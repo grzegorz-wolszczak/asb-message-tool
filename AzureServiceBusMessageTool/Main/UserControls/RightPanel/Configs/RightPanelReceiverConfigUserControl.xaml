@@ -164,14 +164,23 @@
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Auto"
                          IsReadOnly="True"
+                         TextChanged="ReceivedMessageTextBoxBoxChanged"
+                         x:Name="receivedMessagesTextBox"
                          Style="{StaticResource TextBoxStyle}"
-                         Text="{Binding CurrentSelectedConfigModelItem.ReceivedMessagesContent}" />
+                         Text="{Binding CurrentSelectedConfigModelItem.ReceivedMessagesContent}" >
+
+                </TextBox>
 
                 <StackPanel Grid.Column="0"
-                            Grid.Row="1" Orientation="Horizontal">
-                    <Label> Last receiver status: </Label>
-                    <Label Content="{Binding CurrentSelectedConfigModelItem.ReceiverStatus}">  </Label>
+                            Grid.Row="1">
+                    <StackPanel  Orientation="Horizontal">
+                        <Label> Last receiver status: </Label>
+                        <Label Content="{Binding CurrentSelectedConfigModelItem.ReceiverStatus}">  </Label>
+                    </StackPanel>
+                    <CheckBox IsChecked="{Binding CurrentSelectedConfigModelItem.ShouldScrollTextBoxToEndOnNewMessageReceive}">
+                              Scroll to end on message receive</CheckBox>
                 </StackPanel>
+
 
 
             </Grid>

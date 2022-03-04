@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using Main.ViewModels;
 using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
@@ -33,4 +34,21 @@ public partial class MainWindow : Window
       rightPanelControl.rightPanelReceiverConfigTab.DataContext = receiversViewModel;
    }
 
+   private void LogContentTextBoxChanged(object sender, TextChangedEventArgs e)
+   {
+      /*
+       * <x:Code>
+                    <![CDATA[
+                           void LogContentTextBoxChanged(object sender, RoutedEventArgs e)
+                           {
+                              if(((ViewModels.MainViewModel)this.DataContext).ShouldScrollToEndOnLogContentChange)
+                              {
+                                this.logContentTextBox.ScrollToEnd();
+                              }
+
+                           }
+                        ]]>
+                </x:Code>
+       */
+   }
 }

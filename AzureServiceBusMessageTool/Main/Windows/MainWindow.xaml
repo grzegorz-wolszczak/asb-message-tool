@@ -80,9 +80,7 @@
 
             <Label Grid.Column="0" Grid.Row="0" Content="Logs: " />
 
-            <!--
-            HorizontalScrollBarVisibility="Auto"
-                     VerticalScrollBarVisibility="Visible" -->
+
             <TextBox Grid.Column="0"
                      Grid.Row="1"
                      Grid.ColumnSpan="2"
@@ -92,18 +90,28 @@
                      AcceptsReturn="True"
                      Margin="5"
                      IsReadOnly="True"
+                     x:Name="logContentTextBox"
+                     TextChanged="LogContentTextBoxChanged"
                      Text="{Binding LogContent}"
                      Style="{StaticResource TextBoxStyle}"
                      >
+
+
             </TextBox>
-            <Button
-                Grid.Column="2"
-                Grid.Row="2"
-                MinWidth="75"
-                Margin="5"
-                Style="{StaticResource ButtonStyle}"
-                Command="{Binding ClearLogsCommand}" Content="Clear">
-            </Button>
+            <StackPanel Grid.Column="2"
+                        Grid.Row="2" Orientation="Horizontal">
+                <CheckBox Margin="5" VerticalAlignment="Center" IsChecked="{Binding ShouldScrollToEndOnLogContentChange}">Scroll to end on content change ?</CheckBox>
+                <Button
+
+                    MinWidth="75"
+                    Margin="5"
+                    Style="{StaticResource ButtonStyle}"
+                    Command="{Binding ClearLogsCommand}" Content="Clear">
+                </Button>
+
+            </StackPanel>
+
+
 
         </Grid>
 

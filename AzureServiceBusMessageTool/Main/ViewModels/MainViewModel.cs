@@ -19,6 +19,8 @@ public class MainViewModel : INotifyPropertyChanged,
    private string _checkServiceBusStatusMessage = "N/A";
    private string _statusBarMessage = "";
    private ServiceBusHelperLogger _logger;
+   private bool _shouldScrollToEndOnLogContentChange;
+
 
    public event PropertyChangedEventHandler? PropertyChanged;
    public ICommand ClearLogsCommand { get; }
@@ -28,6 +30,19 @@ public class MainViewModel : INotifyPropertyChanged,
       _logger = new ServiceBusHelperLogger(this);
 
       ClearLogsCommand = new DelegateCommand(_ => { LogContent = ""; });
+   }
+
+
+
+   public bool ShouldScrollToEndOnLogContentChange
+   {
+      get => _shouldScrollToEndOnLogContentChange;
+      set
+      {
+         if (value == _shouldScrollToEndOnLogContentChange) return;
+         _shouldScrollToEndOnLogContentChange = value;
+         OnPropertyChanged();
+      }
    }
 
    public string ServiceBusStatusMessage
@@ -62,8 +77,6 @@ public class MainViewModel : INotifyPropertyChanged,
          OnPropertyChanged();
       }
    }
-
-
 
    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
    {

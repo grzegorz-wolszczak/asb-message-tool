@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using Main.Commands;
 using Main.Models;
@@ -16,6 +17,8 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
    private bool _isEmbeddedInsideRightPanel = true;
    private string _receivedMessagesContent;
    private string _receiverStatus = "Idle";
+
+   private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
 
    public ICommand DetachFromPanelCommand { get; }
    public ICommand StartMessageReceiveCommand { get; }
@@ -75,6 +78,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
    }
 
+
    public string ReceiverStatus
    {
       get => _receiverStatus;
@@ -116,6 +120,17 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
       {
          if (value == _isEmbeddedInsideRightPanel) return;
          _isEmbeddedInsideRightPanel = value;
+         OnPropertyChanged();
+      }
+   }
+
+   public bool ShouldScrollTextBoxToEndOnNewMessageReceive
+   {
+      get => _shouldScrollTextBoxToEndOnNewMessageReceive;
+      set
+      {
+         if (value == _shouldScrollTextBoxToEndOnNewMessageReceive) return;
+         _shouldScrollTextBoxToEndOnNewMessageReceive = value;
          OnPropertyChanged();
       }
    }
