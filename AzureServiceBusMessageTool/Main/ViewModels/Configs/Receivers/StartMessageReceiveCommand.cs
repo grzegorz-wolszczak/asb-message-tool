@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Main.ViewModels.Configs.Receivers;
 
-public class StartMessageReceiveCommand2 : ICommand
+public class StartMessageReceiveCommand : ICommand
 {
    private readonly IServiceBusMessageReceiver _msgReceiver;
    private readonly Func<ServiceBusReceiverSettings> _serviceBusReceiverProviderFunc;
@@ -14,7 +14,7 @@ public class StartMessageReceiveCommand2 : ICommand
 
    private bool _canExecute = true;
 
-   public StartMessageReceiveCommand2(
+   public StartMessageReceiveCommand(
       IServiceBusMessageReceiver msgReceiver,
       Func<ServiceBusReceiverSettings> serviceBusReceiverProviderFunc,
       Action<ReceivedMessage> onMessageReceived,

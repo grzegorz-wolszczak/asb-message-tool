@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Main.Application;
 using Main.Commands;
 using Main.Models;
+using Main.Utils;
 
 namespace Main.ViewModels.Configs.Receivers;
 
@@ -39,7 +39,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
       IServiceBusMessageReceiver serviceBusMessageReceiver = _messageReceiverFactory.Create();
 
 
-      StartMessageReceiveCommand = new StartMessageReceiveCommand2(serviceBusMessageReceiver,
+      StartMessageReceiveCommand = new StartMessageReceiveCommand(serviceBusMessageReceiver,
          serviceBusReceiverProviderFunc: () =>
          {
             return new ServiceBusReceiverSettings()
@@ -48,7 +48,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
                ConnectionString = Item.ServiceBusConnectionString,
                SubscriptionName = Item.InputTopicSubscriptionName,
                TopicName = Item.InputTopicName,
-               IsDeadLetterQueue = false, // todo: support dead letter queue from gui
+               IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue, // todo: support dead letter queue from gui
                NextMessageReceiveDelayPeriod = TimeSpan.FromMilliseconds(500) // todo: support this from gui
             };
          },
@@ -65,7 +65,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
    // todo: extract this to function
    private string FormatReceivedMessage(ReceivedMessage msg)
    {
-      return $"{Utils.GetShortTimestamp()} message: '{msg.Body}'";
+      return $"{TimeUtils.GetShortTimestamp()} received message: \n{msg.Body}\n----------------------------------";
    }
 
    public event PropertyChangedEventHandler PropertyChanged;

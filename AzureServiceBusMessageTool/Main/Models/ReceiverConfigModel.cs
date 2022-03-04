@@ -9,6 +9,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
    private string _connectionString;
    private string _inputTopicName;
    private string _inputTopicSubscriptionName;
+   private bool _isAttachedToDeadLetterSubqueue;
 
    public string ConfigName
    {
@@ -17,6 +18,17 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       {
          if (value == _configName) return;
          _configName = value;
+         OnPropertyChanged(nameof(ConfigName));
+      }
+   }
+
+   public bool IsAttachedToDeadLetterSubqueue
+   {
+      get => _isAttachedToDeadLetterSubqueue;
+      set
+      {
+         if (value == _isAttachedToDeadLetterSubqueue) return;
+         _isAttachedToDeadLetterSubqueue = value;
          OnPropertyChanged(nameof(ConfigName));
       }
    }

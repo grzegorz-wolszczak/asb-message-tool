@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:utils="clr-namespace:Main.Utils"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="500">
 
@@ -29,9 +30,12 @@
 
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="0"
+                    Grid.Column="3"
+                    Margin="5,2,5,0"
+                    HorizontalAlignment="Right">
             <Button
-                Margin="5"
+                Margin="5,5,5,0"
                 MinWidth="75"
                 Command="{Binding CurrentSelectedConfigModelItem.DetachFromPanelCommand}"
                 Visibility="{Binding CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel,
@@ -40,7 +44,12 @@
 
         </StackPanel>
 
-        <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Header="Message receiver configuration" Margin="5">
+        <GroupBox Grid.Row="1"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3"
+                  Header="Message receiver configuration"
+                  Margin="5,0,5,2"
+                  >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -53,60 +62,84 @@
                     <RowDefinition Height="Auto" /> <!-- service bus config name --> <!-- combobox -->
                     <RowDefinition Height="Auto" /> <!-- input topic name -->
                     <RowDefinition Height="Auto" /> <!-- input topic subscription name -->
+                    <RowDefinition Height="Auto" /> <!-- is DeadLetter Sub Queue checkbox -->
                 </Grid.RowDefinitions>
 
 
                 <Label Grid.Column="0"
                        Grid.Row="0"
-                       Margin="5"
+                       Margin="5,2,5,2"
                        Content="Receiver config name" />
 
                 <TextBox Grid.Column="1"
                          Grid.Row="0"
-                         Margin="5"
+                         Margin="5,2,5,2"
                          Grid.ColumnSpan="2"
                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.ConfigName, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Grid.Column="0"
                        Grid.Row="1"
-                       Margin="5"
+                       Margin="5,2,5,2"
                        Content="Service bus connection string" />
 
-                <TextBox Grid.Column="1"
-                         Grid.Row="1"
-                         Margin="5"
-                         Grid.ColumnSpan="2"
-                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.ServiceBusConnectionString, UpdateSourceTrigger=PropertyChanged}" />
+
+                <PasswordBox Grid.Column="1"
+                             Grid.Row="1"
+                             Margin="5,0,5,2"
+                             Grid.ColumnSpan="2"
+                             utils:PasswordBoxAssistant.BindPassword="true"
+                             utils:PasswordBoxAssistant.BoundPassword="{Binding
+                         Path=CurrentSelectedConfigModelItem.Item.ServiceBusConnectionString,
+                         Mode=TwoWay,
+                         UpdateSourceTrigger=PropertyChanged}"
+
+                />
 
 
                 <Label Grid.Column="0"
                        Grid.Row="2"
-                       Margin="5"
+                       Margin="5,2,5,2"
                        Content="Input topic name" />
 
                 <TextBox Grid.Column="1"
                          Grid.Row="2"
-                         Margin="5"
+                         Margin="5,2,5,2"
                          Grid.ColumnSpan="2"
                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicName, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Grid.Column="0"
                        Grid.Row="3"
-                       Margin="5"
+                       Margin="5,2,5,2"
                        Content="Input topic subscription name" />
 
                 <TextBox Grid.Column="1"
                          Grid.Row="3"
-                         Margin="5"
+                         Margin="5,2,5,2"
                          Grid.ColumnSpan="2"
                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Label Grid.Column="0"
+                    Grid.Row="4"
+                    Margin="5,2,5,2"
+                    Content="Dead letter subqueue"/>
+
+                <CheckBox Grid.Column="1"
+                          Grid.Row="4"
+                          Margin="5,2,5,2"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue, UpdateSourceTrigger=PropertyChanged}"
+                          />
 
             </Grid>
 
 
         </GroupBox>
 
-        <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="5" Header="Received messages:">
+        <GroupBox Grid.Row="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3"
+                  Margin="5,2,5,2"
+                  Header="Received messages:">
             <Grid>
 
                 <Grid.ColumnDefinitions>
@@ -123,7 +156,9 @@
 
                 <TextBox Grid.Column="0"
                          Grid.Row="0"
-                         Grid.ColumnSpan="3" Margin="5" Background="White"
+                         Grid.ColumnSpan="3"
+                         Margin="5,2,5,2"
+                         Background="White"
                          TextWrapping="NoWrap"
                          AcceptsReturn="True"
                          VerticalScrollBarVisibility="Auto"

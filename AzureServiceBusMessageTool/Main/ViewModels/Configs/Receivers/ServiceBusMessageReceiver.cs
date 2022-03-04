@@ -4,14 +4,15 @@ using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Main.Application;
 using Main.Application.Logging;
+using Main.Utils;
 
 namespace Main.ViewModels.Configs.Receivers;
 
 public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
 {
    private readonly IServiceBusHelperLogger _logger;
-   private static ServiceBusReceiver _receiver;
-   private static CancellationTokenSource _cancellationTokenSource;
+   private ServiceBusReceiver _receiver;
+   private CancellationTokenSource _cancellationTokenSource;
    private ServiceBusReceiverSettings _config;
    private ReceiverCallbacks _callbacks;
    private ServiceBusClient _client;
@@ -83,6 +84,7 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
 
       Task.Factory.StartNew(async () =>
       {
+         var printer = new ServiceBusMessagePrinter();
          try
          {
             _logger.LogInfo($"Receiver '{_config.ConfigName}' started.");
@@ -95,7 +97,7 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
                {
                   var receivedMessage = new ReceivedMessage()
                   {
-                     Body = message.Body == null ? string.Empty : message.Body.ToString()
+                     Body = printer.PrettyPrint(message)
                   };
                   _callbacks.OnMessageReceive(receivedMessage);
                }

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Main.Application;
 using Main.Commands;
 using Main.Models;
+using Main.Utils;
 
 namespace Main.ViewModels.Configs.Senders;
 
@@ -58,7 +58,7 @@ public class SenderConfigViewModel : INotifyPropertyChanged
 
    private void SetLastSendStatus(string msg)
    {
-      var status = $"{Utils.GetShortTimestamp()} {msg}";
+      var status = $"{TimeUtils.GetShortTimestamp()} {msg}";
       LastSendStatus = status;
    }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Main.Utils;
 using Main.ViewModels;
 
 namespace Main.Application.Logging;
@@ -55,6 +56,6 @@ public class ServiceBusHelperLogger : IServiceBusHelperLogger
 
    private string WrapWithTimestamp(string msg)
    {
-      return $"{Utils.GetShortTimestamp()} {msg}";
+      return $"{TimeUtils.GetShortTimestamp()} {msg}";
    }
 }

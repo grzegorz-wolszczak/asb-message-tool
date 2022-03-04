@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Main.Application
+namespace Main.Utils
 {
-   public static class Utils
+   public static class TimeUtils
    {
       public static string GetShortTimestamp()
       {
