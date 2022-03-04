@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>disable</Nullable>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.6.0" />
+      <PackageReference Include="Core.Maybe" Version="2.4.1" />
+      <PackageReference Include="nucs.JsonSettings" Version="1.0.7" />
+    </ItemGroup>
+
+</Project>
