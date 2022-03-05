@@ -1,15 +1,16 @@
 ﻿using System;
 using Core.Maybe;
 
-namespace Main.ViewModels.Configs.Senders;
-
-public interface IMessageSender
+namespace Main.ViewModels.Configs.Senders
 {
-   Maybe<MessageSendErrorInfo> Send(MessageToSendData msgToSend);
-}
+   public interface IMessageSender
+   {
+      Maybe<MessageSendErrorInfo> Send(MessageToSendData msgToSend);
+   }
 
-public class MessageSendErrorInfo
-{
-   public string Message { get; init; }
-   public Maybe<Exception> Exception { get; init; }
+   public class MessageSendErrorInfo
+   {
+      public string Message { get; init; }
+      public Maybe<Exception> Exception { get; init; }
+   }
 }

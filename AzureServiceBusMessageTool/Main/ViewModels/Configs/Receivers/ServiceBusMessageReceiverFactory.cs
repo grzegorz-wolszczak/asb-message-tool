@@ -1,18 +1,19 @@
 ﻿using Main.Application.Logging;
 
-namespace Main.ViewModels.Configs.Receivers;
-
-public class ServiceBusMessageReceiverFactory
+namespace Main.ViewModels.Configs.Receivers
 {
-   private readonly IServiceBusHelperLogger _logger;
-
-   public ServiceBusMessageReceiverFactory(IServiceBusHelperLogger logger)
+   public class ServiceBusMessageReceiverFactory
    {
-      _logger = logger;
-   }
+      private readonly IServiceBusHelperLogger _logger;
 
-   public IServiceBusMessageReceiver Create()
-   {
-      return new ServiceBusMessageReceiver(_logger);
+      public ServiceBusMessageReceiverFactory(IServiceBusHelperLogger logger)
+      {
+         _logger = logger;
+      }
+
+      public IServiceBusMessageReceiver Create()
+      {
+         return new ServiceBusMessageReceiver(_logger);
+      }
    }
 }

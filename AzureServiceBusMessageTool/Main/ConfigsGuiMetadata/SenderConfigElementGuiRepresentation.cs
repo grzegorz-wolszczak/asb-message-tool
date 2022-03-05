@@ -1,31 +1,32 @@
 ﻿using Main.ViewModels.Configs.Senders;
 using Main.Windows.Configs;
 
-namespace Main.ConfigsGuiMetadata;
-
-public class SenderConfigElementGuiRepresentation
+namespace Main.ConfigsGuiMetadata
 {
-   private SenderConfigWindow _window;
-
-   public void ShowCorrespondingElementWindow(SenderConfigViewModelWrapper currentSelectedItem)
+   public class SenderConfigElementGuiRepresentation
    {
-      if (_window == null)
+      private SenderConfigWindow _window;
+
+      public void ShowCorrespondingElementWindow(SenderConfigViewModelWrapper currentSelectedItem)
       {
-         _window = CreateWindowForElement(currentSelectedItem);
+         if (_window == null)
+         {
+            _window = CreateWindowForElement(currentSelectedItem);
+         }
+
+         _window.Show();
       }
 
-      _window.Show();
-   }
+      private SenderConfigWindow CreateWindowForElement(SenderConfigViewModelWrapper currentSelectedItem)
+      {
+         var window = new SenderConfigWindow(currentSelectedItem);
+         return window;
+      }
 
-   private SenderConfigWindow CreateWindowForElement(SenderConfigViewModelWrapper currentSelectedItem)
-   {
-      var window = new SenderConfigWindow(currentSelectedItem);
-      return window;
-   }
-
-   public void CloseWindowOnElementDelete()
-   {
-      // this can be null if we are deleting config and never actually showed a window
-      _window?.Close();
+      public void CloseWindowOnElementDelete()
+      {
+         // this can be null if we are deleting config and never actually showed a window
+         _window?.Close();
+      }
    }
 }

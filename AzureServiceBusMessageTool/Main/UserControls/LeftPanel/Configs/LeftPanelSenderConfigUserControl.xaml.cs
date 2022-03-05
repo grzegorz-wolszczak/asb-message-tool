@@ -1,12 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace Main.UserControls.LeftPanel.Configs;
-
-public partial class LeftPanelSenderConfigUserControl : UserControl
+namespace Main.UserControls.LeftPanel.Configs
 {
-   public LeftPanelSenderConfigUserControl()
+   public partial class LeftPanelSenderConfigUserControl : UserControl
    {
-      InitializeComponent();
+      public LeftPanelSenderConfigUserControl()
+      {
+         InitializeComponent();
+      }
    }
 }
 

@@ -117,6 +117,8 @@
                      x:Name="logContentTextBox"
                      TextChanged="LogContentTextBoxChanged"
                      Text="{Binding LogContent}"
+                     FontSize="{Binding LogTextBoxFontSize}"
+                     PreviewMouseWheel="LogContentTextBox_OnPreviewMouseWheel"
                      Style="{StaticResource TextBoxStyle}"
                      >
 

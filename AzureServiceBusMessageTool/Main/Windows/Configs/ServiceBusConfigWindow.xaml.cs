@@ -1,12 +1,13 @@
 ﻿using System.Windows;
 
-namespace Main.Windows.Configs;
-
-public partial class ServiceBusConfigWindow : Window
+namespace Main.Windows.Configs
 {
-   public ServiceBusConfigWindow()
+   public partial class ServiceBusConfigWindow : Window
    {
-      InitializeComponent();
+      public ServiceBusConfigWindow()
+      {
+         InitializeComponent();
+      }
    }
 }
 

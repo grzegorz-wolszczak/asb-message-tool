@@ -1,53 +1,67 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Main.Application;
 
-namespace Main.Models;
-
-public sealed class SenderConfigModel : INotifyPropertyChanged
+namespace Main.Models
 {
-   private string _configName;
-   private string _serviceBusConnectionString;
-   private string _outputTopicName;
-
-   public string ConfigId { get; init; }
-
-   public string ConfigName
+   public sealed class SenderConfigModel : INotifyPropertyChanged
    {
-      get => _configName;
-      set
+      private string _configName;
+      private string _serviceBusConnectionString;
+      private string _outputTopicName;
+      private int _msgBodyTextFontSize = AppDefaults.DefaultTextBoxFontSize; // todo: is value should be in configview model ? maybe move it to
+
+      public string ConfigId { get; init; }
+
+      public string ConfigName
       {
-         if (value == _configName) return;
-         _configName = value;
-         OnPropertyChanged();
+         get => _configName;
+         set
+         {
+            if (value == _configName) return;
+            _configName = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public string ServiceBusConnectionString
-   {
-      get => _serviceBusConnectionString;
-      set
+      public int MsgBodyTextBoxFontSize
       {
-         if (value == _serviceBusConnectionString) return;
-         _serviceBusConnectionString = value;
-         OnPropertyChanged();
+         get => _msgBodyTextFontSize;
+         set
+         {
+            if (value == _msgBodyTextFontSize) return;
+            _msgBodyTextFontSize = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public string OutputTopicName
-   {
-      get => _outputTopicName;
-      set
+      public string ServiceBusConnectionString
       {
-         if (value == _outputTopicName) return;
-         _outputTopicName = value;
-         OnPropertyChanged();
+         get => _serviceBusConnectionString;
+         set
+         {
+            if (value == _serviceBusConnectionString) return;
+            _serviceBusConnectionString = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public event PropertyChangedEventHandler PropertyChanged;
+      public string OutputTopicName
+      {
+         get => _outputTopicName;
+         set
+         {
+            if (value == _outputTopicName) return;
+            _outputTopicName = value;
+            OnPropertyChanged();
+         }
+      }
 
-   private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-   {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      public event PropertyChangedEventHandler PropertyChanged;
+
+      private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+      {
+         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      }
    }
 }

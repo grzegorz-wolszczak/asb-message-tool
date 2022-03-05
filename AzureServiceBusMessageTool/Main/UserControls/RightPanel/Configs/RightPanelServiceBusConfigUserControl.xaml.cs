@@ -1,12 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace Main.UserControls.RightPanel.Configs;
-
-public partial class RightPanelServiceBusConfigUserControl : UserControl
+namespace Main.UserControls.RightPanel.Configs
 {
-   public RightPanelServiceBusConfigUserControl()
+   public partial class RightPanelServiceBusConfigUserControl : UserControl
    {
-      InitializeComponent();
+      public RightPanelServiceBusConfigUserControl()
+      {
+         InitializeComponent();
+      }
    }
 }
 

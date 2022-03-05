@@ -1,19 +1,20 @@
 ﻿using Main.ViewModels;
 using Main.Windows;
 
-namespace Main.Application;
-
-public class AboutWindowProxy: IAboutWindowProxy
+namespace Main.Application
 {
-   private readonly AboutWindow _aboutWindow;
-
-   public AboutWindowProxy(AboutWindow aboutWindow)
+   public class AboutWindowProxy: IAboutWindowProxy
    {
-      _aboutWindow = aboutWindow;
-   }
+      private readonly AboutWindow _aboutWindow;
 
-   public void Show()
-   {
-      _aboutWindow.ShowDialog();
+      public AboutWindowProxy(AboutWindow aboutWindow)
+      {
+         _aboutWindow = aboutWindow;
+      }
+
+      public void Show()
+      {
+         _aboutWindow.ShowDialog();
+      }
    }
 }

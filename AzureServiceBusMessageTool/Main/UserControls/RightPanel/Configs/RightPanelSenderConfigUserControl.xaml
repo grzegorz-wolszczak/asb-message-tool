@@ -137,6 +137,8 @@
                          HorizontalAlignment="Stretch"
                          IsReadOnly="False"
                          Style="{StaticResource TextBoxStyle}"
+                         FontSize="{Binding CurrentSelectedConfigModelItem.Item.MsgBodyTextBoxFontSize}"
+                         PreviewMouseWheel="SenderMsgBodyTextBox_OnPreviewMouseWheel"
                          Text="{Binding CurrentSelectedConfigModelItem.MessageToSendStringContent}" />
             </Grid>
         </GroupBox>

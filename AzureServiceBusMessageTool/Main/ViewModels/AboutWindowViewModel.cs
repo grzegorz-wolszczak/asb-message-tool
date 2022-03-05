@@ -1,10 +1,13 @@
-﻿namespace Main.Application;
+﻿using Main.Application;
 
-public class AboutWindowViewModel
+namespace Main.ViewModels
 {
-   public AboutWindowViewModel(ApplicationBinaryInfo binaryInfo)
+   public class AboutWindowViewModel
    {
+      public AboutWindowViewModel(ApplicationBinaryInfo binaryInfo)
+      {
+      }
+
+
    }
-
-
 }

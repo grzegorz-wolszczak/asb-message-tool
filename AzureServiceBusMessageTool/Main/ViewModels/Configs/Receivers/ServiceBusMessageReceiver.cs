@@ -6,135 +6,136 @@ using Main.Application;
 using Main.Application.Logging;
 using Main.Utils;
 
-namespace Main.ViewModels.Configs.Receivers;
-
-public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
+namespace Main.ViewModels.Configs.Receivers
 {
-   private readonly IServiceBusHelperLogger _logger;
-   private ServiceBusReceiver _receiver;
-   private CancellationTokenSource _cancellationTokenSource;
-   private ServiceBusReceiverSettings _config;
-   private ReceiverCallbacks _callbacks;
-   private ServiceBusClient _client;
-   private StopReason _stopReason = StopReason.Intentional;
-
-   public ServiceBusMessageReceiver(IServiceBusHelperLogger logger)
+   public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
    {
-      _logger = logger;
-   }
+      private readonly IServiceBusHelperLogger _logger;
+      private ServiceBusReceiver _receiver;
+      private CancellationTokenSource _cancellationTokenSource;
+      private ServiceBusReceiverSettings _config;
+      private ReceiverCallbacks _callbacks;
+      private ServiceBusClient _client;
+      private StopReason _stopReason = StopReason.Intentional;
 
-   private enum StopReason
-   {
-      Unexpected = 0,
-      Intentional
-   }
-
-   public void Start(
-      ServiceBusReceiverSettings config,
-      ReceiverCallbacks callbacks)
-   {
-      _config = config;
-      _callbacks = callbacks;
-      _stopReason = StopReason.Unexpected;
-      try
+      public ServiceBusMessageReceiver(IServiceBusHelperLogger logger)
       {
-         TryStart();
-      }
-      catch (Exception e)
-      {
-         StopReceiver();
-         callbacks.OnReceiverFailure.Invoke(e);
-         _logger.LogException($"Could not start receiving for receiver '{_config.ConfigName}' for messages because of error.", e);
-      }
-   }
-
-   private void StopReceiver()
-   {
-      if (_stopReason == StopReason.Intentional)
-      {
-         _callbacks.OnReceiverStop.Invoke();
+         _logger = logger;
       }
 
-      _cancellationTokenSource?.Cancel();
-      _cancellationTokenSource = null;
-      _client?.DisposeAsync();
-      _receiver?.DisposeAsync();
-   }
-
-   private void TryStart()
-   {
-      if (_cancellationTokenSource != null)
+      private enum StopReason
       {
-         throw new ServiceBusHelperException($"InternalError: Receiver '{_config.ConfigName}' already started");
+         Unexpected = 0,
+         Intentional
       }
 
-      _client = new ServiceBusClient(_config.ConnectionString);
-      var serviceBusReceiverOptions = new ServiceBusReceiverOptions()
+      public void Start(
+         ServiceBusReceiverSettings config,
+         ReceiverCallbacks callbacks)
       {
-         SubQueue = _config.IsDeadLetterQueue ? SubQueue.DeadLetter : SubQueue.None,
-         ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
-      };
-      _receiver = _client.CreateReceiver(
-         _config.TopicName,
-         _config.SubscriptionName,
-         serviceBusReceiverOptions);
-
-      _cancellationTokenSource = new CancellationTokenSource();
-      var token = _cancellationTokenSource.Token;
-
-      Task.Factory.StartNew(async () =>
-      {
-         var printer = new ServiceBusMessagePrinter();
+         _config = config;
+         _callbacks = callbacks;
+         _stopReason = StopReason.Unexpected;
          try
          {
-            _logger.LogInfo($"Receiver '{_config.ConfigName}' started.");
-            _callbacks.OnReceiverStarted.Invoke();
-            while (!token.IsCancellationRequested)
-            {
-               // todo: make this async and update all code accordingly
-               var message = await _receiver.ReceiveMessageAsync(TimeSpan.FromSeconds(10), token);
-               if (message != null)
-               {
-                  var receivedMessage = new ReceivedMessage()
-                  {
-                     Body = printer.PrettyPrint(message)
-                  };
-                  _callbacks.OnMessageReceive(receivedMessage);
-               }
-
-               await Task.Delay(_config.NextMessageReceiveDelayPeriod);
-            }
-         }
-         catch (TaskCanceledException e)
-         {
-            if (_stopReason == StopReason.Intentional)
-            {
-               _logger.LogInfo($"Receiver '{_config.ConfigName}' was stopped manually.");
-            }
-            else
-            {
-               _logger.LogError($"Receiver '{_config.ConfigName}' was stopped unexpectedly");
-            }
-
-            StopReceiver();
+            TryStart();
          }
          catch (Exception e)
          {
-            _callbacks.OnReceiverFailure.Invoke(e);
-            _logger.LogException(e);
             StopReceiver();
+            callbacks.OnReceiverFailure.Invoke(e);
+            _logger.LogException($"Could not start receiving for receiver '{_config.ConfigName}' for messages because of error.", e);
          }
-      }, TaskCreationOptions.LongRunning);
+      }
+
+      private void StopReceiver()
+      {
+         if (_stopReason == StopReason.Intentional)
+         {
+            _callbacks.OnReceiverStop.Invoke();
+         }
+
+         _cancellationTokenSource?.Cancel();
+         _cancellationTokenSource = null;
+         _client?.DisposeAsync();
+         _receiver?.DisposeAsync();
+      }
+
+      private void TryStart()
+      {
+         if (_cancellationTokenSource != null)
+         {
+            throw new ServiceBusHelperException($"InternalError: Receiver '{_config.ConfigName}' already started");
+         }
+
+         _client = new ServiceBusClient(_config.ConnectionString);
+         var serviceBusReceiverOptions = new ServiceBusReceiverOptions()
+         {
+            SubQueue = _config.IsDeadLetterQueue ? SubQueue.DeadLetter : SubQueue.None,
+            ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
+         };
+         _receiver = _client.CreateReceiver(
+            _config.TopicName,
+            _config.SubscriptionName,
+            serviceBusReceiverOptions);
+
+         _cancellationTokenSource = new CancellationTokenSource();
+         var token = _cancellationTokenSource.Token;
+
+         Task.Factory.StartNew(async () =>
+         {
+            var printer = new ServiceBusMessagePrinter();
+            try
+            {
+               _logger.LogInfo($"Receiver '{_config.ConfigName}' started.");
+               _callbacks.OnReceiverStarted.Invoke();
+               while (!token.IsCancellationRequested)
+               {
+                  // todo: make this async and update all code accordingly
+                  var message = await _receiver.ReceiveMessageAsync(TimeSpan.FromSeconds(10), token);
+                  if (message != null)
+                  {
+                     var receivedMessage = new ReceivedMessage()
+                     {
+                        Body = printer.PrettyPrint(message)
+                     };
+                     _callbacks.OnMessageReceive(receivedMessage);
+                  }
+
+                  await Task.Delay(_config.NextMessageReceiveDelayPeriod);
+               }
+            }
+            catch (TaskCanceledException e)
+            {
+               if (_stopReason == StopReason.Intentional)
+               {
+                  _logger.LogInfo($"Receiver '{_config.ConfigName}' was stopped manually.");
+               }
+               else
+               {
+                  _logger.LogError($"Receiver '{_config.ConfigName}' was stopped unexpectedly");
+               }
+
+               StopReceiver();
+            }
+            catch (Exception e)
+            {
+               _callbacks.OnReceiverFailure.Invoke(e);
+               _logger.LogException(e);
+               StopReceiver();
+            }
+         }, TaskCreationOptions.LongRunning);
+      }
+
+      public void Stop()
+      {
+         _stopReason = StopReason.Intentional;
+         StopReceiver();
+      }
    }
 
-   public void Stop()
+   public class ReceivedMessage
    {
-      _stopReason = StopReason.Intentional;
-      StopReceiver();
+      public string Body { get; init; }
    }
-}
-
-public class ReceivedMessage
-{
-   public string Body { get; init; }
 }

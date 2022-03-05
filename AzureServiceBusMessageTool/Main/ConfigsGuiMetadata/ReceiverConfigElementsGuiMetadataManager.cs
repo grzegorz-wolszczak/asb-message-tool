@@ -2,45 +2,46 @@
 using System.Collections.Generic;
 using Main.ViewModels.Configs.Receivers;
 
-namespace Main.ConfigsGuiMetadata;
-
-public class ReceiverConfigElementsGuiMetadataManager : IReceiverConfigWindowDetacher
+namespace Main.ConfigsGuiMetadata
 {
-   private readonly Dictionary<ReceiverConfigViewModelWrapper, ReceiverConfigElementGuiRepresentation> _dict = new();
-
-   public void Add(ReceiverConfigViewModelWrapper newConfig)
+   public class ReceiverConfigElementsGuiMetadataManager : IReceiverConfigWindowDetacher
    {
-      var newMetadata = new ReceiverConfigElementGuiRepresentation();
-      _dict.Add(newConfig, newMetadata);
-   }
+      private readonly Dictionary<ReceiverConfigViewModelWrapper, ReceiverConfigElementGuiRepresentation> _dict = new();
 
-   public void Remove(ReceiverConfigViewModelWrapper currentSelectedItem)
-   {
-      _dict.Remove(currentSelectedItem);
-   }
-
-
-   public void Delete(ReceiverConfigViewModelWrapper currentSelectedItem)
-   {
-      _dict.TryGetValue(currentSelectedItem, out ReceiverConfigElementGuiRepresentation metadata);
-      if (metadata == null)
+      public void Add(ReceiverConfigViewModelWrapper newConfig)
       {
-         throw new ApplicationException("Could not find metadata for Receiver config");
+         var newMetadata = new ReceiverConfigElementGuiRepresentation();
+         _dict.Add(newConfig, newMetadata);
       }
 
-      metadata.CloseWindowOnElementDelete();
-      Remove(currentSelectedItem);
-   }
-
-   public void DetachFromPanel(ReceiverConfigViewModelWrapper currentSelectedItem)
-   {
-      _dict.TryGetValue(currentSelectedItem, out ReceiverConfigElementGuiRepresentation metadata);
-      if (metadata == null)
+      public void Remove(ReceiverConfigViewModelWrapper currentSelectedItem)
       {
-         throw new ApplicationException("Could not find metadata for Receiver config");
+         _dict.Remove(currentSelectedItem);
       }
 
-      metadata.ShowCorrespondingElementWindow(currentSelectedItem);
-      currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = false;
+
+      public void Delete(ReceiverConfigViewModelWrapper currentSelectedItem)
+      {
+         _dict.TryGetValue(currentSelectedItem, out ReceiverConfigElementGuiRepresentation metadata);
+         if (metadata == null)
+         {
+            throw new ApplicationException("Could not find metadata for Receiver config");
+         }
+
+         metadata.CloseWindowOnElementDelete();
+         Remove(currentSelectedItem);
+      }
+
+      public void DetachFromPanel(ReceiverConfigViewModelWrapper currentSelectedItem)
+      {
+         _dict.TryGetValue(currentSelectedItem, out ReceiverConfigElementGuiRepresentation metadata);
+         if (metadata == null)
+         {
+            throw new ApplicationException("Could not find metadata for Receiver config");
+         }
+
+         metadata.ShowCorrespondingElementWindow(currentSelectedItem);
+         currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = false;
+      }
    }
 }

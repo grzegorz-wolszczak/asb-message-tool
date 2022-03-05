@@ -1,12 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace Main.UserControls.RightPanel;
-
-public partial class RightPanelControl : UserControl
+namespace Main.UserControls.RightPanel
 {
-   public RightPanelControl()
+   public partial class RightPanelControl : UserControl
    {
-      InitializeComponent();
+      public RightPanelControl()
+      {
+         InitializeComponent();
+      }
    }
 }
 

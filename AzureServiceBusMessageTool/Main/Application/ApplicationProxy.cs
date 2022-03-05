@@ -1,11 +1,12 @@
-﻿namespace Main.Application;
-
-public class ApplicationProxy : IApplicationProxy
+﻿namespace Main.Application
 {
-   private readonly System.Windows.Application _wpfApplication;
-
-   public ApplicationProxy(System.Windows.Application wpfApplication)
+   public class ApplicationProxy : IApplicationProxy
    {
-      _wpfApplication = wpfApplication;
+      private readonly System.Windows.Application _wpfApplication;
+
+      public ApplicationProxy(System.Windows.Application wpfApplication)
+      {
+         _wpfApplication = wpfApplication;
+      }
    }
 }

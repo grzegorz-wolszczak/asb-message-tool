@@ -16,10 +16,10 @@
     <Grid>
         <TabControl>
 
-            <TabItem Header="Service Bus" x:Name="rightPanelServiceBusConfigTab"
-                     IsSelected="{Binding IsServiceBusConfigTabSelected}" Visibility="Hidden">
-                <configs:RightPanelServiceBusConfigUserControl />
-            </TabItem>
+            <!-- <TabItem Header="Service Bus" x:Name="rightPanelServiceBusConfigTab" -->
+            <!--          IsSelected="{Binding IsServiceBusConfigTabSelected}" Visibility="Hidden"> -->
+            <!--     <configs:RightPanelServiceBusConfigUserControl /> -->
+            <!-- </TabItem> -->
 
             <TabItem Header="Sender" x:Name="rightPanelSenderConfigTab"
                      IsSelected="{Binding IsSenderConfigTabSelected}"

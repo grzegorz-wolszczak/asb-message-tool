@@ -1,12 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace Main.UserControls.LeftPanel.Configs;
-
-public partial class LeftPanelReceiverConfigUserControl : UserControl
+namespace Main.UserControls.LeftPanel.Configs
 {
-   public LeftPanelReceiverConfigUserControl()
+   public partial class LeftPanelReceiverConfigUserControl : UserControl
    {
-      InitializeComponent();
+      public LeftPanelReceiverConfigUserControl()
+      {
+         InitializeComponent();
+      }
    }
 }
 

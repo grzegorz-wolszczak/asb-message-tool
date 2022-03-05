@@ -1,40 +1,41 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Main.Models;
-
-public sealed class ServiceBusConfigModel : INotifyPropertyChanged
+namespace Main.Models
 {
-   private string _configName;
-   private string _connectionString;
-
-   public string ConfigId { get; init; } // UUID
-   public event PropertyChangedEventHandler PropertyChanged;
-
-   public string ConfigName
+   public sealed class ServiceBusConfigModel : INotifyPropertyChanged
    {
-      get => _configName;
-      set
+      private string _configName;
+      private string _connectionString;
+
+      public string ConfigId { get; init; } // UUID
+      public event PropertyChangedEventHandler PropertyChanged;
+
+      public string ConfigName
       {
-         if (value == _configName) return;
-         _configName = value;
-         OnPropertyChanged();
+         get => _configName;
+         set
+         {
+            if (value == _configName) return;
+            _configName = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public string ConnectionString
-   {
-      get => _connectionString;
-      set
+      public string ConnectionString
       {
-         if (value == _connectionString) return;
-         _connectionString = value;
-         OnPropertyChanged();
+         get => _connectionString;
+         set
+         {
+            if (value == _connectionString) return;
+            _connectionString = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-   {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+      {
+         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      }
    }
 }

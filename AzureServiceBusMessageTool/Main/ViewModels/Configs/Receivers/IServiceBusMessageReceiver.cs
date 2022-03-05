@@ -1,8 +1,9 @@
-﻿namespace Main.ViewModels.Configs.Receivers;
-
-public interface IServiceBusMessageReceiver
+﻿namespace Main.ViewModels.Configs.Receivers
 {
-   void Start(ServiceBusReceiverSettings config, ReceiverCallbacks callbacks);
-   void Stop();
+   public interface IServiceBusMessageReceiver
+   {
+      void Start(ServiceBusReceiverSettings config, ReceiverCallbacks callbacks);
+      void Stop();
 
+   }
 }

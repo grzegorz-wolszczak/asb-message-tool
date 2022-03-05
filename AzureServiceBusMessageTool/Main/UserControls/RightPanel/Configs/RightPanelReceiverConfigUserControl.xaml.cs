@@ -1,30 +1,58 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Input;
+using Main.ViewModels.Configs.Receivers;
 
-namespace Main.UserControls.RightPanel.Configs;
-
-public partial class RightPanelReceiverConfigUserControl : UserControl
+namespace Main.UserControls.RightPanel.Configs
 {
-   public RightPanelReceiverConfigUserControl()
+   public partial class RightPanelReceiverConfigUserControl : UserControl
    {
-      InitializeComponent();
-   }
-
-   private void ReceivedMessageTextBoxBoxChanged(object sender, TextChangedEventArgs e)
-   {
-
-      if (DataContext is Main.ViewModels.Configs.Receivers.ReceiversSelectedConfigViewModel viewModel1)
+      public RightPanelReceiverConfigUserControl()
       {
-         if (viewModel1.CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive)
+         InitializeComponent();
+      }
+
+      private void ReceivedMessageTextBoxBoxChanged(object sender, TextChangedEventArgs e)
+      {
+
+         if (DataContext is Main.ViewModels.Configs.Receivers.ReceiversSelectedConfigViewModel viewModel1)
          {
-            receivedMessagesTextBox.ScrollToEnd();
+            if (viewModel1.CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive)
+            {
+               receivedMessagesTextBox.ScrollToEnd();
+            }
+         }
+         else if (DataContext is Main.ViewModels.Configs.Receivers.ReceiverConfigViewModelWrapper viewModel2)
+         {
+            if (viewModel2.CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive)
+            {
+               receivedMessagesTextBox.ScrollToEnd();
+            }
          }
       }
-      else if (DataContext is Main.ViewModels.Configs.Receivers.ReceiverConfigViewModelWrapper viewModel2)
+
+      private void ReceivedMessagesTextBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
       {
-         if (viewModel2.CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive)
+         if (Keyboard.Modifiers != ModifierKeys.Control)
          {
-            receivedMessagesTextBox.ScrollToEnd();
+            return;
          }
+
+         e.Handled = true;
+         var propertyName = $"{nameof(ReceiversSelectedConfigViewModel.CurrentSelectedConfigModelItem)}";
+         var propertyInfo = DataContext.GetType().GetProperty(propertyName);
+         ReceiverConfigViewModel item = (ReceiverConfigViewModel)propertyInfo.GetValue(DataContext, null);
+         var targetItem = item.Item;
+         var initialValue = targetItem.MsgBodyTextBoxFontSize;
+         if (e.Delta > 0)
+         {
+            initialValue++;
+         }
+         else
+         {
+            initialValue--;
+         }
+
+         targetItem.MsgBodyTextBoxFontSize = initialValue;
       }
    }
 }

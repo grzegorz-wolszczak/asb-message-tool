@@ -3,9 +3,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Main.Converters;
-
-
+namespace Main.Converters
+{
    public class BoolToTextWrappingValueConverter : IValueConverter
    {
       public object Convert(object value,
@@ -34,4 +33,5 @@ namespace Main.Converters;
          throw new NotImplementedException();
       }
    }
+}
 

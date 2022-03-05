@@ -3,32 +3,33 @@ using System.ComponentModel;
 using System.Windows;
 using Main.ViewModels.Configs.Senders;
 
-namespace Main.Windows.Configs;
-
-public partial class SenderConfigWindow : Window
+namespace Main.Windows.Configs
 {
-   private SenderConfigViewModelWrapper _currentSelectedItem;
-
-   public SenderConfigWindow(SenderConfigViewModelWrapper currentSelectedItem)
+   public partial class SenderConfigWindow : Window
    {
-      _currentSelectedItem = currentSelectedItem;
+      private SenderConfigViewModelWrapper _currentSelectedItem;
 
-      InitializeComponent();
-      DataContext = currentSelectedItem;
-   }
+      public SenderConfigWindow(SenderConfigViewModelWrapper currentSelectedItem)
+      {
+         _currentSelectedItem = currentSelectedItem;
 
-   protected override void OnClosing(CancelEventArgs e)
-   {
-      e.Cancel = true;
-      Hide();
-      _currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = true;
-   }
+         InitializeComponent();
+         DataContext = currentSelectedItem;
+      }
 
-   protected override void OnInitialized(EventArgs e)
-   {
-      base.OnInitialized(e);
+      protected override void OnClosing(CancelEventArgs e)
+      {
+         e.Cancel = true;
+         Hide();
+         _currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = true;
+      }
 
-      System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+      protected override void OnInitialized(EventArgs e)
+      {
+         base.OnInitialized(e);
+
+         System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+      }
    }
 }
 
