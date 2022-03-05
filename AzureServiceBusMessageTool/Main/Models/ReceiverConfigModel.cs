@@ -10,6 +10,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
    private string _inputTopicName;
    private string _inputTopicSubscriptionName;
    private bool _isAttachedToDeadLetterSubqueue;
+   private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
 
    public string ConfigName
    {
@@ -66,6 +67,16 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       }
    }
 
+   public bool ShouldScrollTextBoxToEndOnNewMessageReceive
+   {
+      get => _shouldScrollTextBoxToEndOnNewMessageReceive;
+      set
+      {
+         if (value == _shouldScrollTextBoxToEndOnNewMessageReceive) return;
+         _shouldScrollTextBoxToEndOnNewMessageReceive = value;
+         OnPropertyChanged();
+      }
+   }
 
    public string ConfigId { get; init; } // UUID
    public event PropertyChangedEventHandler PropertyChanged;

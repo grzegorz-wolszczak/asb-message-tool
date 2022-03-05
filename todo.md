@@ -13,7 +13,7 @@
 - create applicaiton icon
 - add checkbox for message sedner so it sends empty message as null
   - modify receiver to not include Body in response if it is null (or have some special indication that body was null)
-
+- make log window using expander ?
 ## Bugs:
  
 

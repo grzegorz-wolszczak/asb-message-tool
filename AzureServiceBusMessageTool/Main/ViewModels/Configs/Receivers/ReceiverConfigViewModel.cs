@@ -18,7 +18,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
    private string _receivedMessagesContent;
    private string _receiverStatus = "Idle";
 
-   private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
+
 
    public ICommand DetachFromPanelCommand { get; }
    public ICommand StartMessageReceiveCommand { get; }
@@ -124,16 +124,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
       }
    }
 
-   public bool ShouldScrollTextBoxToEndOnNewMessageReceive
-   {
-      get => _shouldScrollTextBoxToEndOnNewMessageReceive;
-      set
-      {
-         if (value == _shouldScrollTextBoxToEndOnNewMessageReceive) return;
-         _shouldScrollTextBoxToEndOnNewMessageReceive = value;
-         OnPropertyChanged();
-      }
-   }
+
 }
 
 public interface IReceiverConfigWindowDetacher

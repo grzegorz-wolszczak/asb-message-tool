@@ -177,7 +177,7 @@
                         <Label> Last receiver status: </Label>
                         <Label Content="{Binding CurrentSelectedConfigModelItem.ReceiverStatus}">  </Label>
                     </StackPanel>
-                    <CheckBox IsChecked="{Binding CurrentSelectedConfigModelItem.ShouldScrollTextBoxToEndOnNewMessageReceive}">
+                    <CheckBox IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive}">
                               Autoscroll</CheckBox>
                 </StackPanel>
 

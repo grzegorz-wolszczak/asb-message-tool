@@ -16,14 +16,14 @@ public partial class RightPanelReceiverConfigUserControl : UserControl
 
       if (DataContext is Main.ViewModels.Configs.Receivers.ReceiversSelectedConfigViewModel viewModel1)
       {
-         if (viewModel1.CurrentSelectedConfigModelItem.ShouldScrollTextBoxToEndOnNewMessageReceive)
+         if (viewModel1.CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive)
          {
             receivedMessagesTextBox.ScrollToEnd();
          }
       }
       else if (DataContext is Main.ViewModels.Configs.Receivers.ReceiverConfigViewModelWrapper viewModel2)
       {
-         if (viewModel2.CurrentSelectedConfigModelItem.ShouldScrollTextBoxToEndOnNewMessageReceive)
+         if (viewModel2.CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive)
          {
             receivedMessagesTextBox.ScrollToEnd();
          }
