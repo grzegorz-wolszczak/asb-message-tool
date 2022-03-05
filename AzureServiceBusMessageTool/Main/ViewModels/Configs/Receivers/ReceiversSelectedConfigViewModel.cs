@@ -15,6 +15,7 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
    private ReceiverConfigViewModel _currentSelectedItem;
    private bool _isReceiverConfigTabSelected;
 
+
    public bool IsReceiverConfigTabSelected
    {
       get => _isReceiverConfigTabSelected;
@@ -104,8 +105,6 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
       }
    }
 
-
    public ICommand AddReceiverConfigCommand { get; }
-
    public ICommand DeleteReceiverConfigCommand { get; }
 }

@@ -12,7 +12,7 @@ public class PersistentConfiguration
    public PersistentConfiguration(ApplicationBinaryInfo binaryInfo, ApplicationPersistentOptions options )
    {
       _options = options;
-      _configFilePath = $"{binaryInfo.ApplicationDirectory}{Path.DirectorySeparatorChar}{Globals.ConfigFileName}";
+      _configFilePath = $"{binaryInfo.ApplicationDirectory}{Path.DirectorySeparatorChar}{AppContants.ConfigFileName}";
 
    }
 
