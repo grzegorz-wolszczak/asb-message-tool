@@ -23,7 +23,7 @@ public class ApplicationLogicRoot
       _appProxy = appProxy;
 
       var binaryInfo = new ApplicationBinaryInfo(
-         AppContants.ApplicationName,
+         AppConstants.ApplicationName,
          Process.GetCurrentProcess().MainModule.FileName);
 
       ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();
@@ -50,7 +50,10 @@ public class ApplicationLogicRoot
          sendersViewModel,
          receiversViewModel);
 
-      var persistentOptions = new ApplicationPersistentOptions(serviceBusConfigsViewModel, sendersViewModel, receiversViewModel);
+      var persistentOptions = new ApplicationPersistentOptions(mainViewModel,
+         serviceBusConfigsViewModel,
+         sendersViewModel,
+         receiversViewModel);
 
       _persistenConfig = new PersistentConfiguration(binaryInfo, persistentOptions);
 

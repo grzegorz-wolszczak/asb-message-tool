@@ -34,24 +34,14 @@ public partial class MainWindow : Window
       leftPanelControl.leftPanelReceiversConfigUserControl.DataContext = receiversViewModel;
       rightPanelControl.rightPanelReceiverConfigTab.DataContext = receiversViewModel;
 
-      Title = $"{AppContants.ApplicationName} ({AppContants.Version})";
+      Title = $"{AppConstants.ApplicationName} ({AppConstants.Version})";
    }
 
    private void LogContentTextBoxChanged(object sender, TextChangedEventArgs e)
    {
-      /*
-       * <x:Code>
-                    <![CDATA[
-                           void LogContentTextBoxChanged(object sender, RoutedEventArgs e)
-                           {
-                              if(((ViewModels.MainViewModel)this.DataContext).ShouldScrollToEndOnLogContentChange)
-                              {
-                                this.logContentTextBox.ScrollToEnd();
-                              }
-
-                           }
-                        ]]>
-                </x:Code>
-       */
+      if(((ViewModels.MainViewModel)this.DataContext).ShouldScrollToEndOnLogContentChange)
+      {
+         this.logContentTextBox.ScrollToEnd();
+      }
    }
 }

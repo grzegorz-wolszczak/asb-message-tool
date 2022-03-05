@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Main.Models;
+using Main.ViewModels;
 using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
 using Main.ViewModels.Configs.Senders;
@@ -9,15 +10,18 @@ namespace Main.Application.Persistence;
 
 public class ApplicationPersistentOptions
 {
+   private readonly MainViewModel _mainViewModel;
    private readonly ServiceBusSelectedConfigsViewModel _serviceBusConfigsViewModel;
    private readonly SendersSelectedConfigViewModel _sendersSelectedConfigViewModel;
    private readonly ReceiversSelectedConfigViewModel _receiversSelectedConfigViewModel;
 
    public ApplicationPersistentOptions(
+      MainViewModel mainViewModel,
       ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel,
       SendersSelectedConfigViewModel sendersSelectedConfigViewModel,
       ReceiversSelectedConfigViewModel receiversSelectedConfigViewModel)
    {
+      _mainViewModel = mainViewModel;
       _serviceBusConfigsViewModel = serviceBusConfigsViewModel;
       _sendersSelectedConfigViewModel = sendersSelectedConfigViewModel;
       _receiversSelectedConfigViewModel = receiversSelectedConfigViewModel;
@@ -54,5 +58,19 @@ public class ApplicationPersistentOptions
    {
       if (settingsReceiversConfig == null) return;
       _receiversSelectedConfigViewModel.AddConfigs(settingsReceiversConfig);
+   }
+
+   public MainWindowSettings GetMainWindowSettings()
+   {
+      return new MainWindowSettings()
+      {
+         ShouldScrollToEndOnLogContentChange = _mainViewModel.ShouldScrollToEndOnLogContentChange
+      };
+   }
+
+   public void ReadMainWindowSettings(MainWindowSettings mainWindowSettings)
+   {
+      if (mainWindowSettings == null) return;
+      _mainViewModel.ShouldScrollToEndOnLogContentChange = mainWindowSettings.ShouldScrollToEndOnLogContentChange;
    }
 }

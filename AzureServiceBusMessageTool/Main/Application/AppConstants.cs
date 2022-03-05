@@ -2,7 +2,7 @@
 
 namespace Main.Application
 {
-  public static class AppContants
+  public static class AppConstants
   {
     public static readonly Version Version = new Version(0, 3, 0);
     public static readonly string ApplicationDisplayName = "Azure service bus message tool";
