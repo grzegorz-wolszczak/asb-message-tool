@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using Azure.Messaging.ServiceBus;
-
 using System.Collections.Specialized;
 
 namespace Main.Utils;
@@ -10,20 +9,17 @@ public class ServiceBusMessagePrinter
 {
    private int _maxFieldWith = 0;
    private OrderedDictionary _fieldValues = new();
-
-   public ServiceBusMessagePrinter()
-   {
-   }
+   // application properties will be displayed with additional indent
+   // make room for it for standard message properties
+   private const int IndentOffsetForApplicationProperties = 4;
 
    public string PrettyPrint(ServiceBusReceivedMessage msg)
    {
       _fieldValues.Clear();
       _maxFieldWith = 0;
 
-
       AppendFiledValues(msg);
       return CreateFormattedMsg();
-
    }
 
    private string CreateFormattedMsg()
@@ -31,7 +27,7 @@ public class ServiceBusMessagePrinter
       var enumerator = _fieldValues.GetEnumerator();
 
       var sb = new StringBuilder();
-      var formatString = $"'{{0,-{_maxFieldWith+4}}}'";
+      var formatString = $"'{{0,-{_maxFieldWith + IndentOffsetForApplicationProperties}}}'";
       while (enumerator.MoveNext())
       {
          sb.Append($"{String.Format(formatString, enumerator.Key)} : '{enumerator.Value}'\n");
@@ -44,19 +40,8 @@ public class ServiceBusMessagePrinter
    {
       AppendNotEmptyPrimitiveProperties(msg);
       //AppendApplicationProperties(msg);
-      AppendBody(msg);
    }
 
-   private void AppendBody(ServiceBusReceivedMessage msg)
-   {
-      string effectiveBody = "<<null>";
-      if (msg.Body != null)
-      {
-         effectiveBody = msg.Body.ToString();
-      }
-
-      _fieldValues["Body"] = $"{effectiveBody}";
-   }
 
    private void AppendApplicationProperties(ServiceBusReceivedMessage msg)
    {
@@ -88,7 +73,7 @@ public class ServiceBusMessagePrinter
       AppendSimplePropertyIfNotNull(nameof(msg.TimeToLive), msg.TimeToLive);
       AppendSimplePropertyIfNotNull(nameof(msg.To), msg.To);
       AppendSimplePropertyIfNotNull(nameof(msg.TransactionPartitionKey), msg.TransactionPartitionKey);
-
+      AppendSimplePropertyIfNotNull(nameof(msg.Body), msg.Body);
    }
 
    private void AppendSimplePropertyIfNotNull<T>(string fieldName, T fieldValue)
@@ -98,7 +83,7 @@ public class ServiceBusMessagePrinter
          return;
       }
 
-      _maxFieldWith = Math.Max(_maxFieldWith, fieldName.Length);
+      _maxFieldWith = Math.Max(_maxFieldWith, fieldName.Length + IndentOffsetForApplicationProperties);
       _fieldValues[fieldName] = $"{fieldValue.ToString()}";
    }
 }

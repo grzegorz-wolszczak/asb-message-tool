@@ -35,13 +35,16 @@ public class MessageSender : IMessageSender
          var sender = GetSenderForClient(client, msgToSend.TopicName, msgToSend.ConnectionString);
 
          _logger.LogInfo($"Sending message to topic '{msgToSend.TopicName}\nwith content :'{msgBody}'");
+
+         ServiceBusMessage message;
+
          if (msgBody == null)
          {
-            _logger.LogInfo("Msg body is null, replacing with empty string");
             msgBody = string.Empty;
          }
 
-         ServiceBusMessage message = new ServiceBusMessage(Encoding.UTF8.GetBytes(msgBody));
+         message = new ServiceBusMessage(msgBody);
+
          sender.SendMessageAsync(message).GetAwaiter().GetResult();
          return Maybe<MessageSendErrorInfo>.Nothing;
       }
