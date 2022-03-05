@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Main.Application;
 using Main.ViewModels;
 using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
@@ -32,6 +33,8 @@ public partial class MainWindow : Window
       rightPanelControl.rightPanelSenderConfigTab.DataContext = sendersViewModel;
       leftPanelControl.leftPanelReceiversConfigUserControl.DataContext = receiversViewModel;
       rightPanelControl.rightPanelReceiverConfigTab.DataContext = receiversViewModel;
+
+      Title = $"{AppContants.ApplicationName} ({AppContants.Version})";
    }
 
    private void LogContentTextBoxChanged(object sender, TextChangedEventArgs e)

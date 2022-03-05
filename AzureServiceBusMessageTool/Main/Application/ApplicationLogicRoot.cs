@@ -16,21 +16,24 @@ public class ApplicationLogicRoot
    private readonly IApplicationProxy _appProxy;
    private MainWindow _mainWindow;
    private PersistentConfiguration _persistenConfig;
+   private AboutWindow _aboutWindow;
 
    public ApplicationLogicRoot(IApplicationProxy appProxy)
    {
       _appProxy = appProxy;
-      var mainViewModel = new MainViewModel();
-      var logger = mainViewModel.GetLogger();
 
       var binaryInfo = new ApplicationBinaryInfo(
-         Globals.ApplicationName,
+         AppContants.ApplicationName,
          Process.GetCurrentProcess().MainModule.FileName);
 
       ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();
       var senderConfigElementsGuiMetadataManager = new SenderConfigElementsGuiMetadataManager();
 
-      IMessageSender messageSender = new MessageSender(logger);
+      _aboutWindow = new AboutWindow(new AboutWindowViewModel(binaryInfo));
+      var aboutWindowProxy = new AboutWindowProxy(_aboutWindow);
+      var mainViewModel = new MainViewModel(aboutWindowProxy);
+      var logger = mainViewModel.GetLogger();
+
 
       var messageSenderFactory = new MessageSenderFactory(logger);
 
@@ -63,6 +66,9 @@ public class ApplicationLogicRoot
       _mainWindow.InitializeComponent();
       _persistenConfig.Load();
       _mainWindow.Show();
+
+      // below line is needed, without that , after closing main window process still exists;
+      _aboutWindow.Owner = _mainWindow;
    }
 
    public void Stop()

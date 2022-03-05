@@ -15,6 +15,7 @@ public class MainViewModel : INotifyPropertyChanged,
    ILogContentAppender
 
 {
+   private readonly IAboutWindowProxy _aboutWindow;
    private string _logContent;
    private string _checkServiceBusStatusMessage = "N/A";
    private string _statusBarMessage = "";
@@ -25,14 +26,19 @@ public class MainViewModel : INotifyPropertyChanged,
    public event PropertyChangedEventHandler? PropertyChanged;
    public ICommand ClearLogsCommand { get; }
 
-   public MainViewModel()
+   public MainViewModel(IAboutWindowProxy aboutWindow)
    {
+      _aboutWindow = aboutWindow;
       _logger = new ServiceBusHelperLogger(this);
 
       ClearLogsCommand = new DelegateCommand(_ => { LogContent = ""; });
+      ShowAboutWindowCommand = new DelegateCommand(_ =>
+      {
+         _aboutWindow.Show();
+      });
    }
 
-
+   public ICommand ShowAboutWindowCommand { get; }
 
    public bool ShouldScrollToEndOnLogContentChange
    {
@@ -92,4 +98,9 @@ public class MainViewModel : INotifyPropertyChanged,
    {
       return _logger;
    }
+}
+
+public interface IAboutWindowProxy
+{
+   void Show();
 }
