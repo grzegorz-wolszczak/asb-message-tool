@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace Main.ExceptionHandling;
-
-
-class ExceptionWindowVM
+namespace Main.ExceptionHandling
 {
-   public Exception Exception { get; }
-
-   public string ExceptionType { get; }
-
-   public ExceptionWindowVM(Exception exc)
+   class ExceptionWindowVM
    {
-      Exception = exc;
-      ExceptionType = exc.GetType().FullName;
+      public Exception Exception { get; }
+
+      public string ExceptionType { get; }
+
+      public ExceptionWindowVM(Exception exc)
+      {
+         Exception = exc;
+         ExceptionType = exc.GetType().FullName;
+      }
    }
 }

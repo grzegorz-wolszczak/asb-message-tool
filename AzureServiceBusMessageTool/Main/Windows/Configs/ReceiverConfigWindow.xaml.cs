@@ -3,33 +3,34 @@ using System.ComponentModel;
 using System.Windows;
 using Main.ViewModels.Configs.Receivers;
 
-namespace Main.Windows.Configs;
-
-public partial class ReceiverConfigWindow : Window
+namespace Main.Windows.Configs
 {
-
-   private ReceiverConfigViewModelWrapper _currentSelectedItem;
-
-   public ReceiverConfigWindow(ReceiverConfigViewModelWrapper currentSelectedItem)
+   public partial class ReceiverConfigWindow : Window
    {
-      _currentSelectedItem = currentSelectedItem;
 
-      InitializeComponent();
-      DataContext = currentSelectedItem;
-   }
+      private ReceiverConfigViewModelWrapper _currentSelectedItem;
 
-   protected override void OnClosing(CancelEventArgs e)
-   {
-      e.Cancel = true;
-      Hide();
-      _currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = true;
-   }
+      public ReceiverConfigWindow(ReceiverConfigViewModelWrapper currentSelectedItem)
+      {
+         _currentSelectedItem = currentSelectedItem;
 
-   protected override void OnInitialized(EventArgs e)
-   {
-      base.OnInitialized(e);
+         InitializeComponent();
+         DataContext = currentSelectedItem;
+      }
 
-      System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+      protected override void OnClosing(CancelEventArgs e)
+      {
+         e.Cancel = true;
+         Hide();
+         _currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = true;
+      }
+
+      protected override void OnInitialized(EventArgs e)
+      {
+         base.OnInitialized(e);
+
+         System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+      }
    }
 }
 

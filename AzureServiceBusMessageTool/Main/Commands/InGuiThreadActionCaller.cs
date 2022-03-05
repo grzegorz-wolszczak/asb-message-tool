@@ -1,11 +1,12 @@
 ﻿using System;
 
-namespace Main.Commands;
-
-public class InGuiThreadActionCaller : IInGuiThreadActionCaller
+namespace Main.Commands
 {
-   public void Call(Action action)
+   public class InGuiThreadActionCaller : IInGuiThreadActionCaller
    {
-      System.Windows.Application.Current.Dispatcher.Invoke(action);
+      public void Call(Action action)
+      {
+         System.Windows.Application.Current.Dispatcher.Invoke(action);
+      }
    }
 }

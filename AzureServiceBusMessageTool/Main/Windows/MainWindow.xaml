@@ -3,12 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Main"
+        xmlns:converters="clr-namespace:Main.Converters"
         xmlns:leftPanel="clr-namespace:Main.UserControls.LeftPanel"
         xmlns:rightPanel="clr-namespace:Main.UserControls.RightPanel"
         mc:Ignorable="d"
         Height="650"
         Width="900">
+    <Window.Resources>
+        <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -101,18 +104,21 @@
             <Label Grid.Column="0" Grid.Row="0" Content="Logs: " />
 
 
+            <!-- TextWrapping="{Binding ShouldWordWrapLogContent }" -->
             <TextBox Grid.Column="0"
                      Grid.Row="1"
                      Grid.ColumnSpan="2"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                     TextWrapping="NoWrap"
+                     TextWrapping="{Binding ShouldWordWrapLogContent, Converter={StaticResource BoolToTextWrappingConverter} }"
                      AcceptsReturn="True"
                      Margin="5"
                      IsReadOnly="True"
                      x:Name="logContentTextBox"
                      TextChanged="LogContentTextBoxChanged"
                      Text="{Binding LogContent}"
+                     FontSize="{Binding LogTextBoxFontSize}"
+                     PreviewMouseWheel="LogContentTextBox_OnPreviewMouseWheel"
                      Style="{StaticResource TextBoxStyle}"
                      >
 
@@ -125,6 +131,13 @@
                           IsChecked="{Binding ShouldScrollToEndOnLogContentChange}">
                     Autoscroll
                 </CheckBox>
+
+                <CheckBox Margin="5"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding ShouldWordWrapLogContent}">
+                    Word wrap
+                </CheckBox>
+
                 <Button
 
                     MinWidth="75"

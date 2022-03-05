@@ -1,14 +1,15 @@
 ﻿using System.Windows.Controls;
 
-namespace Main.UserControls.LeftPanel;
-
-public partial class LeftPanelControl : UserControl
+namespace Main.UserControls.LeftPanel
 {
-   public LeftPanelControl()
+   public partial class LeftPanelControl : UserControl
    {
-      InitializeComponent();
+      public LeftPanelControl()
+      {
+         InitializeComponent();
+      }
+
+
    }
-
-
 }
 

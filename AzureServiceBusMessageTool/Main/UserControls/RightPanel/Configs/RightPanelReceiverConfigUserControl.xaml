@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:utils="clr-namespace:Main.Utils"
+             xmlns:converters="clr-namespace:Main.Converters"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="500">
 
@@ -11,6 +12,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}"></Style>
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}"></Style>
+        <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
 
     </UserControl.Resources>
 
@@ -49,7 +51,7 @@
                   Grid.ColumnSpan="3"
                   Header="Message receiver configuration"
                   Margin="5,0,5,2"
-                  >
+                  IsEnabled="{Binding ElementName=ReceiveButton, Path=IsEnabled}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -85,15 +87,13 @@
 
                 <PasswordBox Grid.Column="1"
                              Grid.Row="1"
-                             Margin="5,0,5,2"
+                             Margin="5,2,5,2"
                              Grid.ColumnSpan="2"
                              utils:PasswordBoxAssistant.BindPassword="true"
                              utils:PasswordBoxAssistant.BoundPassword="{Binding
                          Path=CurrentSelectedConfigModelItem.Item.ServiceBusConnectionString,
                          Mode=TwoWay,
-                         UpdateSourceTrigger=PropertyChanged}"
-
-                />
+                         UpdateSourceTrigger=PropertyChanged}" />
 
 
                 <Label Grid.Column="0"
@@ -119,16 +119,15 @@
                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Grid.Column="0"
-                    Grid.Row="4"
-                    Margin="5,2,5,2"
-                    Content="Dead letter subqueue"/>
+                       Grid.Row="4"
+                       Margin="5,2,5,2"
+                       Content="Dead letter subqueue" />
 
                 <CheckBox Grid.Column="1"
                           Grid.Row="4"
                           Margin="5,2,5,2"
                           VerticalAlignment="Center"
-                          IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue, UpdateSourceTrigger=PropertyChanged}"
-                          />
+                          IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue, UpdateSourceTrigger=PropertyChanged}" />
 
             </Grid>
 
@@ -159,28 +158,39 @@
                          Grid.ColumnSpan="3"
                          Margin="5,2,5,2"
                          Background="White"
-                         TextWrapping="NoWrap"
+                         IsReadOnly="True"
                          AcceptsReturn="True"
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Auto"
-                         IsReadOnly="True"
+                         PreviewMouseWheel="ReceivedMessagesTextBox_OnPreviewMouseWheel"
                          TextChanged="ReceivedMessageTextBoxBoxChanged"
                          x:Name="receivedMessagesTextBox"
+                         FontSize="{Binding CurrentSelectedConfigModelItem.Item.MsgBodyTextBoxFontSize}"
                          Style="{StaticResource TextBoxStyle}"
-                         Text="{Binding CurrentSelectedConfigModelItem.ReceivedMessagesContent}" >
+                         TextWrapping="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent, Converter={StaticResource BoolToTextWrappingConverter} }"
+                         Text="{Binding CurrentSelectedConfigModelItem.ReceivedMessagesContent}">
 
                 </TextBox>
 
                 <StackPanel Grid.Column="0"
                             Grid.Row="1">
-                    <StackPanel  Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
                         <Label> Last receiver status: </Label>
                         <Label Content="{Binding CurrentSelectedConfigModelItem.ReceiverStatus}">  </Label>
                     </StackPanel>
-                    <CheckBox IsChecked="{Binding CurrentSelectedConfigModelItem.ShouldScrollTextBoxToEndOnNewMessageReceive}">
-                              Autoscroll</CheckBox>
-                </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Margin="2,0,0,0"
+                                  IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive}">
+                            Autoscroll
+                        </CheckBox>
+                        <CheckBox Margin="5,0,0,0"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent }">
+                            Word wrap
+                        </CheckBox>
+                    </StackPanel>
 
+                </StackPanel>
 
 
             </Grid>
@@ -194,7 +204,8 @@
 
             <StackPanel Orientation="Horizontal">
                 <Button Margin="5" MinWidth="75"
-                        Command="{Binding CurrentSelectedConfigModelItem.StartMessageReceiveCommand}">
+                        Command="{Binding CurrentSelectedConfigModelItem.StartMessageReceiveCommand}"
+                        x:Name="ReceiveButton">
                     Receive
                 </Button>
                 <Button Margin="5" MinWidth="75"

@@ -15,7 +15,7 @@
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}"></Style>
     </UserControl.Resources>
 
-    <Grid >
+    <Grid Background="Gainsboro">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -48,7 +48,8 @@
 
         <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
                   Margin="5,2,5,0"
-                  Header="Service Bus Sender configuration">
+                  Header="Service Bus Sender configuration"
+                  IsEnabled="{Binding ElementName=SendButton, Path=IsEnabled }">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -136,6 +137,8 @@
                          HorizontalAlignment="Stretch"
                          IsReadOnly="False"
                          Style="{StaticResource TextBoxStyle}"
+                         FontSize="{Binding CurrentSelectedConfigModelItem.Item.MsgBodyTextBoxFontSize}"
+                         PreviewMouseWheel="SenderMsgBodyTextBox_OnPreviewMouseWheel"
                          Text="{Binding CurrentSelectedConfigModelItem.MessageToSendStringContent}" />
             </Grid>
         </GroupBox>
@@ -156,6 +159,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Button Grid.Column="0"
+                    x:Name="SendButton"
                     MinWidth="75"
                     Margin="5,2,5,2"
                     Command="{Binding CurrentSelectedConfigModelItem.SendMessageCommand}">

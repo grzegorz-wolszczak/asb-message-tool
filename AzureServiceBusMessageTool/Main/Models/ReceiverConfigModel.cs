@@ -1,77 +1,114 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Main.Application;
 
-namespace Main.Models;
-
-public sealed class ReceiverConfigModel : INotifyPropertyChanged
+namespace Main.Models
 {
-   private string _configName;
-   private string _connectionString;
-   private string _inputTopicName;
-   private string _inputTopicSubscriptionName;
-   private bool _isAttachedToDeadLetterSubqueue;
-
-   public string ConfigName
+   public sealed class ReceiverConfigModel : INotifyPropertyChanged
    {
-      get => _configName;
-      set
+      private string _configName;
+      private string _connectionString;
+      private string _inputTopicName;
+      private string _inputTopicSubscriptionName;
+      private bool _isAttachedToDeadLetterSubqueue;
+      private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
+      private bool _shouldWordWrapLogContent;
+      private int _msgBodyTextBoxFontSize = AppDefaults.DefaultTextBoxFontSize;
+      public string ConfigName
       {
-         if (value == _configName) return;
-         _configName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         get => _configName;
+         set
+         {
+            if (value == _configName) return;
+            _configName = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public bool IsAttachedToDeadLetterSubqueue
-   {
-      get => _isAttachedToDeadLetterSubqueue;
-      set
+      public bool IsAttachedToDeadLetterSubqueue
       {
-         if (value == _isAttachedToDeadLetterSubqueue) return;
-         _isAttachedToDeadLetterSubqueue = value;
-         OnPropertyChanged(nameof(ConfigName));
+         get => _isAttachedToDeadLetterSubqueue;
+         set
+         {
+            if (value == _isAttachedToDeadLetterSubqueue) return;
+            _isAttachedToDeadLetterSubqueue = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public string ServiceBusConnectionString
-   {
-      get => _connectionString;
-      set
+
+      public int MsgBodyTextBoxFontSize
       {
-         if (value == _connectionString) return;
-         _connectionString = value;
-         OnPropertyChanged(nameof(ConfigName));
+         get => _msgBodyTextBoxFontSize;
+         set
+         {
+            if (value == _msgBodyTextBoxFontSize) return;
+            _msgBodyTextBoxFontSize = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public string InputTopicName
-   {
-      get => _inputTopicName;
-      set
+      public bool ShouldWordWrapLogContent
       {
-         if (value == _inputTopicName) return;
-         _inputTopicName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         get => _shouldWordWrapLogContent;
+         set
+         {
+            if (value == _shouldWordWrapLogContent) return;
+            _shouldWordWrapLogContent = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
-   public string InputTopicSubscriptionName
-   {
-      get => _inputTopicSubscriptionName;
-      set
+      public string ServiceBusConnectionString
       {
-         if (value == _inputTopicSubscriptionName) return;
-         _inputTopicSubscriptionName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         get => _connectionString;
+         set
+         {
+            if (value == _connectionString) return;
+            _connectionString = value;
+            OnPropertyChanged();
+         }
       }
-   }
 
+      public string InputTopicName
+      {
+         get => _inputTopicName;
+         set
+         {
+            if (value == _inputTopicName) return;
+            _inputTopicName = value;
+            OnPropertyChanged();
+         }
+      }
 
-   public string ConfigId { get; init; } // UUID
-   public event PropertyChangedEventHandler PropertyChanged;
+      public string InputTopicSubscriptionName
+      {
+         get => _inputTopicSubscriptionName;
+         set
+         {
+            if (value == _inputTopicSubscriptionName) return;
+            _inputTopicSubscriptionName = value;
+            OnPropertyChanged();
+         }
+      }
 
-   private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-   {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      public bool ShouldScrollTextBoxToEndOnNewMessageReceive
+      {
+         get => _shouldScrollTextBoxToEndOnNewMessageReceive;
+         set
+         {
+            if (value == _shouldScrollTextBoxToEndOnNewMessageReceive) return;
+            _shouldScrollTextBoxToEndOnNewMessageReceive = value;
+            OnPropertyChanged();
+         }
+      }
+
+      public string ConfigId { get; init; } // UUID
+      public event PropertyChangedEventHandler PropertyChanged;
+
+      private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+      {
+         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      }
    }
 }

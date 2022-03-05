@@ -2,45 +2,46 @@
 using System.Collections.Generic;
 using Main.ViewModels.Configs.Senders;
 
-namespace Main.ConfigsGuiMetadata;
-
-public class SenderConfigElementsGuiMetadataManager : ISenderConfigWindowDetacher
+namespace Main.ConfigsGuiMetadata
 {
-   private readonly Dictionary<SenderConfigViewModelWrapper, SenderConfigElementGuiRepresentation> _dict = new();
-
-   public void Add(SenderConfigViewModelWrapper newConfig)
+   public class SenderConfigElementsGuiMetadataManager : ISenderConfigWindowDetacher
    {
-      var newMetadata = new SenderConfigElementGuiRepresentation();
-      _dict.Add(newConfig, newMetadata);
-   }
+      private readonly Dictionary<SenderConfigViewModelWrapper, SenderConfigElementGuiRepresentation> _dict = new();
 
-   public void Remove(SenderConfigViewModelWrapper currentSelectedItem)
-   {
-      _dict.Remove(currentSelectedItem);
-   }
-
-   public void DetachFromPanel(SenderConfigViewModelWrapper currentSelectedItem)
-   {
-      _dict.TryGetValue(currentSelectedItem, out SenderConfigElementGuiRepresentation metadata);
-      if (metadata == null)
+      public void Add(SenderConfigViewModelWrapper newConfig)
       {
-         throw new ApplicationException("Could not find metadata for sender config");
+         var newMetadata = new SenderConfigElementGuiRepresentation();
+         _dict.Add(newConfig, newMetadata);
       }
 
-      metadata.ShowCorrespondingElementWindow(currentSelectedItem);
-      currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = false;
-
-   }
-
-   public void Delete(SenderConfigViewModelWrapper currentSelectedItem)
-   {
-      _dict.TryGetValue(currentSelectedItem, out SenderConfigElementGuiRepresentation metadata);
-      if (metadata == null)
+      public void Remove(SenderConfigViewModelWrapper currentSelectedItem)
       {
-         throw new ApplicationException("Could not find metadata for sender config");
+         _dict.Remove(currentSelectedItem);
       }
 
-      metadata.CloseWindowOnElementDelete();
-      Remove(currentSelectedItem);
+      public void DetachFromPanel(SenderConfigViewModelWrapper currentSelectedItem)
+      {
+         _dict.TryGetValue(currentSelectedItem, out SenderConfigElementGuiRepresentation metadata);
+         if (metadata == null)
+         {
+            throw new ApplicationException("Could not find metadata for sender config");
+         }
+
+         metadata.ShowCorrespondingElementWindow(currentSelectedItem);
+         currentSelectedItem.CurrentSelectedConfigModelItem.IsEmbeddedInsideRightPanel = false;
+
+      }
+
+      public void Delete(SenderConfigViewModelWrapper currentSelectedItem)
+      {
+         _dict.TryGetValue(currentSelectedItem, out SenderConfigElementGuiRepresentation metadata);
+         if (metadata == null)
+         {
+            throw new ApplicationException("Could not find metadata for sender config");
+         }
+
+         metadata.CloseWindowOnElementDelete();
+         Remove(currentSelectedItem);
+      }
    }
 }

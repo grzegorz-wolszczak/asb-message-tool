@@ -1,8 +1,9 @@
 ﻿using System;
 
-namespace Main.Commands;
-
-public interface IInGuiThreadActionCaller
+namespace Main.Commands
 {
-   public void Call(Action action);
+   public interface IInGuiThreadActionCaller
+   {
+      public void Call(Action action);
+   }
 }

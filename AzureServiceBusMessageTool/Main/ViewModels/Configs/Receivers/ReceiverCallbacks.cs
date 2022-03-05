@@ -1,11 +1,12 @@
 ﻿using System;
 
-namespace Main.ViewModels.Configs.Receivers;
-
-public class ReceiverCallbacks
+namespace Main.ViewModels.Configs.Receivers
 {
-   public Action<Exception> OnReceiverFailure { get; init; }
-   public Action<ReceivedMessage> OnMessageReceive { get; init; }
-   public Action OnReceiverStop { get; init; }
-   public Action OnReceiverStarted { get; init; }
+   public class ReceiverCallbacks
+   {
+      public Action<Exception> OnReceiverFailure { get; init; }
+      public Action<ReceivedMessage> OnMessageReceive { get; init; }
+      public Action OnReceiverStop { get; init; }
+      public Action OnReceiverStarted { get; init; }
+   }
 }

@@ -4,84 +4,84 @@ using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
 using Main.ViewModels.Configs.Senders;
 
-namespace Main.ViewModels;
-
-
-public class LeftPanelControlViewModel : INotifyPropertyChanged
+namespace Main.ViewModels
 {
-   private readonly ServiceBusSelectedConfigsViewModel _serviceBusConfigsViewModel;
-   private readonly SendersSelectedConfigViewModel _sendersViewModel;
-   private readonly ReceiversSelectedConfigViewModel _receiversViewModel;
-
-   private bool _leftPanelServiceBusConfigTabIsSelected;
-   private bool _leftPanelSenderConfigTabIsSelected;
-   private bool _leftPanelReceiversConfigTabIsSelected;
-
-
-
-   public event PropertyChangedEventHandler PropertyChanged;
-
-
-   public LeftPanelControlViewModel(
-      ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel,
-      SendersSelectedConfigViewModel sendersViewModel,
-      ReceiversSelectedConfigViewModel receiversViewModel)
+   public class LeftPanelControlViewModel : INotifyPropertyChanged
    {
-      _serviceBusConfigsViewModel = serviceBusConfigsViewModel;
-      _sendersViewModel = sendersViewModel;
-      _receiversViewModel = receiversViewModel;
-   }
+      private readonly ServiceBusSelectedConfigsViewModel _serviceBusConfigsViewModel;
+      private readonly SendersSelectedConfigViewModel _sendersViewModel;
+      private readonly ReceiversSelectedConfigViewModel _receiversViewModel;
+
+      private bool _leftPanelServiceBusConfigTabIsSelected;
+      private bool _leftPanelSenderConfigTabIsSelected;
+      private bool _leftPanelReceiversConfigTabIsSelected;
 
 
-   protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-   {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-   }
+
+      public event PropertyChangedEventHandler PropertyChanged;
 
 
-   public bool LeftPanelServiceBusConfigTabIsSelected
-   {
-      get => _leftPanelServiceBusConfigTabIsSelected;
-      set
+      public LeftPanelControlViewModel(
+         ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel,
+         SendersSelectedConfigViewModel sendersViewModel,
+         ReceiversSelectedConfigViewModel receiversViewModel)
       {
-         if (value == _leftPanelServiceBusConfigTabIsSelected) return;
-         _leftPanelServiceBusConfigTabIsSelected = value;
-         if (_leftPanelServiceBusConfigTabIsSelected)
-         {
-            _serviceBusConfigsViewModel.IsServiceBusConfigTabSelected = true;
-         }
-         OnPropertyChanged();
+         _serviceBusConfigsViewModel = serviceBusConfigsViewModel;
+         _sendersViewModel = sendersViewModel;
+         _receiversViewModel = receiversViewModel;
       }
-   }
 
-   public bool LeftPanelSenderConfigTabIsSelected
-   {
-      get => _leftPanelSenderConfigTabIsSelected;
-      set
+
+      protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
       {
-         if (value == _leftPanelSenderConfigTabIsSelected) return;
-         _leftPanelSenderConfigTabIsSelected = value;
-         if (_leftPanelSenderConfigTabIsSelected)
-         {
-            _sendersViewModel.IsSenderConfigTabSelected = true;
-         }
-
-         OnPropertyChanged();
+         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
       }
-   }
 
-   public bool LeftPanelReceiverConfigTabIsSelected
-   {
-      get => _leftPanelReceiversConfigTabIsSelected;
-      set
+
+      public bool LeftPanelServiceBusConfigTabIsSelected
       {
-         if (value == _leftPanelReceiversConfigTabIsSelected) return;
-         _leftPanelReceiversConfigTabIsSelected = value;
-         if (_leftPanelReceiversConfigTabIsSelected)
+         get => _leftPanelServiceBusConfigTabIsSelected;
+         set
          {
-            _receiversViewModel.IsReceiverConfigTabSelected = true;
+            if (value == _leftPanelServiceBusConfigTabIsSelected) return;
+            _leftPanelServiceBusConfigTabIsSelected = value;
+            if (_leftPanelServiceBusConfigTabIsSelected)
+            {
+               _serviceBusConfigsViewModel.IsServiceBusConfigTabSelected = true;
+            }
+            OnPropertyChanged();
          }
-         OnPropertyChanged();
+      }
+
+      public bool LeftPanelSenderConfigTabIsSelected
+      {
+         get => _leftPanelSenderConfigTabIsSelected;
+         set
+         {
+            if (value == _leftPanelSenderConfigTabIsSelected) return;
+            _leftPanelSenderConfigTabIsSelected = value;
+            if (_leftPanelSenderConfigTabIsSelected)
+            {
+               _sendersViewModel.IsSenderConfigTabSelected = true;
+            }
+
+            OnPropertyChanged();
+         }
+      }
+
+      public bool LeftPanelReceiverConfigTabIsSelected
+      {
+         get => _leftPanelReceiversConfigTabIsSelected;
+         set
+         {
+            if (value == _leftPanelReceiversConfigTabIsSelected) return;
+            _leftPanelReceiversConfigTabIsSelected = value;
+            if (_leftPanelReceiversConfigTabIsSelected)
+            {
+               _receiversViewModel.IsReceiverConfigTabSelected = true;
+            }
+            OnPropertyChanged();
+         }
       }
    }
 }

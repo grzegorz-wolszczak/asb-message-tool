@@ -8,6 +8,6 @@
         mc:Ignorable="d"
         Title="SenderConfigWindow" Height="450" Width="800">
 
-        <configs:DetailedSenderConfigUserControl x:Name="detailedSenderConfigUserControl"/>
+        <configs:DetailedSenderConfigUserControl x:Name="detailedSenderConfigUserControl" DataContext="{Binding }"/>
 
 </Window>

@@ -9,85 +9,91 @@ using Main.ViewModels.Configs.Receivers;
 using Main.ViewModels.Configs.Senders;
 using Main.Windows;
 
-namespace Main.Application;
-
-public class ApplicationLogicRoot
+namespace Main.Application
 {
-   private readonly IApplicationProxy _appProxy;
-   private MainWindow _mainWindow;
-   private PersistentConfiguration _persistenConfig;
-   private AboutWindow _aboutWindow;
-
-   public ApplicationLogicRoot(IApplicationProxy appProxy)
+   public class ApplicationLogicRoot
    {
-      _appProxy = appProxy;
+      private readonly IApplicationProxy _appProxy;
+      private MainWindow _mainWindow;
+      private PersistentConfiguration _persistenConfig;
+      private AboutWindow _aboutWindow;
+      private IServiceBusHelperLogger _logger;
 
-      var binaryInfo = new ApplicationBinaryInfo(
-         AppContants.ApplicationName,
-         Process.GetCurrentProcess().MainModule.FileName);
+      public ApplicationLogicRoot(IApplicationProxy appProxy)
+      {
+         _appProxy = appProxy;
 
-      ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();
-      var senderConfigElementsGuiMetadataManager = new SenderConfigElementsGuiMetadataManager();
+         var binaryInfo = new ApplicationBinaryInfo(
+            AppConstants.ApplicationName,
+            Process.GetCurrentProcess().MainModule.FileName);
 
-      _aboutWindow = new AboutWindow(new AboutWindowViewModel(binaryInfo));
-      var aboutWindowProxy = new AboutWindowProxy(_aboutWindow);
-      var mainViewModel = new MainViewModel(aboutWindowProxy);
-      var logger = mainViewModel.GetLogger();
+         ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();
+         var senderConfigElementsGuiMetadataManager = new SenderConfigElementsGuiMetadataManager();
+
+         _aboutWindow = new AboutWindow(new AboutWindowViewModel(binaryInfo));
+         var aboutWindowProxy = new AboutWindowProxy(_aboutWindow);
+         var mainViewModel = new MainViewModel(aboutWindowProxy);
+         _logger = mainViewModel.GetLogger();
 
 
-      var messageSenderFactory = new MessageSenderFactory(logger);
+         var messageSenderFactory = new MessageSenderFactory(_logger);
 
-      var inGuiThreadActionCaller = new InGuiThreadActionCaller();
-      SendersSelectedConfigViewModel sendersViewModel = new SendersSelectedConfigViewModel(
-         senderConfigElementsGuiMetadataManager,
-         inGuiThreadActionCaller,
-         messageSenderFactory);
-      var serviceBusMessageReceiverFactory = new ServiceBusMessageReceiverFactory(logger);
-      ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(serviceBusMessageReceiverFactory);
+         var inGuiThreadActionCaller = new InGuiThreadActionCaller();
+         SendersSelectedConfigViewModel sendersViewModel = new SendersSelectedConfigViewModel(
+            senderConfigElementsGuiMetadataManager,
+            inGuiThreadActionCaller,
+            messageSenderFactory);
+         var serviceBusMessageReceiverFactory = new ServiceBusMessageReceiverFactory(_logger);
+         ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(serviceBusMessageReceiverFactory);
 
-      var leftPanelControlViewModel = new LeftPanelControlViewModel(
-         serviceBusConfigsViewModel,
-         sendersViewModel,
-         receiversViewModel);
+         var leftPanelControlViewModel = new LeftPanelControlViewModel(
+            serviceBusConfigsViewModel,
+            sendersViewModel,
+            receiversViewModel);
 
-      var persistentOptions = new ApplicationPersistentOptions(serviceBusConfigsViewModel, sendersViewModel, receiversViewModel);
+         var persistentOptions = new ApplicationPersistentOptions(mainViewModel,
+            serviceBusConfigsViewModel,
+            sendersViewModel,
+            receiversViewModel);
 
-      _persistenConfig = new PersistentConfiguration(binaryInfo, persistentOptions);
+         _persistenConfig = new PersistentConfiguration(_logger,binaryInfo,
+            persistentOptions);
 
-      _mainWindow = new MainWindow(mainViewModel,
-         serviceBusConfigsViewModel,
-         sendersViewModel,
-         receiversViewModel,
-         leftPanelControlViewModel);
+         _mainWindow = new MainWindow(mainViewModel,
+            serviceBusConfigsViewModel,
+            sendersViewModel,
+            receiversViewModel,
+            leftPanelControlViewModel);
+      }
+
+      public void Start()
+      {
+         _mainWindow.InitializeComponent();
+         _persistenConfig.Load();
+         _mainWindow.Show();
+
+         // below line is needed, without that , after closing main window process still exists;
+         _aboutWindow.Owner = _mainWindow;
+      }
+
+      public void Stop()
+      {
+         _persistenConfig.Save();
+      }
    }
 
-   public void Start()
+   public class MessageSenderFactory
    {
-      _mainWindow.InitializeComponent();
-      _persistenConfig.Load();
-      _mainWindow.Show();
+      private readonly IServiceBusHelperLogger _logger;
 
-      // below line is needed, without that , after closing main window process still exists;
-      _aboutWindow.Owner = _mainWindow;
-   }
+      public MessageSenderFactory(IServiceBusHelperLogger logger)
+      {
+         _logger = logger;
+      }
 
-   public void Stop()
-   {
-      _persistenConfig.Save();
-   }
-}
-
-public class MessageSenderFactory
-{
-   private readonly IServiceBusHelperLogger _logger;
-
-   public MessageSenderFactory(IServiceBusHelperLogger logger)
-   {
-      _logger = logger;
-   }
-
-   public IMessageSender Create()
-   {
-      return new MessageSender(_logger);
+      public IMessageSender Create()
+      {
+         return new MessageSender(_logger);
+      }
    }
 }

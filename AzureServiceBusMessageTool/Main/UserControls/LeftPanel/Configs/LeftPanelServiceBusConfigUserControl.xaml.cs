@@ -1,12 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace Main.UserControls.LeftPanel.Configs;
-
-public partial class LeftPanelServiceBusConfigUserControl : UserControl
+namespace Main.UserControls.LeftPanel.Configs
 {
-   public LeftPanelServiceBusConfigUserControl()
+   public partial class LeftPanelServiceBusConfigUserControl : UserControl
    {
-      InitializeComponent();
+      public LeftPanelServiceBusConfigUserControl()
+      {
+         InitializeComponent();
+      }
    }
 }
 
