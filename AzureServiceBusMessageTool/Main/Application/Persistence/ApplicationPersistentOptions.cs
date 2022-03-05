@@ -64,7 +64,8 @@ public class ApplicationPersistentOptions
    {
       return new MainWindowSettings()
       {
-         ShouldScrollToEndOnLogContentChange = _mainViewModel.ShouldScrollToEndOnLogContentChange
+         ShouldScrollToEndOnLogContentChange = _mainViewModel.ShouldScrollToEndOnLogContentChange,
+         ShouldWordWrapLogContent = _mainViewModel.ShouldWordWrapLogContent
       };
    }
 
@@ -72,5 +73,6 @@ public class ApplicationPersistentOptions
    {
       if (mainWindowSettings == null) return;
       _mainViewModel.ShouldScrollToEndOnLogContentChange = mainWindowSettings.ShouldScrollToEndOnLogContentChange;
+      _mainViewModel.ShouldWordWrapLogContent = mainWindowSettings.ShouldWordWrapLogContent;
    }
 }

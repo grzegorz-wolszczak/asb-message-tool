@@ -18,7 +18,7 @@ public sealed class ServiceBusConfigModel : INotifyPropertyChanged
       {
          if (value == _configName) return;
          _configName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
@@ -29,7 +29,7 @@ public sealed class ServiceBusConfigModel : INotifyPropertyChanged
       {
          if (value == _connectionString) return;
          _connectionString = value;
-         OnPropertyChanged(nameof(ConnectionString));
+         OnPropertyChanged();
       }
    }
 

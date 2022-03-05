@@ -20,4 +20,5 @@ public class MySettings : JsonSettings
 public class MainWindowSettings
 {
    public bool ShouldScrollToEndOnLogContentChange { get; set; }
+   public bool ShouldWordWrapLogContent { get; set; }
 }

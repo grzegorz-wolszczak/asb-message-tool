@@ -21,6 +21,7 @@ public class MainViewModel : INotifyPropertyChanged,
    private string _statusBarMessage = "";
    private ServiceBusHelperLogger _logger;
    private bool _shouldScrollToEndOnLogContentChange;
+   private bool _shouldWrapLogContent;
 
 
    public event PropertyChangedEventHandler? PropertyChanged;
@@ -83,6 +84,19 @@ public class MainViewModel : INotifyPropertyChanged,
          OnPropertyChanged();
       }
    }
+
+   public bool ShouldWordWrapLogContent
+   {
+      get => _shouldWrapLogContent;
+      set
+      {
+         if (value == _shouldWrapLogContent) return;
+         _shouldWrapLogContent = value;
+         OnPropertyChanged();
+      }
+   }
+
+
 
    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
    {

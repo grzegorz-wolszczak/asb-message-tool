@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using Microsoft.Azure.Amqp.Framing;
+﻿using System.Windows.Controls;
 
 namespace Main.UserControls.RightPanel.Configs;
 

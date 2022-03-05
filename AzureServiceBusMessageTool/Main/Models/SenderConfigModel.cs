@@ -18,7 +18,7 @@ public sealed class SenderConfigModel : INotifyPropertyChanged
       {
          if (value == _configName) return;
          _configName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
@@ -29,7 +29,7 @@ public sealed class SenderConfigModel : INotifyPropertyChanged
       {
          if (value == _serviceBusConnectionString) return;
          _serviceBusConnectionString = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
@@ -40,7 +40,7 @@ public sealed class SenderConfigModel : INotifyPropertyChanged
       {
          if (value == _outputTopicName) return;
          _outputTopicName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 

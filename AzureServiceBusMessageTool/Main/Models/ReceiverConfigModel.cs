@@ -11,6 +11,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
    private string _inputTopicSubscriptionName;
    private bool _isAttachedToDeadLetterSubqueue;
    private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
+   private bool _shouldWordWrapLogContent;
 
    public string ConfigName
    {
@@ -19,7 +20,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       {
          if (value == _configName) return;
          _configName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
@@ -30,7 +31,18 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       {
          if (value == _isAttachedToDeadLetterSubqueue) return;
          _isAttachedToDeadLetterSubqueue = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
+      }
+   }
+
+   public bool ShouldWordWrapLogContent
+   {
+      get => _shouldWordWrapLogContent;
+      set
+      {
+         if (value == _shouldWordWrapLogContent) return;
+         _shouldWordWrapLogContent = value;
+         OnPropertyChanged();
       }
    }
 
@@ -41,7 +53,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       {
          if (value == _connectionString) return;
          _connectionString = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
@@ -52,7 +64,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       {
          if (value == _inputTopicName) return;
          _inputTopicName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
@@ -63,7 +75,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
       {
          if (value == _inputTopicSubscriptionName) return;
          _inputTopicSubscriptionName = value;
-         OnPropertyChanged(nameof(ConfigName));
+         OnPropertyChanged();
       }
    }
 
