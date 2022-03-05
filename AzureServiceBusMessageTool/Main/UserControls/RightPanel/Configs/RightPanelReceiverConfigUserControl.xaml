@@ -51,6 +51,7 @@
                   Grid.ColumnSpan="3"
                   Header="Message receiver configuration"
                   Margin="5,0,5,2"
+                  IsEnabled="{Binding ElementName=ReceiveButton, Path=IsEnabled}"
                   >
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -87,7 +88,7 @@
 
                 <PasswordBox Grid.Column="1"
                              Grid.Row="1"
-                             Margin="5,0,5,2"
+                             Margin="5,2,5,2"
                              Grid.ColumnSpan="2"
                              utils:PasswordBoxAssistant.BindPassword="true"
                              utils:PasswordBoxAssistant.BoundPassword="{Binding
@@ -206,7 +207,8 @@
 
             <StackPanel Orientation="Horizontal">
                 <Button Margin="5" MinWidth="75"
-                        Command="{Binding CurrentSelectedConfigModelItem.StartMessageReceiveCommand}">
+                        Command="{Binding CurrentSelectedConfigModelItem.StartMessageReceiveCommand}"
+                        x:Name="ReceiveButton">
                     Receive
                 </Button>
                 <Button Margin="5" MinWidth="75"
