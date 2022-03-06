@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AvalonEdit" Version="6.1.3.50" />
       <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.6.0" />
       <PackageReference Include="Core.Maybe" Version="2.4.1" />
       <PackageReference Include="nucs.JsonSettings" Version="1.0.7" />

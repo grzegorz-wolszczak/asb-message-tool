@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace Main.Converters
 {
@@ -16,8 +17,8 @@ namespace Main.Converters
          {
             throw new InvalidCastException($"The target must be a {typeof(TextWrapping)} but is '{targetType.FullName}'");
          }
-         var t = (bool) value;
-         if (t == true)
+
+         if ((bool) value)
          {
             return TextWrapping.Wrap;
          }
@@ -33,5 +34,6 @@ namespace Main.Converters
          throw new NotImplementedException();
       }
    }
+
 }
 

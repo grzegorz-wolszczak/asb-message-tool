@@ -8,5 +8,9 @@ namespace Main.Commands
       {
          System.Windows.Application.Current.Dispatcher.Invoke(action);
       }
+      public T InvokeFunction<T>(Func<T> function)
+      {
+         return System.Windows.Application.Current.Dispatcher.Invoke(function);
+      }
    }
 }

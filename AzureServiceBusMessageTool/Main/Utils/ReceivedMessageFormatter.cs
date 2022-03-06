@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace Main.Utils
 {
-   public class ServiceBusMessagePrinter
+   public class ReceivedMessageFormatter
    {
       private int _maxFieldWith = 0;
       private OrderedDictionary _fieldValues = new();
@@ -13,7 +13,7 @@ namespace Main.Utils
       // make room for it for standard message properties
       private const int IndentOffsetForApplicationProperties = 4;
 
-      public string PrettyPrint(ServiceBusReceivedMessage msg)
+      public string Format(ServiceBusReceivedMessage msg)
       {
          _fieldValues.Clear();
          _maxFieldWith = 0;
@@ -27,7 +27,7 @@ namespace Main.Utils
          var enumerator = _fieldValues.GetEnumerator();
 
          var sb = new StringBuilder();
-         var formatString = $"'{{0,-{_maxFieldWith + IndentOffsetForApplicationProperties}}}'";
+         var formatString = $"{{0,-{_maxFieldWith + IndentOffsetForApplicationProperties}}}";
          while (enumerator.MoveNext())
          {
             sb.Append($"{String.Format(formatString, enumerator.Key)} : '{enumerator.Value}'\n");

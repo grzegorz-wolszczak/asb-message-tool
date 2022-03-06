@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Main.Application;
+using Main.Application.Logging;
 using Main.Commands;
 using Main.ConfigsGuiMetadata;
 using Main.Models;
@@ -34,13 +35,14 @@ namespace Main.ViewModels.Configs.Senders
          settingsSendersConfig.ForEach(AddNewConfig);
       }
 
-      public SendersSelectedConfigViewModel(
-         SenderConfigElementsGuiMetadataManager senderConfigElementsGuiMetadataManager,
+      public SendersSelectedConfigViewModel(SenderConfigElementsGuiMetadataManager senderConfigElementsGuiMetadataManager,
          InGuiThreadActionCaller inGuiThreadActionCaller,
-         MessageSenderFactory messageSenderFactory)
+         MessageSenderFactory messageSenderFactory,
+         IServiceBusHelperLogger logger)
       {
          _inGuiThreadActionCaller = inGuiThreadActionCaller;
          _messageSenderFactory = messageSenderFactory;
+         _logger = logger;
          _senderConfigElementsGuiMetadataManager = senderConfigElementsGuiMetadataManager;
 
          AddSenderConfigCommand = new DelegateCommand(_ =>
@@ -66,7 +68,8 @@ namespace Main.ViewModels.Configs.Senders
          var viewModel = new SenderConfigViewModel(
             _senderConfigElementsGuiMetadataManager,
             _messageSenderFactory.Create(),
-            _inGuiThreadActionCaller)
+            _inGuiThreadActionCaller,
+            _logger)
          {
             Item = newConfig
          };
@@ -102,6 +105,7 @@ namespace Main.ViewModels.Configs.Senders
       private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
       private InGuiThreadActionCaller _inGuiThreadActionCaller;
       private readonly MessageSenderFactory _messageSenderFactory;
+      private readonly IServiceBusHelperLogger _logger;
 
       public bool IsEmbeddedSenderConfigUserControlForEditingEnabled
       {
