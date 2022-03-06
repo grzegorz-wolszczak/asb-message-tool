@@ -17,10 +17,12 @@ namespace Main.ViewModels.Configs.Receivers
       private ReceiverCallbacks _callbacks;
       private ServiceBusClient _client;
       private StopReason _stopReason = StopReason.Intentional;
+      private ReceivedMessageFormatter _msgFormatter;
 
       public ServiceBusMessageReceiver(IServiceBusHelperLogger logger)
       {
          _logger = logger;
+         _msgFormatter = new ReceivedMessageFormatter();
       }
 
       private enum StopReason
@@ -84,7 +86,6 @@ namespace Main.ViewModels.Configs.Receivers
 
          Task.Factory.StartNew(async () =>
          {
-            var printer = new ServiceBusMessagePrinter();
             try
             {
                _logger.LogInfo($"Receiver '{_config.ConfigName}' started.");
@@ -97,7 +98,7 @@ namespace Main.ViewModels.Configs.Receivers
                   {
                      var receivedMessage = new ReceivedMessage()
                      {
-                        Body = printer.PrettyPrint(message)
+                        Body = _msgFormatter.Format(message)
                      };
                      _callbacks.OnMessageReceive(receivedMessage);
                   }

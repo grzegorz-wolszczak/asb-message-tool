@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit.Document;
+using Main.Application.Logging;
 using Main.Commands;
 using Main.Models;
 using Main.Utils;
@@ -19,8 +22,10 @@ namespace Main.ViewModels.Configs.Senders
       private SenderConfigModel _item;
       private bool _isEmbeddedInsideRightPanel = true;
       private string _lastSendStatus = "N/A";
-      private string _messageToSendStringContent;
+      //private string _messageToSendStringContent;
       private IInGuiThreadActionCaller _inGuiThreadActionCaller;
+      private readonly IServiceBusHelperLogger _logger;
+      private TextDocument _msgToSendDocument = new TextDocument("");
 
       public readonly SenderConfigViewModelWrapper ViewModelWrapper;
 
@@ -30,7 +35,8 @@ namespace Main.ViewModels.Configs.Senders
 
       public SenderConfigViewModel(ISenderConfigWindowDetacher senderConfigWindowDetacher,
          IMessageSender messageSender,
-         IInGuiThreadActionCaller inGuiThreadActionCaller)
+         IInGuiThreadActionCaller inGuiThreadActionCaller,
+         IServiceBusHelperLogger logger)
       {
          _senderConfigWindowDetacher = senderConfigWindowDetacher;
          _messageSender = messageSender;
@@ -39,23 +45,43 @@ namespace Main.ViewModels.Configs.Senders
 
          DetachFromPanelCommand = new DelegateCommand(onExecuteMethod: _ => { _senderConfigWindowDetacher.DetachFromPanel(ViewModelWrapper); });
          _inGuiThreadActionCaller = inGuiThreadActionCaller;
+         _logger = logger;
 
 
          SendMessageCommand = new SendServiceMessageCommand(_messageSender,
             msgProviderFunc: () =>
             {
-               return new MessageToSendData()
+               // must use inGuiThread caller because otherwise referencing AvalongEdit.TextDocument would throw exception saying that
+               // this object can be read only in thread that created it
+               return inGuiThreadActionCaller.InvokeFunction(() => new MessageToSendData()
                {
                   ConnectionString = Item.ServiceBusConnectionString,
-                  MsgBody = MessageToSendStringContent,
+                  MsgBody = TextDocument.Text,
                   TopicName = Item.OutputTopicName
-               };
+               });
+
             },
             onErrorAction: (e) => { SetLastSendStatus(e.Message); },
             onSuccessAction: (statusMessage) => { SetLastSendStatus(statusMessage); },
-            onUnexpectedExceptionAction: (exception) => { },
+            onUnexpectedExceptionAction: (exception) =>
+            {
+               _logger.LogException("While sending message exception happened: ", exception);
+               SetLastSendStatus("Error");
+            },
             _inGuiThreadActionCaller);
       }
+
+      public TextDocument TextDocument
+      {
+         get => _msgToSendDocument;
+         set
+         {
+            if (value == _msgToSendDocument) return;
+            _msgToSendDocument = value;
+            OnPropertyChanged();
+         }
+      }
+
 
       private void SetLastSendStatus(string msg)
       {
@@ -92,16 +118,18 @@ namespace Main.ViewModels.Configs.Senders
          }
       }
 
-      public string MessageToSendStringContent
-      {
-         get => _messageToSendStringContent;
-         set
-         {
-            if (value == _messageToSendStringContent) return;
-            _messageToSendStringContent = value;
-            OnPropertyChanged();
-         }
-      }
+      // public string MessageToSendStringContent
+      // {
+      //    get => TextDocument.Text;
+      //    set
+      //    {
+      //       //if (value == _messageToSendStringContent) return;
+      //       //_messageToSendStringContent = value;
+      //       TextDocument.Text = value;
+      //       OnPropertyChanged();
+      //       OnPropertyChanged(nameof(TextDocument));
+      //    }
+      // }
 
       public bool IsEmbeddedInsideRightPanel
       {

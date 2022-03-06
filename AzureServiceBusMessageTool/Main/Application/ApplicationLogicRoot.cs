@@ -42,7 +42,9 @@ namespace Main.Application
          SendersSelectedConfigViewModel sendersViewModel = new SendersSelectedConfigViewModel(
             senderConfigElementsGuiMetadataManager,
             inGuiThreadActionCaller,
-            messageSenderFactory);
+            messageSenderFactory,
+            _logger
+            );
          var serviceBusMessageReceiverFactory = new ServiceBusMessageReceiverFactory(_logger);
          ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(serviceBusMessageReceiverFactory);
 
