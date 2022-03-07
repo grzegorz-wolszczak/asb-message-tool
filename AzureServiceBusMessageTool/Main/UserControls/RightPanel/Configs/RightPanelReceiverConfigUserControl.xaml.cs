@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
+using Main.Application;
 using Main.ViewModels.Configs.Receivers;
 
 namespace Main.UserControls.RightPanel.Configs
@@ -42,17 +43,21 @@ namespace Main.UserControls.RightPanel.Configs
          var propertyInfo = DataContext.GetType().GetProperty(propertyName);
          ReceiverConfigViewModel item = (ReceiverConfigViewModel)propertyInfo.GetValue(DataContext, null);
          var targetItem = item.Item;
-         var initialValue = targetItem.MsgBodyTextBoxFontSize;
+         var value = targetItem.MsgBodyTextBoxFontSize;
          if (e.Delta > 0)
          {
-            initialValue++;
+            value++;
          }
          else
          {
-            initialValue--;
+            value--;
          }
 
-         targetItem.MsgBodyTextBoxFontSize = initialValue;
+         if (value < AppDefaults.MinimumTextBoxFontSize)
+         {
+            value = AppDefaults.MinimumTextBoxFontSize;
+         }
+         targetItem.MsgBodyTextBoxFontSize = value;
       }
    }
 }

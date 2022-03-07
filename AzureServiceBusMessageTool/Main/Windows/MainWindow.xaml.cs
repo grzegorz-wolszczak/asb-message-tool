@@ -46,7 +46,7 @@ namespace Main.Windows
       {
          if (((ViewModels.MainViewModel) this.DataContext).ShouldScrollToEndOnLogContentChange)
          {
-            this.logContentTextBox.ScrollToEnd();
+            this.LogContentTextBox.ScrollToEnd();
          }
       }
 
@@ -60,14 +60,23 @@ namespace Main.Windows
          var viewModel = (MainViewModel) DataContext;
 
          e.Handled = true;
+         var value = viewModel.LogTextBoxFontSize;
+
          if (e.Delta > 0)
          {
-            ++viewModel.LogTextBoxFontSize;
+            ++value;
          }
          else
          {
-            --viewModel.LogTextBoxFontSize;
+            --value;
          }
+
+         if (value < AppDefaults.MinimumTextBoxFontSize)
+         {
+            value = AppDefaults.MinimumTextBoxFontSize;
+         }
+
+         viewModel.LogTextBoxFontSize = value;
       }
    }
 }

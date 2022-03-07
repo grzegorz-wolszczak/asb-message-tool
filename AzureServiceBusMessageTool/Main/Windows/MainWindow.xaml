@@ -114,7 +114,7 @@
                      AcceptsReturn="True"
                      Margin="5"
                      IsReadOnly="True"
-                     x:Name="logContentTextBox"
+                     x:Name="LogContentTextBox"
                      TextChanged="LogContentTextBoxChanged"
                      Text="{Binding LogContent}"
                      FontSize="{Binding LogTextBoxFontSize}"
@@ -152,12 +152,12 @@
 
         </Grid>
 
-        <!-- status bar -->
-        <!-- <StatusBar Grid.Row="5" Margin="5,5,5,5"> -->
-        <!--     <StatusBarItem> -->
-        <!--         <TextBlock Text="{Binding StatusBarMessage}"></TextBlock> -->
-        <!--     </StatusBarItem> -->
-        <!-- </StatusBar> -->
+
+        <StatusBar Grid.Row="5" Margin="5,5,5,5">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusBarItemTextBox" Text="{Binding StatusBarMessage}"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
 
     </Grid>
 </Window>

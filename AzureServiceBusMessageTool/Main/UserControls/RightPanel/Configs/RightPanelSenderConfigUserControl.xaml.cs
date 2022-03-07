@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
+using Main.Application;
 using Main.ViewModels.Configs.Senders;
 
 namespace Main.UserControls.RightPanel.Configs
@@ -11,7 +12,7 @@ namespace Main.UserControls.RightPanel.Configs
          InitializeComponent();
       }
 
-      // todo: THIS IS DIRTY CODE - USING REFLECITON ONLY BECAUSE THIS USER CONTROL HAVE DIFFERENT DATACONTEXT SET WITH TWO
+      // todo: THIS IS DIRTY CODE - USING REFLECTION ONLY BECAUSE THIS USER CONTROL HAVE DIFFERENT DATACONTEXT SET WITH TWO
       // DIFFERENT CASE, ONE WHEN IT IS EMBEDDED, AND ONE WHEN IT IS DISPLAYED IN A WINDOW
       // TODO: FIX THIS GLOBALLY AND MAKE WINDOW AND EMBEDDED CONTROL HAVING THE SAME DATA CONTEXT SET
 
@@ -25,19 +26,24 @@ namespace Main.UserControls.RightPanel.Configs
          e.Handled = true;
          var propertyName = $"{nameof(SendersSelectedConfigViewModel.CurrentSelectedConfigModelItem)}";
          var propertyInfo = DataContext.GetType().GetProperty(propertyName);
-         SenderConfigViewModel item = (SenderConfigViewModel)propertyInfo.GetValue(DataContext, null);
+         SenderConfigViewModel item = (SenderConfigViewModel) propertyInfo.GetValue(DataContext, null);
          var targetItem = item.Item;
-         var initialValue = targetItem.MsgBodyTextBoxFontSize;
+         var value = targetItem.MsgBodyTextBoxFontSize;
          if (e.Delta > 0)
          {
-            initialValue++;
+            value++;
          }
          else
          {
-            initialValue--;
+            value--;
          }
 
-         targetItem.MsgBodyTextBoxFontSize = initialValue;
+         if (value < AppDefaults.MinimumTextBoxFontSize)
+         {
+            value = AppDefaults.MinimumTextBoxFontSize;
+         }
+
+         targetItem.MsgBodyTextBoxFontSize = value;
       }
    }
 }
