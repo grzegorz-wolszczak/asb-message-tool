@@ -1,0 +1,57 @@
+﻿name: "Basic build validation"
+env:
+  DOTNET_VERSION : "6.0.201"
+  DOTNET_CLI_TELEMETRY_OPTOUT : true
+
+on:
+  workflow_dispatch : # manual trigger
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Validate ASB tool code in PR
+    runs-on: windows-latest
+    steps:
+  
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+     - name: Set directories paths variables used in future scripts
+        shell: pwsh
+        run : |
+          $pathWithAllSlashes="${{github.workspace}}/.github/scripts".Replace('\','/')
+          Add-Content -Path $env:GITHUB_ENV -Value "GITHUB_ACTIONS_SCRIPTS_DIR=$pathWithAllSlashes"
+
+      - name: Set directories paths variables used in future scripts
+        shell: pwsh
+        run : |
+        
+          . "${{env.GITHUB_ACTIONS_SCRIPTS_DIR}}/pipeline_utils.ps1"
+
+          $pipelineConfig = GetPipelineCommonConfiguration          
+          AddEnvVariable "ASB_MESSAGE_TOOL_SOLUTION_FILE_PATH" "$($pipelineConfig.ProjectSolutionFilePath)"
+          
+
+      - name: Print all environment variables
+        shell: pwsh
+        run: |
+          $vars = dir env:\
+          $vars | foreach -Begin {$maxlen = 0} -Process {if($_.Key.length -gt $maxlen){$maxlen=$_.Key.length}}
+          $vars | foreach {"{0,-$maxlen} = '{1}'" -f $_.Name,$_.Value }
+
+      - name: Setup dotnet version ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+
+      - name: Build dataplane agent
+        shell: pwsh
+        run : |
+        
+          dotnet build "${{env.ASB_MESSAGE_TOOL_SOLUTION_FILE_PATH}}" `
+          --nologo `
+
+   
