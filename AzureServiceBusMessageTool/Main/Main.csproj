@@ -5,6 +5,7 @@
         <TargetFramework>net6.0-windows</TargetFramework>
         <Nullable>disable</Nullable>
         <UseWPF>true</UseWPF>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,5 +14,5 @@
       <PackageReference Include="Core.Maybe" Version="2.4.1" />
       <PackageReference Include="nucs.JsonSettings" Version="1.0.7" />
     </ItemGroup>
-
+    
 </Project>

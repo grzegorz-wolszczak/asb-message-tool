@@ -16,7 +16,7 @@ namespace Main.Application.Persistence
       {
          _logger = logger;
          _options = options;
-         _configFilePath = $"{binaryInfo.ApplicationDirectory}{Path.DirectorySeparatorChar}{AppConstants.ConfigFileName}";
+         _configFilePath = $"{binaryInfo.ApplicationDirectory}{Path.DirectorySeparatorChar}{StaticConfig.ConfigFileName}";
 
       }
 

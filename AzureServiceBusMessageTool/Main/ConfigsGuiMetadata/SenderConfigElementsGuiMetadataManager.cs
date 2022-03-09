@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Main.ExceptionHandling;
 using Main.ViewModels.Configs.Senders;
 
 namespace Main.ConfigsGuiMetadata
@@ -24,7 +25,7 @@ namespace Main.ConfigsGuiMetadata
          _dict.TryGetValue(currentSelectedItem, out SenderConfigElementGuiRepresentation metadata);
          if (metadata == null)
          {
-            throw new ApplicationException("Could not find metadata for sender config");
+            throw new AsbMessageToolException("Could not find metadata for sender config");
          }
 
          metadata.ShowCorrespondingElementWindow(currentSelectedItem);
@@ -37,7 +38,7 @@ namespace Main.ConfigsGuiMetadata
          _dict.TryGetValue(currentSelectedItem, out SenderConfigElementGuiRepresentation metadata);
          if (metadata == null)
          {
-            throw new ApplicationException("Could not find metadata for sender config");
+            throw new AsbMessageToolException("Could not find metadata for sender config");
          }
 
          metadata.CloseWindowOnElementDelete();

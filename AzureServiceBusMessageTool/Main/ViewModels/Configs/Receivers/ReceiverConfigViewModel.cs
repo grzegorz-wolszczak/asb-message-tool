@@ -59,7 +59,7 @@ namespace Main.ViewModels.Configs.Receivers
                   SubscriptionName = Item.InputTopicSubscriptionName,
                   TopicName = Item.InputTopicName,
                   IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue,
-                  NextMessageReceiveDelayPeriod = AppConstants.NextMessageReceiveDelayTimeSpan // todo: support this from gui
+                  NextMessageReceiveDelayPeriod = StaticConfig.NextMessageReceiveDelayTimeSpan // todo: support this from gui
                };
             },
             onMessageReceived: (msg) => { ReceivedMessagesContent += $"{FormatReceivedMessage(msg)}\n"; },

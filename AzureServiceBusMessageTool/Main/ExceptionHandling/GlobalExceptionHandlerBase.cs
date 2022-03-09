@@ -103,7 +103,7 @@ namespace Main.ExceptionHandling
       }
    }
 
-   internal class UnknownAppDomainException : Exception
+   public class UnknownAppDomainException : Exception
    {
       public UnknownAppDomainException(string s):base(s)
       {

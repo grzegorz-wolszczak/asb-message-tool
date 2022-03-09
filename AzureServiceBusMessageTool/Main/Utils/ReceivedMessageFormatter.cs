@@ -43,7 +43,7 @@ namespace Main.Utils
             {
                sb.Append($"{applicationPropertiesIndent}{String.Format(appPropertyFormatString, appProperty.Key)} : '{appProperty.Value}'\n");
             }
-            sb.Append("\n");
+            sb.Append('\n');
          }
 
          sb.Append($"{String.Format(formatString, "Body")} : '{msg.Body.ToString()}'\n");

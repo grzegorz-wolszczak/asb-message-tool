@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Main.ExceptionHandling;
 using Main.ViewModels.Configs.Receivers;
 
 namespace Main.ConfigsGuiMetadata
@@ -25,7 +26,7 @@ namespace Main.ConfigsGuiMetadata
          _dict.TryGetValue(currentSelectedItem, out ReceiverConfigElementGuiRepresentation metadata);
          if (metadata == null)
          {
-            throw new ApplicationException("Could not find metadata for Receiver config");
+            throw new AsbMessageToolException("Could not find metadata for Receiver config");
          }
 
          metadata.CloseWindowOnElementDelete();
@@ -37,7 +38,7 @@ namespace Main.ConfigsGuiMetadata
          _dict.TryGetValue(currentSelectedItem, out ReceiverConfigElementGuiRepresentation metadata);
          if (metadata == null)
          {
-            throw new ApplicationException("Could not find metadata for Receiver config");
+            throw new AsbMessageToolException("Could not find metadata for Receiver config");
          }
 
          metadata.ShowCorrespondingElementWindow(currentSelectedItem);

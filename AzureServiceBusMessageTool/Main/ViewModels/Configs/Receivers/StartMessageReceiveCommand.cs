@@ -30,12 +30,12 @@ namespace Main.ViewModels.Configs.Receivers
          _onReceiverStopped = onReceiverStopped;
       }
 
-      public bool CanExecute(object? parameter)
+      public bool CanExecute(object parameter)
       {
          return _canExecute;
       }
 
-      public void Execute(object? parameter)
+      public void Execute(object parameter)
       {
          var callbacks = new ReceiverCallbacks()
          {

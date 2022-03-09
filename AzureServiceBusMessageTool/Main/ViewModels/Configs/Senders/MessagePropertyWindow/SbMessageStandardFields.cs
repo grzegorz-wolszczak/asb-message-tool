@@ -5,8 +5,6 @@ namespace Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
 public class SbMessageField<T>
 {
-   private T _value = default;
-
    public SbMessageField(string fieldName)
    {
       FieldName = fieldName;

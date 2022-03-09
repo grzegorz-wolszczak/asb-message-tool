@@ -25,7 +25,7 @@ namespace Main.ViewModels
       private int _logTextBoxFontSize;
 
 
-      public event PropertyChangedEventHandler? PropertyChanged;
+      public event PropertyChangedEventHandler PropertyChanged;
       public ICommand ClearLogsCommand { get; }
 
       public MainViewModel(IAboutWindowProxy aboutWindow)
@@ -110,7 +110,7 @@ namespace Main.ViewModels
 
 
 
-      protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+      protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
       {
          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
       }
