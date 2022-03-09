@@ -10,6 +10,7 @@
         Title="About"
         Height="250"
         WindowStartupLocation="CenterOwner"
+        Style="{StaticResource WinAll}"
         Width="600">
     <GroupBox Padding="5">
         <Border BorderThickness="4" CornerRadius="3" BorderBrush="Gainsboro">

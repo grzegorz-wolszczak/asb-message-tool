@@ -7,7 +7,8 @@
         xmlns:leftPanel="clr-namespace:Main.UserControls.LeftPanel"
         xmlns:rightPanel="clr-namespace:Main.UserControls.RightPanel"
         mc:Ignorable="d"
-        Height="650"
+        Style="{StaticResource WinAll}"
+        Height="750"
         Width="900">
     <Window.Resources>
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter"/>
