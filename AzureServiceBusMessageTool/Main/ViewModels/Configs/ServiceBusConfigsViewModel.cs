@@ -56,7 +56,7 @@ namespace Main.ViewModels.Configs
          DeleteServiceBusConfigCommand = new DelegateCommand(
             onExecuteMethod: _ =>
             {
-               // todo: ask if user wants to delete object
+
                _serviceBusConfigs.Remove(CurrentSelectedItem);
                CurrentSelectedItem = null;
 

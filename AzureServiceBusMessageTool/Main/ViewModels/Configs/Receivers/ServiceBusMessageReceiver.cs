@@ -92,8 +92,8 @@ namespace Main.ViewModels.Configs.Receivers
                _callbacks.OnReceiverStarted.Invoke();
                while (!token.IsCancellationRequested)
                {
-                  // todo: make this async and update all code accordingly
-                  var message = await _receiver.ReceiveMessageAsync(TimeSpan.FromSeconds(10), token);
+                  var message = await _receiver.ReceiveMessageAsync(AppConstants.MessageReceiverReceiveTimeout, token);
+
                   if (message != null)
                   {
                      var receivedMessage = new ReceivedMessage()

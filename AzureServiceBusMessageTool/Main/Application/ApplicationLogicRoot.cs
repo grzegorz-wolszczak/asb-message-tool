@@ -7,6 +7,7 @@ using Main.ViewModels;
 using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
 using Main.ViewModels.Configs.Senders;
+using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 using Main.Windows;
 
 namespace Main.Application
@@ -39,10 +40,12 @@ namespace Main.Application
          var messageSenderFactory = new MessageSenderFactory(_logger);
 
          var inGuiThreadActionCaller = new InGuiThreadActionCaller();
+         var messagePropertiesWindowFactory = new MessagePropertiesWindowProxyFactory();
          SendersSelectedConfigViewModel sendersViewModel = new SendersSelectedConfigViewModel(
             senderConfigElementsGuiMetadataManager,
             inGuiThreadActionCaller,
             messageSenderFactory,
+            messagePropertiesWindowFactory,
             _logger
             );
          var serviceBusMessageReceiverFactory = new ServiceBusMessageReceiverFactory(_logger);

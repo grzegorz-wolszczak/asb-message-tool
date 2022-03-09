@@ -16,7 +16,7 @@
 
     </UserControl.Resources>
 
-    <Grid Background="Gainsboro">
+    <Grid>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -158,7 +158,7 @@
                          Grid.ColumnSpan="3"
                          Margin="5,2,5,2"
                          Background="White"
-                         IsReadOnly="True"
+
                          AcceptsReturn="True"
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Auto"
@@ -176,7 +176,31 @@
                             Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Label> Last receiver status: </Label>
-                        <Label Content="{Binding CurrentSelectedConfigModelItem.ReceiverStatus}">  </Label>
+                        <Label Content="{Binding CurrentSelectedConfigModelItem.ReceiverStatusText}">
+                            <Label.Style>
+                                <Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
+                                                     Value="StoppedOnError">
+                                            <Setter Property="Control.Foreground" Value="Red"></Setter>
+                                            <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}" Value="Idle">
+                                            <Setter Property="Control.Foreground" Value="Blue"></Setter>
+                                            <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
+                                                     Value="Listening">
+                                            <Setter Property="Control.Foreground" Value="Green"></Setter>
+                                            <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+
+                        </Label>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <CheckBox Margin="2,0,0,0"

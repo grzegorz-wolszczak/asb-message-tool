@@ -16,7 +16,7 @@
         <Style x:Key="TextBoxStyle" BasedOn="{StaticResource TextBoxStyle}"></Style>
     </UserControl.Resources>
 
-    <Grid Background="Gainsboro">
+    <Grid>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -121,27 +121,42 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+
                 </Grid.RowDefinitions>
 
+                <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Label Margin="0,0,5,0" Content="Properties " />
+                    <Button Margin="0,0,0,0" MinWidth="45" Content="..." Height="22"
+                            Command="{Binding CurrentSelectedConfigModelItem.ShowPropertiesWindowCommand}" />
+                </StackPanel>
 
-                <Label Grid.Row="0">Body</Label>
+                <Label Grid.Column="0" Grid.Row="1">Body :</Label>
 
-                <avalonEdit:TextEditor Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                <!-- Unfortunately we cannot bind Text property-->
+                <avalonEdit:TextEditor Grid.Row="2"
+                                       Grid.Column="0"
+                                       Grid.ColumnSpan="2"
+                                       x:Name="SenderMsgBodyTextBox"
                                        Margin="5,0,5,2"
                                        Background="White"
                                        WordWrap="False"
-
                                        VerticalScrollBarVisibility="Auto"
                                        HorizontalScrollBarVisibility="Auto"
                                        VerticalAlignment="Stretch"
                                        HorizontalAlignment="Stretch"
                                        IsReadOnly="False"
                                        SyntaxHighlighting="Json"
+                                       ShowLineNumbers="True"
                                        FontFamily="Consolas"
+                                       TextChanged="SenderMsgBodyTextBox_OnTextChanged"
+
                                        FontSize="{Binding CurrentSelectedConfigModelItem.Item.MsgBodyTextBoxFontSize}"
                                        PreviewMouseWheel="SenderMsgBodyTextBox_OnPreviewMouseWheel"
-                                       Document="{Binding CurrentSelectedConfigModelItem.TextDocument, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                       Document="{Binding CurrentSelectedConfigModelItem.TextDocument,
+                                                           Mode=OneWay,
+                                                           UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
         </GroupBox>
 
@@ -171,10 +186,36 @@
                 Grid.Column="1"
                 Content="Last send status:"
                 Margin="5,0,5,0" />
+
             <Label
                 Margin="5,0,5,0"
                 Grid.Column="2"
-                Content="{Binding CurrentSelectedConfigModelItem.LastSendStatus}" />
+                Content="{Binding CurrentSelectedConfigModelItem.LastSendStatusText}">
+                <Label.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.LastSendStatus}"
+                                         Value="Error">
+                                <Setter Property="Control.Foreground" Value="Red"></Setter>
+                                <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.LastSendStatus}" Value="Idle">
+                                <Setter Property="Control.Foreground" Value="Blue"></Setter>
+                                <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.LastSendStatus}"
+                                         Value="Success">
+                                <Setter Property="Control.Foreground" Value="Green"></Setter>
+                                <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+
         </Grid>
 
 
