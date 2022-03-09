@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Azure.Messaging.ServiceBus;
 using Core.Maybe;
 using Main.Application.Logging;
+using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
 namespace Main.ViewModels.Configs.Senders
 {
@@ -11,6 +12,8 @@ namespace Main.ViewModels.Configs.Senders
       public string ConnectionString { get; init; }
       public string TopicName { get; init; }
       public string MsgBody { get; init; }
+      public SbMessageStandardFields Fields { get; init; }
+      public IList<SBMessageApplicationProperty> ApplicationProperties { get; init; }
    }
 
    public class MessageSender : IMessageSender
@@ -32,17 +35,9 @@ namespace Main.ViewModels.Configs.Senders
 
             var client = GetClientForConnectionString(msgToSend.ConnectionString);
             var sender = GetSenderForClient(client, msgToSend.TopicName, msgToSend.ConnectionString);
-
             _logger.LogInfo($"Sending message to topic '{msgToSend.TopicName}\nwith content :'{msgBody}'");
 
-            ServiceBusMessage message;
-
-            if (msgBody == null)
-            {
-               msgBody = string.Empty;
-            }
-
-            message = new ServiceBusMessage(msgBody);
+            var message = FillAllMessageFields(msgBody, msgToSend.Fields, msgToSend.ApplicationProperties);
 
             sender.SendMessageAsync(message).GetAwaiter().GetResult();
             return Maybe<MessageSendErrorInfo>.Nothing;
@@ -54,6 +49,47 @@ namespace Main.ViewModels.Configs.Senders
             {
                Message = "Sending failed. See log for details"
             }.ToMaybe();
+         }
+      }
+
+      private static ServiceBusMessage FillAllMessageFields(string msgBody,
+         SbMessageStandardFields messageFieldsToSend,
+         IList<SBMessageApplicationProperty> messageApplicationPropertiesToSend)
+      {
+         if (msgBody == null)
+         {
+            msgBody = string.Empty;
+         }
+
+         ServiceBusMessage message = new ServiceBusMessage(msgBody);
+
+         foreach (var appMessageProperty in messageApplicationPropertiesToSend)
+         {
+            if (!string.IsNullOrEmpty(appMessageProperty.PropertyName))
+            {
+               message.ApplicationProperties.Add(appMessageProperty.PropertyName, appMessageProperty.PropertyValue);
+            }
+         }
+
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.ContentType, (ob) => { message.ContentType = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.CorrelationId, (ob) => { message.CorrelationId = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.MessageId, (ob) => { message.MessageId = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.PartitionKey, (ob) => { message.PartitionKey = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.ReplyTo, (ob) => { message.ReplyTo = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.ReplyToSessionId, (ob) => { message.ReplyToSessionId = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.SessionId, (ob) => { message.SessionId = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.Subject, (ob) => { message.Subject = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.To, (ob) => { message.To = ob;});
+         SetMessageFieldIfEnabled<string>(messageFieldsToSend.TransactionPartitionKey, (ob) => { message.TransactionPartitionKey = ob;});
+
+         return message;
+      }
+
+      private static void SetMessageFieldIfEnabled<FieldValueType>(SbMessageField<FieldValueType> field, Action<FieldValueType> messagePropertySetter)
+      {
+         if (field.IsEnabled)
+         {
+            messagePropertySetter((FieldValueType)field.ValueAsObject);
          }
       }
 

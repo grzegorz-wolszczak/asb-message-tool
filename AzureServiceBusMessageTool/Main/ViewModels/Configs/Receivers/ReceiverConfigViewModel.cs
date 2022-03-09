@@ -2,20 +2,30 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Main.Application;
 using Main.Commands;
 using Main.Models;
 using Main.Utils;
 
 namespace Main.ViewModels.Configs.Receivers
 {
+
+   public enum ReceiverEnumStatus
+   {
+      Idle =0,
+      StoppedOnError,
+      Listening
+   }
+
    public class ReceiverConfigViewModel : INotifyPropertyChanged
    {
       private readonly IReceiverConfigWindowDetacher _receiverConfigWindowDetacher;
+      private ReceiverEnumStatus _receiverEnumStatus = ReceiverEnumStatus.Idle;
 
       private ReceiverConfigModel _item;
       private bool _isEmbeddedInsideRightPanel = true;
       private string _receivedMessagesContent;
-      private string _receiverStatus = "Idle";
+      private string _receiverStatusTextText = "Idle";
 
       public ICommand DetachFromPanelCommand { get; }
       public ICommand StartMessageReceiveCommand { get; }
@@ -48,21 +58,38 @@ namespace Main.ViewModels.Configs.Receivers
                   ConnectionString = Item.ServiceBusConnectionString,
                   SubscriptionName = Item.InputTopicSubscriptionName,
                   TopicName = Item.InputTopicName,
-                  IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue, // todo: support dead letter queue from gui
-                  NextMessageReceiveDelayPeriod = TimeSpan.FromMilliseconds(500) // todo: support this from gui
+                  IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue,
+                  NextMessageReceiveDelayPeriod = AppConstants.NextMessageReceiveDelayTimeSpan // todo: support this from gui
                };
             },
             onMessageReceived: (msg) => { ReceivedMessagesContent += $"{FormatReceivedMessage(msg)}\n"; },
-            onReceiverStarted: () => { ReceiverStatus = "Listening..."; },
-            onReceiverFailure: (exc) => { ReceiverStatus = "Stopped because of error"; },
-            onReceiverStopped: () => { ReceiverStatus = "Idle"; /* todo: make this constants*/ }
+            onReceiverStarted: SetListeningReceiverStatus,
+            onReceiverFailure: SetStoppedOnErrorReceiverStatus,
+            onReceiverStopped: SetIdleReceiverStatus
          );
 
          StopMessageReceiveCommand = new DelegateCommand(_ => { serviceBusMessageReceiver.Stop(); },
             _ => !StartMessageReceiveCommand.CanExecute(default));
       }
 
-      // todo: extract this to function
+      private void SetIdleReceiverStatus()
+      {
+         ReceiverStatusText = "Idle";
+         ReceiverEnumStatus = ReceiverEnumStatus.Idle;
+      }
+
+      private void SetStoppedOnErrorReceiverStatus(Exception exception)
+      {
+         ReceiverStatusText = "Stopped because of error";
+         ReceiverEnumStatus = ReceiverEnumStatus.StoppedOnError;
+      }
+
+      private void SetListeningReceiverStatus()
+      {
+         ReceiverStatusText = "Listening...";
+         ReceiverEnumStatus = ReceiverEnumStatus.Listening;
+      }
+
       private string FormatReceivedMessage(ReceivedMessage msg)
       {
          return $"{TimeUtils.GetShortTimestamp()} received message: \n{msg.Body}\n----------------------------------";
@@ -75,13 +102,24 @@ namespace Main.ViewModels.Configs.Receivers
          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
       }
 
-      public string ReceiverStatus
+      public string ReceiverStatusText
       {
-         get => _receiverStatus;
+         get => _receiverStatusTextText;
          set
          {
-            if (value == _receiverStatus) return;
-            _receiverStatus = value;
+            if (value == _receiverStatusTextText) return;
+            _receiverStatusTextText = value;
+            OnPropertyChanged();
+         }
+      }
+
+      public ReceiverEnumStatus ReceiverEnumStatus
+      {
+         get => _receiverEnumStatus;
+         set
+         {
+            if (value == _receiverEnumStatus) return;
+            _receiverEnumStatus = value;
             OnPropertyChanged();
          }
       }

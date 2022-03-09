@@ -1,5 +1,6 @@
-﻿using System.ComponentModel;
-using System.Net.Mime;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
@@ -7,12 +8,15 @@ using Main.Application.Logging;
 using Main.Commands;
 using Main.Models;
 using Main.Utils;
+using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
 namespace Main.ViewModels.Configs.Senders
 {
-   public interface ISenderConfigWindowDetacher
+   public enum LastSendStatus
    {
-      void DetachFromPanel(SenderConfigViewModelWrapper item);
+      Idle,
+      Success,
+      Error
    }
 
    public class SenderConfigViewModel : INotifyPropertyChanged
@@ -21,54 +25,91 @@ namespace Main.ViewModels.Configs.Senders
       private readonly IMessageSender _messageSender;
       private SenderConfigModel _item;
       private bool _isEmbeddedInsideRightPanel = true;
-      private string _lastSendStatus = "N/A";
+
+
+      private string _lastSendStatusText = "N/A";
+      private LastSendStatus _lastSendStatus = LastSendStatus.Idle;
+
+
       //private string _messageToSendStringContent;
       private IInGuiThreadActionCaller _inGuiThreadActionCaller;
       private readonly IServiceBusHelperLogger _logger;
       private TextDocument _msgToSendDocument = new TextDocument("");
 
       public readonly SenderConfigViewModelWrapper ViewModelWrapper;
+      private IMessagePropertiesWindowProxy _messagePropertiesWindowProxy;
 
       public ICommand DetachFromPanelCommand { get; }
       public ICommand SendMessageCommand { get; }
+      public ICommand ShowPropertiesWindowCommand { get; }
 
 
-      public SenderConfigViewModel(ISenderConfigWindowDetacher senderConfigWindowDetacher,
+      public SenderConfigViewModel(
+         ISenderConfigWindowDetacher senderConfigWindowDetacher,
          IMessageSender messageSender,
          IInGuiThreadActionCaller inGuiThreadActionCaller,
-         IServiceBusHelperLogger logger)
+         IServiceBusHelperLogger logger,
+         IMessagePropertiesWindowProxy messagePropertiesWindowProxy)
       {
          _senderConfigWindowDetacher = senderConfigWindowDetacher;
          _messageSender = messageSender;
-
          ViewModelWrapper = new SenderConfigViewModelWrapper(this);
 
          DetachFromPanelCommand = new DelegateCommand(onExecuteMethod: _ => { _senderConfigWindowDetacher.DetachFromPanel(ViewModelWrapper); });
          _inGuiThreadActionCaller = inGuiThreadActionCaller;
          _logger = logger;
 
+         _messagePropertiesWindowProxy = messagePropertiesWindowProxy;
+
+         ShowPropertiesWindowCommand = new DelegateCommand(_ =>
+         {
+            _messagePropertiesWindowProxy.ShowDialog(new SbMessageFieldsViewModel(
+               _item.ApplicationProperties,
+               _item.MessageFields));
+            RemoveEmptyProperties(_item.ApplicationProperties);
+         });
 
          SendMessageCommand = new SendServiceMessageCommand(_messageSender,
             msgProviderFunc: () =>
             {
-               // must use inGuiThread caller because otherwise referencing AvalongEdit.TextDocument would throw exception saying that
-               // this object can be read only in thread that created it
-               return inGuiThreadActionCaller.InvokeFunction(() => new MessageToSendData()
+               return new MessageToSendData()
                {
                   ConnectionString = Item.ServiceBusConnectionString,
-                  MsgBody = TextDocument.Text,
-                  TopicName = Item.OutputTopicName
-               });
-
+                  MsgBody = Item.MsgBody,
+                  TopicName = Item.OutputTopicName,
+                  Fields = Item.MessageFields,
+                  ApplicationProperties = Item.ApplicationProperties
+               };
             },
-            onErrorAction: (e) => { SetLastSendStatus(e.Message); },
-            onSuccessAction: (statusMessage) => { SetLastSendStatus(statusMessage); },
+            onErrorAction: (e) => { SetLastSendStatusErrorMessage(e.Message); },
+            onSuccessAction: (statusMessage) => { SetLastSendStatusSuccessMessage(statusMessage); },
             onUnexpectedExceptionAction: (exception) =>
             {
                _logger.LogException("While sending message exception happened: ", exception);
-               SetLastSendStatus("Error");
+               SetLastSendStatusErrorMessage("Unexpected error, see logs for details.");
             },
             _inGuiThreadActionCaller);
+      }
+
+      private void SetLastSendStatusSuccessMessage(string statusMessage)
+      {
+         SetLastSendStatusMessage(statusMessage);
+         LastSendStatus = LastSendStatus.Success;
+      }
+
+      private void SetLastSendStatusErrorMessage(string msg)
+      {
+         SetLastSendStatusMessage(msg);
+         LastSendStatus = LastSendStatus.Error;
+      }
+
+      private void RemoveEmptyProperties(IList<SBMessageApplicationProperty> itemApplicationProperties)
+      {
+         var itemsToRemove = itemApplicationProperties.Where(e => string.IsNullOrWhiteSpace(e.PropertyName)).ToList();
+         foreach (var itemToRemove in itemsToRemove)
+         {
+            itemApplicationProperties.Remove(itemToRemove);
+         }
       }
 
       public TextDocument TextDocument
@@ -76,17 +117,29 @@ namespace Main.ViewModels.Configs.Senders
          get => _msgToSendDocument;
          set
          {
+
             if (value == _msgToSendDocument) return;
             _msgToSendDocument = value;
             OnPropertyChanged();
          }
       }
 
+      public LastSendStatus LastSendStatus
+      {
+         get => _lastSendStatus;
+         set
+         {
 
-      private void SetLastSendStatus(string msg)
+            if (value == _lastSendStatus) return;
+            _lastSendStatus = value;
+            OnPropertyChanged();
+         }
+      }
+
+      private void SetLastSendStatusMessage(string msg)
       {
          var status = $"{TimeUtils.GetShortTimestamp()} {msg}";
-         LastSendStatus = status;
+         LastSendStatusText = status;
       }
 
       public event PropertyChangedEventHandler PropertyChanged;
@@ -103,33 +156,26 @@ namespace Main.ViewModels.Configs.Senders
          {
             if (value == _item) return;
             _item = value;
+            if (_item != null && _msgToSendDocument != null)
+            {
+               _msgToSendDocument.Text = _item.MsgBody;
+            }
+
             OnPropertyChanged();
          }
       }
 
-      public string LastSendStatus
+      public string LastSendStatusText
       {
-         get => _lastSendStatus;
+         get => _lastSendStatusText;
          set
          {
-            if (value == _lastSendStatus) return;
-            _lastSendStatus = value;
+            if (value == _lastSendStatusText) return;
+            _lastSendStatusText = value;
             OnPropertyChanged();
          }
       }
 
-      // public string MessageToSendStringContent
-      // {
-      //    get => TextDocument.Text;
-      //    set
-      //    {
-      //       //if (value == _messageToSendStringContent) return;
-      //       //_messageToSendStringContent = value;
-      //       TextDocument.Text = value;
-      //       OnPropertyChanged();
-      //       OnPropertyChanged(nameof(TextDocument));
-      //    }
-      // }
 
       public bool IsEmbeddedInsideRightPanel
       {
@@ -142,4 +188,6 @@ namespace Main.ViewModels.Configs.Senders
          }
       }
    }
+
+
 }

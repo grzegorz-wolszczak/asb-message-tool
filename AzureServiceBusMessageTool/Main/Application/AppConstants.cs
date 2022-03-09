@@ -11,4 +11,7 @@ public static class AppConstants
   public static readonly string ApplicationName = "AzureServiceBusMessageTool";
   public static readonly string ConfigFileName = $"{ApplicationName}.settings.json";
   public static readonly string ThisRepositoryUrl = "https://github.com/grzegorz-wolszczak/asb-message-tool";
+
+  public static readonly TimeSpan NextMessageReceiveDelayTimeSpan = TimeSpan.FromMilliseconds(500);
+  public static readonly TimeSpan MessageReceiverReceiveTimeout = TimeSpan.FromSeconds(30);
 }

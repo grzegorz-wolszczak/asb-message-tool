@@ -1,15 +1,13 @@
 ﻿# TODO: 
 
 
-- display received message properties (if not empty)
-  - for dead letter queue message there are additional properties
-- add posibility to set message properties when sending message (use expander ?)
 - add when adding new sender receiver so that it copies data from already selected
 - add SetFont popup for all textBoxes and save this in config
 - set application icon
-- make log window using expander ?
 - replace AvalonEdit with Scintilla.Net for better syntax highligting.
-
+- add hints over message properties button to display what are the current sb messages properties without the need to push the button and open the window
+- add posibility to sent receive mode on reciever (PeekLock vs ReceiveAndDelete) , for PeekLock set OnReceiveAction e.g. Complete, deadletter, abandon
+  - add check that receiver with PeekLock with OnReceiveAction set to 'send to DeadLetterChannel' cannot listend on DeadLetter Channel already
 
 ## Bugs:
 

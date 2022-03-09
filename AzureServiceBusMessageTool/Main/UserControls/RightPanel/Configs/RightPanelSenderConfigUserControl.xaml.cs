@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Main.Application;
 using Main.ViewModels.Configs.Senders;
@@ -45,5 +46,27 @@ namespace Main.UserControls.RightPanel.Configs
 
          targetItem.MsgBodyTextBoxFontSize = value;
       }
+
+      // avalonEdit does not have its property 'Text' as dependency property so we cannot bind viewmodel for it
+      // must set MsgBody in code behind;
+
+      private void SenderMsgBodyTextBox_OnTextChanged(object? sender, EventArgs e)
+      {
+         if (DataContext == null)
+         {
+            return;
+         }
+         var propertyName = $"{nameof(SendersSelectedConfigViewModel.CurrentSelectedConfigModelItem)}";
+         var propertyInfo = DataContext.GetType().GetProperty(propertyName);
+
+         SenderConfigViewModel item = (SenderConfigViewModel) propertyInfo.GetValue(DataContext, null);
+
+         if (item != null)
+         {
+            item.Item.MsgBody = SenderMsgBodyTextBox.Text;
+         }
+      }
+
+
    }
 }

@@ -1,15 +1,22 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Main.Application;
+using Main.ViewModels.Configs.Senders;
+using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
 namespace Main.Models
 {
    public sealed class SenderConfigModel : INotifyPropertyChanged
    {
-      private string _configName;
-      private string _serviceBusConnectionString;
-      private string _outputTopicName;
-      private int _msgBodyTextFontSize = AppDefaults.DefaultTextBoxFontSize; // todo: is value should be in configview model ? maybe move it to
+      private SbMessageStandardFields _sbMessageStandardFields = new();
+      private IList<SBMessageApplicationProperty> _messageApplicationProperties = new ObservableCollection<SBMessageApplicationProperty>();
+      private string _configName = string.Empty;
+      private string _serviceBusConnectionString = string.Empty;
+      private string _outputTopicName = string.Empty;
+      private int _msgBodyTextFontSize = AppDefaults.DefaultTextBoxFontSize;
+      private string _body = string.Empty;
 
       public string ConfigId { get; init; }
 
@@ -20,6 +27,17 @@ namespace Main.Models
          {
             if (value == _configName) return;
             _configName = value;
+            OnPropertyChanged();
+         }
+      }
+
+      public string MsgBody
+      {
+         get => _body;
+         set
+         {
+            if (value == _body) return;
+            _body = value;
             OnPropertyChanged();
          }
       }
@@ -59,9 +77,33 @@ namespace Main.Models
 
       public event PropertyChangedEventHandler PropertyChanged;
 
+      public SbMessageStandardFields MessageFields
+      {
+         get => _sbMessageStandardFields;
+         set
+         {
+            if (value == _sbMessageStandardFields) return;
+            _sbMessageStandardFields = value;
+            OnPropertyChanged();
+         }
+      }
+
+      public IList<SBMessageApplicationProperty> ApplicationProperties
+      {
+         get => _messageApplicationProperties;
+         set
+         {
+            if (value == _messageApplicationProperties) return;
+            _messageApplicationProperties = value;
+            OnPropertyChanged();
+         }
+      }
+
       private void OnPropertyChanged([CallerMemberName] string propertyName = null)
       {
          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
       }
+
+
    }
 }
