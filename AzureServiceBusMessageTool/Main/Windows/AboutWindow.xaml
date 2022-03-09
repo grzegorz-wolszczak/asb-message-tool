@@ -32,42 +32,35 @@
                 <Label Grid.Column="0"
                        Grid.ColumnSpan="2"
                        Grid.Row="0"
-                       Content="{Binding Source={x:Static application:AppConstants.ApplicationDisplayName}}"
+                       Content="{Binding Source={x:Static application:StaticConfig.ApplicationDisplayName}}"
                        FontSize="15"
                        FontWeight="Bold"
                        />
 
                 <Label Grid.Column="0" Grid.Row="1"  > Author </Label>
                 <Label Grid.Column="1" Grid.Row="1"
-                       Content="{Binding Source={x:Static application:AppConstants.AuthorDisplayInfo}}"
+                       Content="{Binding Source={x:Static application:StaticConfig.AuthorDisplayInfo}}"
                        />
 
                 <Label Grid.Column="0" Grid.Row="2"  > Version </Label>
                 <Label
                     Grid.Column="1"
                     Grid.Row="2"
-                    Content="{Binding Source={x:Static application:AppConstants.Version}}"
+                    Content="{Binding Source={x:Static application:StaticConfig.Version}}"
                        />
 
                 <Label Grid.Column="0" Grid.Row="3"  > License </Label>
                 <Label Grid.Column="1" Grid.Row="3"
-                       Content="{Binding Source={x:Static application:AppConstants.LicenseName}}"
+                       Content="{Binding Source={x:Static application:StaticConfig.LicenseName}}"
 
                        />
 
                 <Label Grid.Column="0" Grid.Row="4"  > Source code </Label>
                 <TextBlock  Grid.Column="1" Grid.Row="4" VerticalAlignment="Center">
-                    <Hyperlink NavigateUri="{Binding Source={x:Static application:AppConstants.ThisRepositoryUrl}}"
+                    <Hyperlink NavigateUri="{Binding Source={x:Static application:StaticConfig.ThisRepositoryUrl}}"
                                RequestNavigate="Hyperlink_RequestNavigate">
-                        <Run Text="{Binding Mode=OneWay, Source={x:Static application:AppConstants.ThisRepositoryUrl}}"/>
+                        <Run Text="{Binding Mode=OneWay, Source={x:Static application:StaticConfig.ThisRepositoryUrl}}"/>
                     </Hyperlink>
-                    <!-- <Hyperlink -->
-                    <!--     RequestNavigate="Hyperlink_RequestNavigate" -->
-                    <!--     TargetName="{Binding Source={x:Static application:Globals.ThisRepositoryUrl}}" -->
-                    <!--     NavigateUri="www.google.pl" -->
-                    <!--     > -->
-                    <!-- -->
-                    <!-- </Hyperlink> -->
                 </TextBlock>
 
 

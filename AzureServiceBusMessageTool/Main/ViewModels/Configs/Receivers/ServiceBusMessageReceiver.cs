@@ -92,7 +92,7 @@ namespace Main.ViewModels.Configs.Receivers
                _callbacks.OnReceiverStarted.Invoke();
                while (!token.IsCancellationRequested)
                {
-                  var message = await _receiver.ReceiveMessageAsync(AppConstants.MessageReceiverReceiveTimeout, token);
+                  var message = await _receiver.ReceiveMessageAsync(StaticConfig.MessageReceiverReceiveTimeout, token);
 
                   if (message != null)
                   {
@@ -106,7 +106,7 @@ namespace Main.ViewModels.Configs.Receivers
                   await Task.Delay(_config.NextMessageReceiveDelayPeriod);
                }
             }
-            catch (TaskCanceledException e)
+            catch (TaskCanceledException)
             {
                if (_stopReason == StopReason.Intentional)
                {

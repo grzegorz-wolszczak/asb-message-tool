@@ -25,7 +25,7 @@ namespace Main.Application
          _appProxy = appProxy;
 
          var binaryInfo = new ApplicationBinaryInfo(
-            AppConstants.ApplicationName,
+            StaticConfig.ApplicationName,
             Process.GetCurrentProcess().MainModule.FileName);
 
          ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();

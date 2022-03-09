@@ -158,7 +158,9 @@ namespace Main.ViewModels.Configs.Senders
             _item = value;
             if (_item != null && _msgToSendDocument != null)
             {
-               _msgToSendDocument.Text = _item.MsgBody;
+#pragma warning disable CA1416
+                _msgToSendDocument.Text = _item.MsgBody;
+#pragma warning restore CA1416
             }
 
             OnPropertyChanged();

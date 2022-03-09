@@ -17,4 +17,8 @@
  - Use async everywhre possible
  
 
+## Suppressed warnings - reevaluate and fix code when have time
+CA1058
+CA1012
+CA1002
 

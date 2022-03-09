@@ -32,14 +32,13 @@ namespace Main.Windows
          leftPanelControl.leftPanelReceiversConfigTabItem.DataContext = leftPanelControlViewModel;
          leftPanelControl.leftPanelServiceBusConfigUserControl.DataContext = serviceBusConfigsViewModel;
 
-         //rightPanelControl.rightPanelServiceBusConfigTab.DataContext = serviceBusConfigsViewModel;
          leftPanelControl.leftPanelSendersConfigUserControl.DataContext = sendersViewModel;
          rightPanelControl.rightPanelSenderConfigTab.DataContext = sendersViewModel;
 
          leftPanelControl.leftPanelReceiversConfigUserControl.DataContext = receiversViewModel;
          rightPanelControl.rightPanelReceiverConfigTab.DataContext = receiversViewModel;
 
-         Title = $"{AppConstants.ApplicationName} ({AppConstants.Version})";
+         Title = $"{StaticConfig.ApplicationName} ({StaticConfig.Version})";
       }
 
       private void LogContentTextBoxChanged(object sender, TextChangedEventArgs e)

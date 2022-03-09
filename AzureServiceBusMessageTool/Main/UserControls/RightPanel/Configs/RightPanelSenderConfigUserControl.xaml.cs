@@ -50,7 +50,7 @@ namespace Main.UserControls.RightPanel.Configs
       // avalonEdit does not have its property 'Text' as dependency property so we cannot bind viewmodel for it
       // must set MsgBody in code behind;
 
-      private void SenderMsgBodyTextBox_OnTextChanged(object? sender, EventArgs e)
+      private void SenderMsgBodyTextBox_OnTextChanged(object sender, EventArgs e)
       {
          if (DataContext == null)
          {

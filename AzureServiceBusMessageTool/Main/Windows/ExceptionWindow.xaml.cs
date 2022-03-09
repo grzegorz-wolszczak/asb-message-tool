@@ -10,7 +10,7 @@ namespace Main.Windows
          InitializeComponent();
       }
 
-      private void OnExceptionWindowClosed(object? sender, EventArgs e)
+      private void OnExceptionWindowClosed(object sender, EventArgs e)
       {
          System.Windows.Application.Current.Shutdown();
       }
