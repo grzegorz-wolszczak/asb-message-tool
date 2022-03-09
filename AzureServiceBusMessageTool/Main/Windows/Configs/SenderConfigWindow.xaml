@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Main.Windows"
         xmlns:configs="clr-namespace:Main.UserControls.RightPanel.Configs"
         mc:Ignorable="d"
+        Style="{StaticResource WinAll}"
         Title="SenderConfigWindow" Height="450" Width="800">
 
         <configs:DetailedSenderConfigUserControl x:Name="detailedSenderConfigUserControl" DataContext="{Binding }"/>

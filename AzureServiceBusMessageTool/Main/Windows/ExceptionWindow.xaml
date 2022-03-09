@@ -9,6 +9,7 @@
         Closed="OnExceptionWindowClosed"
         ResizeMode="CanResize"
         SizeToContent="Height"
+        Style="{StaticResource WinAll}"
         mc:Ignorable="d">
     <Window.Resources>
         <Style x:Key="Label"

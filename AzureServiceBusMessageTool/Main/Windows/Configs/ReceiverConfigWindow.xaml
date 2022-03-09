@@ -7,6 +7,7 @@
         xmlns:main="clr-namespace:Main"
         xmlns:configs="clr-namespace:Main.UserControls.RightPanel.Configs"
         mc:Ignorable="d"
+        Style="{StaticResource WinAll}"
         Title="ReceiverConfigWindow" Height="450" Width="800">
 
     <configs:RightPanelReceiverConfigUserControl x:Name="detailedReceiverConfigUserControl"/>
