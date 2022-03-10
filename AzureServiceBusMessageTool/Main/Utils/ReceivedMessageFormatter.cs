@@ -14,8 +14,6 @@ namespace Main.Utils
       // make room for it for standard message properties
       private readonly string applicationPropertiesIndent = new String(' ', 3);
 
-
-
       public string Format(ServiceBusReceivedMessage msg)
       {
          _fieldValues.Clear();

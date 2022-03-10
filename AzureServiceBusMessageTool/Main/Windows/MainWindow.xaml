@@ -12,6 +12,7 @@
         Width="900">
     <Window.Resources>
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -20,10 +21,10 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" /> <!-- menu -->
-            <RowDefinition Height="300*" />  <!-- main content -->
+            <RowDefinition Height="300*" Name="MainContentRow"/>  <!-- main content -->
             <RowDefinition Height="Auto" /> <!-- grid splitter -->
-            <RowDefinition Height="150*" /> <!-- logs window  -->
-            <RowDefinition Height="Auto" /> <!-- status bar -->
+            <RowDefinition Height="Auto" Name="ExpanderRow"/> <!-- logs window  -->
+
         </Grid.RowDefinitions>
 
         <!-- menu -->
@@ -87,27 +88,35 @@
                       HorizontalAlignment="Stretch"
                       Background="CornflowerBlue"
                       VerticalAlignment="Stretch"
+                      Visibility="{Binding ElementName=BottomExpander, Path=IsExpanded, Converter={StaticResource BoolToVisConverter}}"
                       ></GridSplitter>
 
-        <!-- logs widget -->
-        <Grid Grid.Row="3">
+        <!-- logs container -->
+        <Expander Header="Logs"
+                  Grid.Row="3"
+                  IsExpanded="False"
+                  x:Name="BottomExpander"
+                  Collapsed="BottomExpander_OnCollapsed"
+                  Expanded="BottomExpander_OnExpanded"
+                  >
+            <Grid >
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+
+                <RowDefinition Height="*" /> <!-- TextBox -->
+                <RowDefinition Height="Auto" /> <!-- buttons and checkboxes -->
             </Grid.RowDefinitions>
 
-            <Label Grid.Column="0" Grid.Row="0" Content="Logs: " />
+
 
 
             <!-- TextWrapping="{Binding ShouldWordWrapLogContent }" -->
             <TextBox Grid.Column="0"
-                     Grid.Row="1"
+                     Grid.Row="0"
                      Grid.ColumnSpan="2"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
@@ -123,10 +132,9 @@
                      Style="{StaticResource TextBoxStyle}"
                      >
 
-
             </TextBox>
-            <StackPanel Grid.Column="2"
-                        Grid.Row="2" Orientation="Horizontal">
+            <StackPanel Grid.Column="1"
+                        Grid.Row="1" Orientation="Horizontal">
                 <CheckBox Margin="5"
                           VerticalAlignment="Center"
                           IsChecked="{Binding ShouldScrollToEndOnLogContentChange}">
@@ -140,7 +148,6 @@
                 </CheckBox>
 
                 <Button
-
                     MinWidth="75"
                     Margin="5"
                     Style="{StaticResource ButtonStyle}"
@@ -149,16 +156,16 @@
 
             </StackPanel>
 
-
-
         </Grid>
+        </Expander>
 
 
-        <StatusBar Grid.Row="5" Margin="5,5,5,5">
-            <StatusBarItem>
-                <TextBlock x:Name="StatusBarItemTextBox" Text="{Binding StatusBarMessage}"></TextBlock>
-            </StatusBarItem>
-        </StatusBar>
+
+        <!-- <StatusBar Grid.Row="5" Margin="5,5,5,5"> -->
+        <!--     <StatusBarItem> -->
+        <!--         <TextBlock x:Name="StatusBarItemTextBox" Text="{Binding StatusBarMessage}"></TextBlock> -->
+        <!--     </StatusBarItem> -->
+        <!-- </StatusBar> -->
 
     </Grid>
 </Window>

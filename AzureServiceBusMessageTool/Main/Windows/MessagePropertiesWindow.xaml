@@ -26,7 +26,73 @@
     <TabControl>
 
 
-        <TabItem Header="Other message fields" DataContext="{Binding MessageFields}">
+
+
+        <TabItem Header="Application properties">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="5" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                </Grid.RowDefinitions>
+
+
+                <DataGrid
+
+                    ItemsSource="{Binding ApplicationProperties}"
+                    SelectionMode="Single"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    ColumnWidth="Auto"
+                    RowHeight="30"
+                    AutoGenerateColumns="False"
+                    CanUserDeleteRows="False"
+                    CanUserReorderColumns="False"
+                    CanUserSortColumns="False"
+                    CanUserAddRows="false"
+                    MinColumnWidth="150"
+                    SelectedItem="{Binding SelectedItem}"
+                    x:Name="ApplicationPropertiesDataGrid"
+
+                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Property name"
+                                            Binding="{Binding PropertyName,
+                                            UpdateSourceTrigger=PropertyChanged}" />
+                        <DataGridTextColumn Header="Property value"
+                                            Binding="{Binding PropertyValue,
+                                            UpdateSourceTrigger=PropertyChanged}" />
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+                <StackPanel VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5">
+                    <Button Margin="5" MinWidth="75" Command="{Binding AddMessagePropertyCommand}">Add </Button>
+                    <Button Margin="5" MinWidth="75" Command="{Binding DeleteMessagePropertyCommand}">Delete </Button>
+
+                </StackPanel>
+                <Label Grid.Column="1" Grid.Row="2" Content="Note: All properties with empty names will be removed."
+                       FontStyle="Italic" />
+
+
+            </Grid>
+
+
+        </TabItem>
+         <TabItem Header="Other message fields" DataContext="{Binding MessageFields}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="5" />
@@ -180,80 +246,12 @@
                     Text="{Binding TransactionPartitionKey.Value , UpdateSourceTrigger=PropertyChanged}"
                     IsEnabled="{Binding ElementName=TransactionPartitionKeyCheckBox, Path=IsChecked}" />
 
-                <!-- todo: add
-                public TimeSpan? TimeToLive { get; set; }
-   public DateTimeOffset? ScheduledEnqueueTimeUtc { get; set; }
-                -->
-            </Grid>
-
-
-        </TabItem>
-
-
-        <TabItem Header="Application properties">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="5" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10" />
-                </Grid.RowDefinitions>
-
-
-                <DataGrid
-
-                    ItemsSource="{Binding ApplicationProperties}"
-                    SelectionMode="Single"
-                    Grid.Column="1"
-                    Grid.Row="1"
-                    ColumnWidth="Auto"
-                    RowHeight="30"
-                    AutoGenerateColumns="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="False"
-                    CanUserSortColumns="False"
-                    CanUserAddRows="false"
-                    MinColumnWidth="150"
-                    SelectedItem="{Binding SelectedItem}"
-                    x:Name="ApplicationPropertiesDataGrid"
-
-                    ScrollViewer.CanContentScroll="True"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto">
-
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Property name"
-                                            Binding="{Binding PropertyName,
-                                            UpdateSourceTrigger=PropertyChanged}" />
-                        <DataGridTextColumn Header="Property value"
-                                            Binding="{Binding PropertyValue,
-                                            UpdateSourceTrigger=PropertyChanged}" />
-
-                    </DataGrid.Columns>
-
-                </DataGrid>
-
-                <StackPanel VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5">
-                    <Button Margin="5" MinWidth="75" Command="{Binding AddMessagePropertyCommand}">Add </Button>
-                    <Button Margin="5" MinWidth="75" Command="{Binding DeleteMessagePropertyCommand}">Delete </Button>
-
-                </StackPanel>
-                <Label Grid.Column="1" Grid.Row="2" Content="Note: All properties with empty names will be removed."
-                       FontStyle="Italic" />
-
 
             </Grid>
 
 
         </TabItem>
+
 
     </TabControl>
 

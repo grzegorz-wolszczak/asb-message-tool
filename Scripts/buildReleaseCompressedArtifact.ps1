@@ -1,6 +1,6 @@
 
 $thisDir = $PSScriptRoot;
-$solutionFilePath = "$thisDir/../AzureServiceBusMessageTool.sln" | Resolve-Path
+$solutionFilePath = "$thisDir/../AzureServiceBusMessageTool/AzureServiceBusMessageTool.sln" | Resolve-Path
 
 
 $global:ErrorActionPreference = "stop"
@@ -50,7 +50,9 @@ if(Test-Path $destinationFilePath)
 {
     Remove-Item $destinationFilePath -Force
 }
+Write-Host "Compressing artifact '$destinationFilePath'..."
 Compress-Archive -CompressionLevel Optimal -Path "${publishedDir}/*" -DestinationPath $destinationFilePath
 
 # remove old published dir
 Remove-Item -Path $publishedDir -Recurse -Force
+Write-Host "All done!"
