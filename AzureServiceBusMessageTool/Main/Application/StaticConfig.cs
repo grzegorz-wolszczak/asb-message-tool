@@ -13,6 +13,6 @@ public static class StaticConfig
 
    public static readonly TimeSpan NextMessageReceiveDelayTimeSpan = TimeSpan.FromMilliseconds(500);
    public static readonly TimeSpan MessageReceiverReceiveTimeout = TimeSpan.FromSeconds(30);
-   public const string VersionString = "0.9.0";
+   public const string VersionString = "0.10.0";
    public static readonly Version Version = Version.Parse(VersionString);
 }

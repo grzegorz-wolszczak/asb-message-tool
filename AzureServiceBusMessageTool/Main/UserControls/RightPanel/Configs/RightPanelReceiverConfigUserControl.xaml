@@ -15,6 +15,9 @@
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}"></Style>
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <converters:NegatedBooleanConverter x:Key="NegatedBooleanConverter" />
+        <converters:BooleanToReversedVisibilityConverter x:Key="BooleanToReversedVisibilityConverter" />
+
 
     </UserControl.Resources>
 
@@ -126,12 +129,16 @@
                           Margin="5,5,5,5"
                           VerticalAlignment="Center"
                           Content="Deadletter queue"
+                          x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
                           IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Expander Grid.Column="0"
                           Grid.Row="5"
                           Grid.ColumnSpan="3"
-                          Header="On message receive action" Visibility="Visible">
+                          Header="On message receive action"
+                          Visibility="{Binding ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox, Path=IsChecked, Converter={StaticResource BooleanToReversedVisibilityConverter} }"
+
+                          >
                     <GroupBox>
                         <StackPanel Margin="2" Orientation="Vertical">
                             <RadioButton Margin="5"
