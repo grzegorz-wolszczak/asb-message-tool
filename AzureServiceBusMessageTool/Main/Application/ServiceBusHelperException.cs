@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Main.Application
+namespace Main.Application;
+
+public class ServiceBusHelperException : Exception
 {
-   public class ServiceBusHelperException : Exception
-   {
-      public ServiceBusHelperException(string msg):base(msg)
-      {
-      }
-   }
+    public ServiceBusHelperException(string msg):base(msg)
+    {
+    }
 }

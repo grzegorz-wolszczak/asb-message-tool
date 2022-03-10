@@ -11,118 +11,117 @@ using Main.ConfigsGuiMetadata;
 using Main.Models;
 using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
-namespace Main.ViewModels.Configs.Senders
-{
-   public class SendersSelectedConfigViewModel : INotifyPropertyChanged
-   {
-      private SenderConfigViewModel _currentSelectedItem;
-      private bool _isSenderConfigConfigTabSelected;
-      public ICommand AddSenderConfigCommand { get; }
-      public ICommand DeleteSenderConfigCommand { get; }
+namespace Main.ViewModels.Configs.Senders;
 
-      public bool IsSenderConfigTabSelected
-      {
-         get => _isSenderConfigConfigTabSelected;
-         set
-         {
+public class SendersSelectedConfigViewModel : INotifyPropertyChanged
+{
+    private SenderConfigViewModel _currentSelectedItem;
+    private bool _isSenderConfigConfigTabSelected;
+    public ICommand AddSenderConfigCommand { get; }
+    public ICommand DeleteSenderConfigCommand { get; }
+
+    public bool IsSenderConfigTabSelected
+    {
+        get => _isSenderConfigConfigTabSelected;
+        set
+        {
             if (value == _isSenderConfigConfigTabSelected) return;
             _isSenderConfigConfigTabSelected = value;
             OnPropertyChanged();
-         }
-      }
+        }
+    }
 
-      public void AddConfigs(List<SenderConfigModel> settingsSendersConfig)
-      {
-         settingsSendersConfig.ForEach(AddNewConfig);
-      }
+    public void AddConfigs(List<SenderConfigModel> settingsSendersConfig)
+    {
+        settingsSendersConfig.ForEach(AddNewConfig);
+    }
 
-      public SendersSelectedConfigViewModel(
-         SenderConfigElementsGuiMetadataManager senderConfigElementsGuiMetadataManager,
-         InGuiThreadActionCaller inGuiThreadActionCaller,
-         MessageSenderFactory messageSenderFactory,
-         MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
-         IServiceBusHelperLogger logger)
-      {
-         _inGuiThreadActionCaller = inGuiThreadActionCaller;
-         _messageSenderFactory = messageSenderFactory;
-         _messagePropertiesWindowProxyFactory = messagePropertiesWindowProxyFactory;
-         _logger = logger;
-         _senderConfigElementsGuiMetadataManager = senderConfigElementsGuiMetadataManager;
+    public SendersSelectedConfigViewModel(
+        SenderConfigElementsGuiMetadataManager senderConfigElementsGuiMetadataManager,
+        InGuiThreadActionCaller inGuiThreadActionCaller,
+        MessageSenderFactory messageSenderFactory,
+        MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
+        IServiceBusHelperLogger logger)
+    {
+        _inGuiThreadActionCaller = inGuiThreadActionCaller;
+        _messageSenderFactory = messageSenderFactory;
+        _messagePropertiesWindowProxyFactory = messagePropertiesWindowProxyFactory;
+        _logger = logger;
+        _senderConfigElementsGuiMetadataManager = senderConfigElementsGuiMetadataManager;
 
-         AddSenderConfigCommand = new DelegateCommand(_ =>
-         {
+        AddSenderConfigCommand = new DelegateCommand(_ =>
+        {
             var newConfig = new SenderConfigModel()
             {
-               ConfigId = Guid.NewGuid().ToString(),
-               ConfigName = "<config name not set>",
+                ConfigId = Guid.NewGuid().ToString(),
+                ConfigName = "<config name not set>",
             };
             AddNewConfig(newConfig);
-         });
+        });
 
-         DeleteSenderConfigCommand = new DelegateCommand(_ =>
+        DeleteSenderConfigCommand = new DelegateCommand(_ =>
             {
-               _senderConfigElementsGuiMetadataManager.Delete(CurrentSelectedConfigModelItem.ViewModelWrapper);
-               SendersConfigs.Remove(CurrentSelectedConfigModelItem);
+                _senderConfigElementsGuiMetadataManager.Delete(CurrentSelectedConfigModelItem.ViewModelWrapper);
+                SendersConfigs.Remove(CurrentSelectedConfigModelItem);
             },
             _ => CurrentSelectedConfigModelItem != null);
-      }
+    }
 
-      private void AddNewConfig(SenderConfigModel newConfig)
-      {
-         var viewModel = new SenderConfigViewModel(
+    private void AddNewConfig(SenderConfigModel newConfig)
+    {
+        var viewModel = new SenderConfigViewModel(
             _senderConfigElementsGuiMetadataManager,
             _messageSenderFactory.Create(),
             _inGuiThreadActionCaller,
             _logger,
             _messagePropertiesWindowProxyFactory.Create())
-         {
+        {
             Item = newConfig
-         };
-         _senderConfigElementsGuiMetadataManager.Add(viewModel.ViewModelWrapper);
-         SendersConfigs.Add(viewModel);
-      }
+        };
+        _senderConfigElementsGuiMetadataManager.Add(viewModel.ViewModelWrapper);
+        SendersConfigs.Add(viewModel);
+    }
 
-      private SenderConfigElementsGuiMetadataManager _senderConfigElementsGuiMetadataManager;
+    private SenderConfigElementsGuiMetadataManager _senderConfigElementsGuiMetadataManager;
 
-      public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged;
 
 
-      protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-      {
-         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-      }
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
-      private readonly IList<SenderConfigViewModel> _sendersConfigs = new ObservableCollection<SenderConfigViewModel>();
-      public IList<SenderConfigViewModel> SendersConfigs => _sendersConfigs;
+    private readonly IList<SenderConfigViewModel> _sendersConfigs = new ObservableCollection<SenderConfigViewModel>();
+    public IList<SenderConfigViewModel> SendersConfigs => _sendersConfigs;
 
-      public SenderConfigViewModel CurrentSelectedConfigModelItem
-      {
-         get => _currentSelectedItem;
-         set
-         {
+    public SenderConfigViewModel CurrentSelectedConfigModelItem
+    {
+        get => _currentSelectedItem;
+        set
+        {
             if (value == _currentSelectedItem) return;
             _currentSelectedItem = value;
             IsEmbeddedSenderConfigUserControlForEditingEnabled = _currentSelectedItem != null;
             OnPropertyChanged();
-         }
-      }
+        }
+    }
 
-      private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
-      private InGuiThreadActionCaller _inGuiThreadActionCaller;
-      private readonly MessageSenderFactory _messageSenderFactory;
-      private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
-      private readonly IServiceBusHelperLogger _logger;
+    private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
+    private InGuiThreadActionCaller _inGuiThreadActionCaller;
+    private readonly MessageSenderFactory _messageSenderFactory;
+    private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
+    private readonly IServiceBusHelperLogger _logger;
 
-      public bool IsEmbeddedSenderConfigUserControlForEditingEnabled
-      {
-         get => _isEmbeddedSenderConfigUserControlForEditingEnabled;
-         set
-         {
+    public bool IsEmbeddedSenderConfigUserControlForEditingEnabled
+    {
+        get => _isEmbeddedSenderConfigUserControlForEditingEnabled;
+        set
+        {
             if (value == _isEmbeddedSenderConfigUserControlForEditingEnabled) return;
             _isEmbeddedSenderConfigUserControlForEditingEnabled = value;
 
             OnPropertyChanged();
-         }
-      }
-   }
+        }
+    }
 }

@@ -8,141 +8,141 @@ using Main.Models;
 using Main.Utils;
 using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
-namespace Main.ViewModels.Configs.Senders
+namespace Main.ViewModels.Configs.Senders;
+
+public enum LastSendStatus
 {
-   public enum LastSendStatus
-   {
-      Idle,
-      Success,
-      Error
-   }
+    Idle,
+    Success,
+    Error
+}
 
-   public class SenderConfigViewModel : INotifyPropertyChanged
-   {
-      private readonly ISenderConfigWindowDetacher _senderConfigWindowDetacher;
-      private readonly IMessageSender _messageSender;
-      private SenderConfigModel _item;
-      private bool _isEmbeddedInsideRightPanel = true;
+public class SenderConfigViewModel : INotifyPropertyChanged
+{
+    private readonly ISenderConfigWindowDetacher _senderConfigWindowDetacher;
+    private readonly IMessageSender _messageSender;
+    private SenderConfigModel _item;
+    private bool _isEmbeddedInsideRightPanel = true;
 
 
-      private string _lastSendStatusText = "N/A";
-      private LastSendStatus _lastSendStatus = LastSendStatus.Idle;
+    private string _lastSendStatusText = "N/A";
+    private LastSendStatus _lastSendStatus = LastSendStatus.Idle;
 
 
-      //private string _messageToSendStringContent;
-      private IInGuiThreadActionCaller _inGuiThreadActionCaller;
-      private readonly IServiceBusHelperLogger _logger;
-      private TextDocument _msgToSendDocument = new TextDocument("");
+    //private string _messageToSendStringContent;
+    private IInGuiThreadActionCaller _inGuiThreadActionCaller;
+    private readonly IServiceBusHelperLogger _logger;
+    private TextDocument _msgToSendDocument = new TextDocument("");
 
-      public readonly SenderConfigViewModelWrapper ViewModelWrapper;
-      private IMessagePropertiesWindowProxy _messagePropertiesWindowProxy;
+    public readonly SenderConfigViewModelWrapper ViewModelWrapper;
+    private IMessagePropertiesWindowProxy _messagePropertiesWindowProxy;
 
-      public ICommand DetachFromPanelCommand { get; }
-      public ICommand SendMessageCommand { get; }
-      public ICommand ShowPropertiesWindowCommand { get; }
+    public ICommand DetachFromPanelCommand { get; }
+    public ICommand SendMessageCommand { get; }
+    public ICommand ShowPropertiesWindowCommand { get; }
 
 
-      public SenderConfigViewModel(
-         ISenderConfigWindowDetacher senderConfigWindowDetacher,
-         IMessageSender messageSender,
-         IInGuiThreadActionCaller inGuiThreadActionCaller,
-         IServiceBusHelperLogger logger,
-         IMessagePropertiesWindowProxy messagePropertiesWindowProxy)
-      {
-         _senderConfigWindowDetacher = senderConfigWindowDetacher;
-         _messageSender = messageSender;
-         ViewModelWrapper = new SenderConfigViewModelWrapper(this);
+    public SenderConfigViewModel(
+        ISenderConfigWindowDetacher senderConfigWindowDetacher,
+        IMessageSender messageSender,
+        IInGuiThreadActionCaller inGuiThreadActionCaller,
+        IServiceBusHelperLogger logger,
+        IMessagePropertiesWindowProxy messagePropertiesWindowProxy)
+    {
+        _senderConfigWindowDetacher = senderConfigWindowDetacher;
+        _messageSender = messageSender;
+        ViewModelWrapper = new SenderConfigViewModelWrapper(this);
 
-         DetachFromPanelCommand = new DelegateCommand(onExecuteMethod: _ => { _senderConfigWindowDetacher.DetachFromPanel(ViewModelWrapper); });
-         _inGuiThreadActionCaller = inGuiThreadActionCaller;
-         _logger = logger;
+        DetachFromPanelCommand = new DelegateCommand(onExecuteMethod: _ => { _senderConfigWindowDetacher.DetachFromPanel(ViewModelWrapper); });
+        _inGuiThreadActionCaller = inGuiThreadActionCaller;
+        _logger = logger;
 
-         _messagePropertiesWindowProxy = messagePropertiesWindowProxy;
+        _messagePropertiesWindowProxy = messagePropertiesWindowProxy;
 
-         ShowPropertiesWindowCommand = new DelegateCommand(_ =>
-         {
+        ShowPropertiesWindowCommand = new DelegateCommand(_ =>
+        {
             _messagePropertiesWindowProxy.ShowDialog(new SbMessageFieldsViewModel(
-               _item.ApplicationProperties,
-               _item.MessageFields));
+                _item.ApplicationProperties,
+                _item.MessageFields));
 
-         });
+        });
 
-         SendMessageCommand = new SendServiceMessageCommand(_messageSender,
+        SendMessageCommand = new SendServiceMessageCommand(_messageSender,
             msgProviderFunc: () =>
             {
-               return new MessageToSendData()
-               {
-                  ConnectionString = Item.ServiceBusConnectionString,
-                  MsgBody = Item.MsgBody,
-                  TopicName = Item.OutputTopicName,
-                  Fields = Item.MessageFields,
-                  ApplicationProperties = Item.ApplicationProperties
-               };
+                return new MessageToSendData()
+                {
+                    ConnectionString = Item.ServiceBusConnectionString,
+                    MsgBody = Item.MsgBody,
+                    TopicName = Item.OutputTopicName,
+                    Fields = Item.MessageFields,
+                    ApplicationProperties = Item.ApplicationProperties
+                };
             },
             onErrorAction: (e) => { SetLastSendStatusErrorMessage(e.Message); },
             onSuccessAction: (statusMessage) => { SetLastSendStatusSuccessMessage(statusMessage); },
             onUnexpectedExceptionAction: (exception) =>
             {
-               _logger.LogException("While sending message exception happened: ", exception);
-               SetLastSendStatusErrorMessage("Unexpected error, see logs for details.");
+                _logger.LogException("While sending message exception happened: ", exception);
+                SetLastSendStatusErrorMessage("Unexpected error, see logs for details.");
             },
             _inGuiThreadActionCaller);
-      }
+    }
 
-      private void SetLastSendStatusSuccessMessage(string statusMessage)
-      {
-         SetLastSendStatusMessage(statusMessage);
-         LastSendStatus = LastSendStatus.Success;
-      }
+    private void SetLastSendStatusSuccessMessage(string statusMessage)
+    {
+        SetLastSendStatusMessage(statusMessage);
+        LastSendStatus = LastSendStatus.Success;
+    }
 
-      private void SetLastSendStatusErrorMessage(string msg)
-      {
-         SetLastSendStatusMessage(msg);
-         LastSendStatus = LastSendStatus.Error;
-      }
+    private void SetLastSendStatusErrorMessage(string msg)
+    {
+        SetLastSendStatusMessage(msg);
+        LastSendStatus = LastSendStatus.Error;
+    }
 
-      public TextDocument TextDocument
-      {
-         get => _msgToSendDocument;
-         set
-         {
+    public TextDocument TextDocument
+    {
+        get => _msgToSendDocument;
+        set
+        {
 
             if (value == _msgToSendDocument) return;
             _msgToSendDocument = value;
             OnPropertyChanged();
-         }
-      }
+        }
+    }
 
-      public LastSendStatus LastSendStatus
-      {
-         get => _lastSendStatus;
-         set
-         {
+    public LastSendStatus LastSendStatus
+    {
+        get => _lastSendStatus;
+        set
+        {
 
             if (value == _lastSendStatus) return;
             _lastSendStatus = value;
             OnPropertyChanged();
-         }
-      }
+        }
+    }
 
-      private void SetLastSendStatusMessage(string msg)
-      {
-         var status = $"{TimeUtils.GetShortTimestamp()} {msg}";
-         LastSendStatusText = status;
-      }
+    private void SetLastSendStatusMessage(string msg)
+    {
+        var status = $"{TimeUtils.GetShortTimestamp()} {msg}";
+        LastSendStatusText = status;
+    }
 
-      public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged;
 
-      protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-      {
-         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-      }
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
-      public SenderConfigModel Item
-      {
-         get => _item;
-         set
-         {
+    public SenderConfigModel Item
+    {
+        get => _item;
+        set
+        {
             if (value == _item) return;
             _item = value;
             if (_item != null && _msgToSendDocument != null)
@@ -153,32 +153,29 @@ namespace Main.ViewModels.Configs.Senders
             }
 
             OnPropertyChanged();
-         }
-      }
+        }
+    }
 
-      public string LastSendStatusText
-      {
-         get => _lastSendStatusText;
-         set
-         {
+    public string LastSendStatusText
+    {
+        get => _lastSendStatusText;
+        set
+        {
             if (value == _lastSendStatusText) return;
             _lastSendStatusText = value;
             OnPropertyChanged();
-         }
-      }
+        }
+    }
 
 
-      public bool IsEmbeddedInsideRightPanel
-      {
-         get => _isEmbeddedInsideRightPanel;
-         set
-         {
+    public bool IsEmbeddedInsideRightPanel
+    {
+        get => _isEmbeddedInsideRightPanel;
+        set
+        {
             if (value == _isEmbeddedInsideRightPanel) return;
             _isEmbeddedInsideRightPanel = value;
             OnPropertyChanged();
-         }
-      }
-   }
-
-
+        }
+    }
 }
