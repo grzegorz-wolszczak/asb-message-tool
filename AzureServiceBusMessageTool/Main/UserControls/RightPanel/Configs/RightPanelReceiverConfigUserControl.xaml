@@ -143,12 +143,18 @@
                                          />
                             <RadioButton
                                 Margin="5"
-                                Content="Abandon"
+
                                 IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
                                             ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Abandon}
                                 }"
-                                />
+                                >
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Abandon" Margin="0,0,5,0" />
+                                    <!-- <Button Content="..." Height="20" Width="75" Margin="5,0,0,0" -->
+                                    <!--         IsEnabled="{Binding ElementName=DeadLetterCheckbox, Path=IsChecked}" /> -->
+                                </StackPanel>
+                            </RadioButton>
 
                             <RadioButton Margin="5"
                                          VerticalAlignment="Center"
@@ -160,8 +166,8 @@
                             >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Deadletter" Margin="0,0,5,0" />
-                                    <Button Content="..." Height="20" Width="75" Margin="5,0,0,0"
-                                            IsEnabled="{Binding ElementName=DeadLetterCheckbox, Path=IsChecked}" />
+                                    <!-- <Button Content="..." Height="20" Width="75" Margin="5,0,0,0" -->
+                                    <!--         IsEnabled="{Binding ElementName=DeadLetterCheckbox, Path=IsChecked}" /> -->
                                 </StackPanel>
                             </RadioButton>
                         </StackPanel>

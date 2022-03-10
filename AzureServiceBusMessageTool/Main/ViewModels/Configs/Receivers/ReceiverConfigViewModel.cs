@@ -52,17 +52,15 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
 
 
         StartMessageReceiveCommand = new StartMessageReceiveCommand(serviceBusMessageReceiver,
-            serviceBusReceiverProviderFunc: () =>
+            serviceBusReceiverProviderFunc: () => new ServiceBusReceiverSettings()
             {
-                return new ServiceBusReceiverSettings()
-                {
-                    ConfigName = Item.ConfigName,
-                    ConnectionString = Item.ServiceBusConnectionString,
-                    SubscriptionName = Item.InputTopicSubscriptionName,
-                    TopicName = Item.InputTopicName,
-                    IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue,
-                    MessageReceiveDelayPeriod = StaticConfig.NextMessageReceiveDelayTimeSpan // todo: support this from gui
-                };
+                ConfigName = Item.ConfigName,
+                ConnectionString = Item.ServiceBusConnectionString,
+                SubscriptionName = Item.InputTopicSubscriptionName,
+                TopicName = Item.InputTopicName,
+                IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue,
+                MessageReceiveDelayPeriod = StaticConfig.NextMessageReceiveDelayTimeSpan, // todo: support this from gui,
+                OnMessageReceiveEnumAction = Item.OnMessageReceiveAction
             },
             onMessageReceived: AppendReceivedMessageToOutput,
             onReceiverStarted: SetListeningReceiverStatus,

@@ -6,9 +6,9 @@ namespace Main.Models;
 
 public enum OnMessageReceiveEnumAction
 {
-    Complete,
-    Abandon,
-    MoveToDeadLetter
+    Complete = 0,
+    Abandon = 1,
+    MoveToDeadLetter = 2
 }
 public sealed class ReceiverConfigModel : INotifyPropertyChanged
 {
@@ -20,7 +20,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
     private bool _shouldWordWrapLogContent;
     private int _msgBodyTextBoxFontSize = AppDefaults.DefaultTextBoxFontSize;
-    private OnMessageReceiveEnumAction _onMessageReceiveAction = OnMessageReceiveEnumAction.Complete;
+    private OnMessageReceiveEnumAction _onMessageReceiveAction;
     public string ConfigName
     {
         get => _configName;
