@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Main.Commands;
@@ -20,6 +21,7 @@ public sealed class SbMessageFieldsViewModel : INotifyPropertyChanged
    {
       _messageApplicationProperties = messageApplicationProperties;
       _sbMessageStandardFields = sbMessageStandardFields;
+
       AddMessagePropertyCommand = new DelegateCommand(_ =>
       {
          _messageApplicationProperties.Add(new SBMessageApplicationProperty()
@@ -73,5 +75,22 @@ public sealed class SbMessageFieldsViewModel : INotifyPropertyChanged
    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
    {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+   }
+
+   public void RemoveEmptyProperties()
+   {
+       var itemsToRemove = _messageApplicationProperties.Where(e => string.IsNullOrWhiteSpace(e.PropertyName)).ToList();
+       foreach (var itemToRemove in itemsToRemove)
+       {
+           _messageApplicationProperties.Remove(itemToRemove);
+       }
+   }
+
+   public IList<string> GetDuplicatedApplicationProperties()
+   {
+       return _messageApplicationProperties.GroupBy(x => x.PropertyName)
+           .Where(g => g.Count() > 1)
+           .Select(x => x.Key)
+           .ToList();
    }
 }

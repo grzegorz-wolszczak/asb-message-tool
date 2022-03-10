@@ -14,6 +14,8 @@ namespace Main.Windows
    /// </summary>
    public partial class MainWindow : Window
    {
+       private GridLength _expanderHightBeforeCollapsing;
+
       public MainWindow(
          MainViewModel mainViewModel,
          ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel,
@@ -76,6 +78,22 @@ namespace Main.Windows
          }
 
          viewModel.LogTextBoxFontSize = value;
+      }
+
+      private void BottomExpander_OnCollapsed(object sender, RoutedEventArgs e)
+      {
+          _expanderHightBeforeCollapsing = ExpanderRow.Height;
+          MainContentRow.Height = new GridLength(1, GridUnitType.Star);
+          ExpanderRow.Height = new GridLength(1, GridUnitType.Auto);
+          ExpanderRow.MinHeight = 0;
+      }
+
+      private void BottomExpander_OnExpanded(object sender, RoutedEventArgs e)
+      {
+          ExpanderRow.Height = _expanderHightBeforeCollapsing;
+          // todo: MinimumLogExpanderHeight value should be somehow calculated and be absolute value
+          // don't know how to do it yet
+          ExpanderRow.MinHeight = AppDefaults.MinimumLogExpanderHeight;
       }
    }
 }

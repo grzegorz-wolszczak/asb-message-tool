@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
@@ -66,7 +64,7 @@ namespace Main.ViewModels.Configs.Senders
             _messagePropertiesWindowProxy.ShowDialog(new SbMessageFieldsViewModel(
                _item.ApplicationProperties,
                _item.MessageFields));
-            RemoveEmptyProperties(_item.ApplicationProperties);
+
          });
 
          SendMessageCommand = new SendServiceMessageCommand(_messageSender,
@@ -101,15 +99,6 @@ namespace Main.ViewModels.Configs.Senders
       {
          SetLastSendStatusMessage(msg);
          LastSendStatus = LastSendStatus.Error;
-      }
-
-      private void RemoveEmptyProperties(IList<SBMessageApplicationProperty> itemApplicationProperties)
-      {
-         var itemsToRemove = itemApplicationProperties.Where(e => string.IsNullOrWhiteSpace(e.PropertyName)).ToList();
-         foreach (var itemToRemove in itemsToRemove)
-         {
-            itemApplicationProperties.Remove(itemToRemove);
-         }
       }
 
       public TextDocument TextDocument

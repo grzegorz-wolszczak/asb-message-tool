@@ -1,27 +1,56 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using Main.ViewModels.Configs.Senders;
 
 namespace Main.Windows;
 
 public partial class MessagePropertiesWindow : Window
 {
-   public MessagePropertiesWindow()
-   {
-      InitializeComponent();
-   }
+    private SbMessageFieldsViewModel _viewModel;
 
-   protected override void OnClosing(CancelEventArgs e)
-   {
-      e.Cancel = true;
-      Hide();
-   }
+    public MessagePropertiesWindow()
+    {
+        InitializeComponent();
+    }
 
-   protected override void OnInitialized(EventArgs e)
-   {
-      base.OnInitialized(e);
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        e.Cancel = true;
 
-      System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-   }
+        if (_viewModel == null)
+        {
+            return;
+        }
+
+        _viewModel.RemoveEmptyProperties();
+        var duplicatedPropertyNames = _viewModel.GetDuplicatedApplicationProperties();
+        if (duplicatedPropertyNames.Count > 0)
+        {
+            var duplicatedNames = string.Join(",", duplicatedPropertyNames);
+            Xceed.Wpf.Toolkit.MessageBox.Show(this,
+                $"There cannot be duplicated property names but found following duplicates: [{duplicatedNames}].\nRemove duplicates or rename them.",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+        else
+        {
+            Hide();
+        }
+    }
+
+    protected override void OnInitialized(EventArgs e)
+    {
+        base.OnInitialized(e);
+
+        System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+    }
+
+
+    public void ShowDialogForDataContext(SbMessageFieldsViewModel dataContext)
+    {
+        _viewModel = dataContext;
+        DataContext = dataContext;
+    }
 }
-

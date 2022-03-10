@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Threading;
 using Main.Application;
 using Main.ExceptionHandling;
 
@@ -27,5 +28,15 @@ namespace Main
 
       }
 
+      private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+      {
+          e.Handled = true;
+
+          MessageBox.Show(
+               $"During application shutdown, exception happened {e.Exception}",
+               "Application shutdown error",
+               MessageBoxButton.OK,
+               MessageBoxImage.Error);
+      }
    }
 }
