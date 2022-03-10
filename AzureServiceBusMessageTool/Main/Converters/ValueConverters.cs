@@ -48,3 +48,56 @@ public class EnumToBooleanConverter : IValueConverter
         return (bool)value ? param : Binding.DoNothing;
     }
 }
+
+public class NegatedBooleanConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (targetType != typeof(bool))
+        {
+            throw new InvalidCastException($"The target must be a {typeof(bool)} but is '{targetType.FullName}'");
+        }
+
+        if (value is not bool)
+        {
+            throw new InvalidCastException($"The value must be a {typeof(bool)} but is '{value.GetType().FullName}'");
+        }
+
+        var bValue = (bool)value;
+
+        return !bValue;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public sealed class BooleanToReversedVisibilityConverter : IValueConverter
+{
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        bool bValue = false;
+        if (value is bool)
+        {
+            bValue = (bool)value;
+        }
+
+        return (bValue) ? Visibility.Collapsed: Visibility.Visible ;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+        // if (value is Visibility)
+        // {
+        //     return (Visibility)value == Visibility.Visible;
+        // }
+        // else
+        // {
+        //     return false;
+        // }
+    }
+}
