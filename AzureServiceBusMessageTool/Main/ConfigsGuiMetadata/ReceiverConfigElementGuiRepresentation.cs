@@ -1,34 +1,33 @@
 ﻿using Main.ViewModels.Configs.Receivers;
 using Main.Windows.Configs;
 
-namespace Main.ConfigsGuiMetadata
+namespace Main.ConfigsGuiMetadata;
+
+public class ReceiverConfigElementGuiRepresentation
 {
-   public class ReceiverConfigElementGuiRepresentation
-   {
 
-      private ReceiverConfigWindow _window;
+    private ReceiverConfigWindow _window;
 
 
-      public void ShowCorrespondingElementWindow(ReceiverConfigViewModelWrapper currentSelectedItem)
-      {
-         if (_window == null)
-         {
+    public void ShowCorrespondingElementWindow(ReceiverConfigViewModelWrapper currentSelectedItem)
+    {
+        if (_window == null)
+        {
             _window = CreateWindowForElement(currentSelectedItem);
-         }
+        }
 
-         _window.Show();
-      }
+        _window.Show();
+    }
 
-      private ReceiverConfigWindow CreateWindowForElement(ReceiverConfigViewModelWrapper currentSelectedItem)
-      {
-         var window = new ReceiverConfigWindow(currentSelectedItem);
-         return window;
-      }
+    private ReceiverConfigWindow CreateWindowForElement(ReceiverConfigViewModelWrapper currentSelectedItem)
+    {
+        var window = new ReceiverConfigWindow(currentSelectedItem);
+        return window;
+    }
 
-      public void CloseWindowOnElementDelete()
-      {
-         // this can be null if we are deleting config and never actually showed a window
-         _window?.Close();
-      }
-   }
+    public void CloseWindowOnElementDelete()
+    {
+        // this can be null if we are deleting config and never actually showed a window
+        _window?.Close();
+    }
 }

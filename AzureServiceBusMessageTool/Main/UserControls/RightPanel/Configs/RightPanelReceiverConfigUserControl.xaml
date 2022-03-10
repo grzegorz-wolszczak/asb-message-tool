@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:utils="clr-namespace:Main.Utils"
              xmlns:converters="clr-namespace:Main.Converters"
+             xmlns:models="clr-namespace:Main.Models"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="500">
 
@@ -13,6 +14,7 @@
         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}"></Style>
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}"></Style>
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
 
     </UserControl.Resources>
 
@@ -65,6 +67,7 @@
                     <RowDefinition Height="Auto" /> <!-- input topic name -->
                     <RowDefinition Height="Auto" /> <!-- input topic subscription name -->
                     <RowDefinition Height="Auto" /> <!-- is DeadLetter Sub Queue checkbox -->
+                    <RowDefinition Height="Auto" /> <!-- On receive action groupbox -->
                 </Grid.RowDefinitions>
 
 
@@ -118,16 +121,54 @@
                          Grid.ColumnSpan="2"
                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName, UpdateSourceTrigger=PropertyChanged}" />
 
-                <Label Grid.Column="0"
-                       Grid.Row="4"
-                       Margin="5,2,5,2"
-                       Content="Dead letter subqueue" />
-
-                <CheckBox Grid.Column="1"
+                <CheckBox Grid.Column="0"
                           Grid.Row="4"
-                          Margin="5,2,5,2"
+                          Margin="5,5,5,5"
                           VerticalAlignment="Center"
+                          Content="Deadletter queue"
                           IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Expander Grid.Column="0"
+                          Grid.Row="5"
+                          Grid.ColumnSpan="3"
+                          Header="On message receive action" Visibility="Visible">
+                    <GroupBox>
+                        <StackPanel Margin="2" Orientation="Vertical">
+                            <RadioButton Margin="5"
+                                         Content="Complete"
+                                         IsChecked="{Binding
+                                            Path=CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
+                                            Converter={StaticResource EnumToBooleanConverter},
+                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Complete} }"
+                                         />
+                            <RadioButton
+                                Margin="5"
+                                Content="Abandon"
+                                IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
+                                            Converter={StaticResource EnumToBooleanConverter},
+                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Abandon}
+                                }"
+                                />
+
+                            <RadioButton Margin="5"
+                                         VerticalAlignment="Center"
+                                         x:Name="DeadLetterCheckbox"
+                                         IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
+                                            Converter={StaticResource EnumToBooleanConverter},
+                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.MoveToDeadLetter}
+                                }"
+                            >
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Deadletter" Margin="0,0,5,0" />
+                                    <Button Content="..." Height="20" Width="75" Margin="5,0,0,0"
+                                            IsEnabled="{Binding ElementName=DeadLetterCheckbox, Path=IsChecked}" />
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+
+                    </GroupBox>
+                </Expander>
+
 
             </Grid>
 
@@ -164,7 +205,7 @@
                          HorizontalScrollBarVisibility="Auto"
                          PreviewMouseWheel="ReceivedMessagesTextBox_OnPreviewMouseWheel"
                          TextChanged="ReceivedMessageTextBoxBoxChanged"
-                         x:Name="receivedMessagesTextBox"
+                         x:Name="ReceivedMessagesTextBox"
                          FontSize="{Binding CurrentSelectedConfigModelItem.Item.MsgBodyTextBoxFontSize}"
                          Style="{StaticResource TextBoxStyle}"
                          TextWrapping="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent, Converter={StaticResource BoolToTextWrappingConverter} }"
@@ -180,19 +221,23 @@
                             <Label.Style>
                                 <Style>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
-                                                     Value="StoppedOnError">
+                                        <DataTrigger
+                                            Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
+                                            Value="StoppedOnError">
                                             <Setter Property="Control.Foreground" Value="Red"></Setter>
                                             <Setter Property="Control.FontWeight" Value="Bold"></Setter>
                                         </DataTrigger>
 
-                                        <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}" Value="Idle">
+                                        <DataTrigger
+                                            Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
+                                            Value="Idle">
                                             <Setter Property="Control.Foreground" Value="Blue"></Setter>
                                             <Setter Property="Control.FontWeight" Value="Bold"></Setter>
                                         </DataTrigger>
 
-                                        <DataTrigger Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
-                                                     Value="Listening">
+                                        <DataTrigger
+                                            Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
+                                            Value="Listening">
                                             <Setter Property="Control.Foreground" Value="Green"></Setter>
                                             <Setter Property="Control.FontWeight" Value="Bold"></Setter>
                                         </DataTrigger>
@@ -212,6 +257,8 @@
                                   IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent }">
                             Word wrap
                         </CheckBox>
+
+
                     </StackPanel>
 
                 </StackPanel>
