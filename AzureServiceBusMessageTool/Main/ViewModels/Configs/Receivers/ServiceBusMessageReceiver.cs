@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Main.Application;
 using Main.Application.Logging;
+using Main.ExceptionHandling;
+using Main.Models;
 using Main.Utils;
 
 namespace Main.ViewModels.Configs.Receivers;
@@ -71,11 +73,7 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
         }
 
         _client = new ServiceBusClient(_config.ConnectionString);
-        var serviceBusReceiverOptions = new ServiceBusReceiverOptions()
-        {
-            SubQueue = _config.IsDeadLetterQueue ? SubQueue.DeadLetter : SubQueue.None,
-            ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
-        };
+        var serviceBusReceiverOptions = GetServiceBusReceiverOptionsBasedOnConfig();
         _receiver = _client.CreateReceiver(
             _config.TopicName,
             _config.SubscriptionName,
@@ -101,6 +99,7 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
                             Body = _msgFormatter.Format(message)
                         };
                         _callbacks.OnMessageReceive(receivedMessage);
+                        await FinalizeMessageReceiveForPickLockMode(message, token);
                     }
 
                     await Task.Delay(_config.MessageReceiveDelayPeriod);
@@ -126,6 +125,51 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
                 StopReceiver();
             }
         }, TaskCreationOptions.LongRunning);
+    }
+
+    private async Task FinalizeMessageReceiveForPickLockMode(ServiceBusReceivedMessage message, CancellationToken cancellationToken)
+    {
+        if (_receiver.ReceiveMode != ServiceBusReceiveMode.PeekLock)
+        {
+            return;
+        }
+        var onReceiveAction = _config.OnMessageReceiveEnumAction;
+        if (onReceiveAction == OnMessageReceiveEnumAction.Abandon)
+        {
+            // todo: support properties to modify on abandon
+            await _receiver.AbandonMessageAsync(message, null, cancellationToken);
+        }
+        else if (onReceiveAction == OnMessageReceiveEnumAction.Complete)
+        {
+            await _receiver.CompleteMessageAsync(message, cancellationToken);
+        }
+        else if (onReceiveAction == OnMessageReceiveEnumAction.MoveToDeadLetter)
+        {
+            // todo: support properties to modify on dead letter
+            await _receiver.DeadLetterMessageAsync(message, null, cancellationToken);
+        }
+        else
+        {
+            throw new AsbMessageToolException($"Internal error: unhandled enumeration '{onReceiveAction}'");
+        }
+    }
+
+    private ServiceBusReceiverOptions GetServiceBusReceiverOptionsBasedOnConfig()
+    {
+        if (_config.IsDeadLetterQueue)
+        {
+            return new ServiceBusReceiverOptions()
+            {
+                SubQueue = SubQueue.DeadLetter,
+                ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
+            };
+        }
+
+        return new ServiceBusReceiverOptions()
+        {
+            SubQueue = SubQueue.None,
+            ReceiveMode = ServiceBusReceiveMode.PeekLock,
+        };
     }
 
     public void Stop()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using Main.ViewModels.Configs.Senders;
 
@@ -27,9 +28,11 @@ public partial class MessagePropertiesWindow : Window
         var duplicatedPropertyNames = _viewModel.GetDuplicatedApplicationProperties();
         if (duplicatedPropertyNames.Count > 0)
         {
-            var duplicatedNames = string.Join(",", duplicatedPropertyNames);
+            var duplicatedNames = string.Join(", ", duplicatedPropertyNames.Select(e=>$"\"{e}\""));
             Xceed.Wpf.Toolkit.MessageBox.Show(this,
-                $"There cannot be duplicated property names but found following duplicates: [{duplicatedNames}].\nRemove duplicates or rename them.",
+                $"Property names must be unique.\n" +
+                $"Found following duplicate names:\n\n{duplicatedNames}" +
+                $"\n\nRemove duplicates or rename them.",
                 "Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -52,5 +55,6 @@ public partial class MessagePropertiesWindow : Window
     {
         _viewModel = dataContext;
         DataContext = dataContext;
+        ShowDialog();
     }
 }

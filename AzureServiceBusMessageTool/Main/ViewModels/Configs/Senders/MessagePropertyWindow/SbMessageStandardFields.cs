@@ -15,7 +15,7 @@ public class SbMessageField<T>
 
 public class SbMessageStandardFields
 {
-   public SbMessageField<string> ContentType { get; set; } = new("ContentType");
+   public SbMessageField<string> ContentType { get; } = new("ContentType");
    public SbMessageField<string> CorrelationId { get; } = new("CorrelationId");
 
    public SbMessageField<string> MessageId { get; } = new("MessageId");

@@ -6,10 +6,7 @@
 - replace AvalonEdit with Scintilla.Net for better syntax highligting.
 - add hints over message properties button to display what are the current sb messages properties without the need to
   push the button and open the window
-- add possibility to sent receive mode on reciever (PeekLock vs ReceiveAndDelete) , for PeekLock set OnReceiveAction
-  e.g. Complete, deadletter, abandon
-    - add check that receiver with PeekLock with OnReceiveAction set to 'send to DeadLetterChannel' cannot listen on
-      DeadLetter Channel already
+- add posibility to define modified message properties for OnAbandon and OnDeadLetter message receive action
 - add validation rules to WPF controls where possible
 - create sender and receiver validator class that will validate configuration before sending/receiving messages
 - warn if settings file is corrupted and cannot be read

@@ -1,4 +1,5 @@
 ﻿using System;
+using Main.Models;
 
 namespace Main.ViewModels.Configs.Receivers;
 
@@ -10,4 +11,6 @@ public class ServiceBusReceiverSettings
     public string SubscriptionName { get; init; }
     public bool IsDeadLetterQueue { get; init; }
     public TimeSpan MessageReceiveDelayPeriod { get; init; }
+
+    public OnMessageReceiveEnumAction OnMessageReceiveEnumAction { get; init; }
 }
