@@ -62,7 +62,7 @@ public class ApplicationPersistentOptions
 
     public MainWindowSettings GetMainWindowSettings()
     {
-        return new MainWindowSettings()
+        return new MainWindowSettings
         {
             ShouldScrollToEndOnLogContentChange = _mainViewModel.ShouldScrollToEndOnLogContentChange,
             ShouldWordWrapLogContent = _mainViewModel.ShouldWordWrapLogContent,

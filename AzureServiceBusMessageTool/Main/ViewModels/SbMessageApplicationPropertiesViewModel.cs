@@ -4,38 +4,33 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Main.Commands;
-using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
+using Main.ViewModels.Configs.Senders;
 
-namespace Main.ViewModels.Configs.Senders;
+namespace Main.ViewModels;
 
-public sealed class SbMessageFieldsViewModel : INotifyPropertyChanged
+public sealed class SbMessageApplicationPropertiesViewModel : INotifyPropertyChanged
 {
    private  IList<SBMessageApplicationProperty> _messageApplicationProperties;
-   private  SbMessageStandardFields _sbMessageStandardFields;
-
    private SBMessageApplicationProperty _selectedItem;
-
-   public SbMessageFieldsViewModel(
-      IList<SBMessageApplicationProperty> messageApplicationProperties,
-      SbMessageStandardFields sbMessageStandardFields)
+   public SbMessageApplicationPropertiesViewModel(
+      IList<SBMessageApplicationProperty> messageApplicationProperties
+      )
    {
       _messageApplicationProperties = messageApplicationProperties;
-      _sbMessageStandardFields = sbMessageStandardFields;
-
       AddMessagePropertyCommand = new DelegateCommand(_ =>
       {
-         _messageApplicationProperties.Add(new SBMessageApplicationProperty
-         {
-            PropertyName = "",
-            PropertyValue = ""
-         });
+          _messageApplicationProperties.Add(new SBMessageApplicationProperty
+          {
+              PropertyName = "",
+              PropertyValue = ""
+          });
       });
       DeleteMessagePropertyCommand = new DelegateCommand(_ =>
       {
-         if (SelectedItem != null)
-         {
-            _messageApplicationProperties.Remove(SelectedItem);
-         }
+          if (SelectedItem != null)
+          {
+              _messageApplicationProperties.Remove(SelectedItem);
+          }
       },_=> SelectedItem != null);
    }
 
@@ -44,32 +39,20 @@ public sealed class SbMessageFieldsViewModel : INotifyPropertyChanged
    public ICommand AddMessagePropertyCommand { get; }
    public ICommand DeleteMessagePropertyCommand { get; }
 
-   public SbMessageStandardFields MessageFields
+   public IList<SBMessageApplicationProperty> ApplicationProperties
    {
-      get => _sbMessageStandardFields;
-      set
-      {
-         if (value == _sbMessageStandardFields) return;
-         _sbMessageStandardFields = value;
-         OnPropertyChanged();
-      }
-
+      get => _messageApplicationProperties;
    }
 
    public SBMessageApplicationProperty SelectedItem
    {
-      get => _selectedItem;
-      set
-      {
-         if (value == _selectedItem) return;
-         _selectedItem = value;
-         OnPropertyChanged();
-      }
-   }
-
-   public IList<SBMessageApplicationProperty> ApplicationProperties
-   {
-      get => _messageApplicationProperties;
+       get => _selectedItem;
+       set
+       {
+           if (value == _selectedItem) return;
+           _selectedItem = value;
+           OnPropertyChanged();
+       }
    }
 
    private void OnPropertyChanged([CallerMemberName] string propertyName = null)

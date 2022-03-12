@@ -111,7 +111,8 @@
                          Grid.Row="2"
                          Margin="5,2,5,2"
                          Grid.ColumnSpan="2"
-                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicName, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicName,
+                         UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Grid.Column="0"
                        Grid.Row="3"
@@ -122,7 +123,8 @@
                          Grid.Row="3"
                          Margin="5,2,5,2"
                          Grid.ColumnSpan="2"
-                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName,
+                         UpdateSourceTrigger=PropertyChanged}" />
 
                 <CheckBox Grid.Column="0"
                           Grid.Row="4"
@@ -130,16 +132,106 @@
                           VerticalAlignment="Center"
                           Content="Deadletter queue"
                           x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
-                          IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue, UpdateSourceTrigger=PropertyChanged}" />
+                          IsChecked="{Binding CurrentSelectedConfigModelItem.Item.IsAttachedToDeadLetterSubqueue,
+                          UpdateSourceTrigger=PropertyChanged}"
+                >
+
+                </CheckBox>
 
                 <Expander Grid.Column="0"
                           Grid.Row="5"
                           Grid.ColumnSpan="3"
                           Header="On message receive action"
-                          Visibility="{Binding ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox, Path=IsChecked, Converter={StaticResource BooleanToReversedVisibilityConverter} }"
-
-                          >
+                          Visibility="{Binding ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox, Path=IsChecked, Converter={StaticResource BooleanToReversedVisibilityConverter} }">
                     <GroupBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <!-- complete checkbox grid -->
+                            <Grid Grid.Column="0" Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+
+                                </Grid.ColumnDefinitions>
+                                <RadioButton Margin="5"
+                                             Content="Complete"
+                                             IsChecked="{Binding
+                                            Path=CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
+                                            Converter={StaticResource EnumToBooleanConverter},
+                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Complete} }" />
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="AllAdditionalButtonsForRadioButtonsWidth"/>
+                                </Grid.ColumnDefinitions>
+
+                                <RadioButton
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    Margin="5"
+                                    Content="Abandon"
+                                    x:Name="AbandonMessageCheckbox"
+                                    IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
+                                            Converter={StaticResource EnumToBooleanConverter},
+                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Abandon}
+                                }"/>
+
+
+                                <Button
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Content="..."
+                                    Height="20"
+                                    Width="75"
+                                    Margin="5,0,0,0"
+                                    IsEnabled="{Binding ElementName=AbandonMessageCheckbox, Path=IsChecked}"
+                                    Command="{Binding CurrentSelectedConfigModelItem.ShowAbandonMessageOverriddenPropertiesWindowCommand}" />
+
+
+                            </Grid>
+
+
+                            <Grid Grid.Column="0" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="AllAdditionalButtonsForRadioButtonsWidth"/>
+                                </Grid.ColumnDefinitions>
+
+                                <RadioButton
+                                    Grid.Column="0" Grid.Row="0"
+                                    Margin="5"
+                                             VerticalAlignment="Center"
+                                             Content="DeadLetter"
+                                             x:Name="DeadLetterMessageCheckbox"
+                                             IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
+                                            Converter={StaticResource EnumToBooleanConverter},
+                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.MoveToDeadLetter}
+                                }"/>
+
+
+                                <Button
+                                    Grid.Column="1"
+                                    Grid.Row="0"
+                                    Content="..." Height="20" Width="75" Margin="5,0,0,0"
+                                        IsEnabled="{Binding ElementName=DeadLetterMessageCheckbox, Path=IsChecked}"
+                                        Command="{Binding CurrentSelectedConfigModelItem.ShowDeadLetterMessageOverriddenPropertiesWindowCommand}"/>
+
+                            </Grid>
+
+
+                        </Grid>
+                        <!--
                         <StackPanel Margin="2" Orientation="Vertical">
                             <RadioButton Margin="5"
                                          Content="Complete"
@@ -150,7 +242,7 @@
                                          />
                             <RadioButton
                                 Margin="5"
-
+                                x:Name="AbandonMessageCheckbox"
                                 IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
                                             ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Abandon}
@@ -158,14 +250,15 @@
                                 >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Abandon" Margin="0,0,5,0" />
-                                    <!-- <Button Content="..." Height="20" Width="75" Margin="5,0,0,0" -->
-                                    <!--         IsEnabled="{Binding ElementName=DeadLetterCheckbox, Path=IsChecked}" /> -->
+                                    <Button Content="..." Height="20" Width="75" Margin="5,0,0,0"
+                                            IsEnabled="{Binding ElementName=AbandonMessageCheckbox, Path=IsChecked}"
+                                            Command="{Binding CurrentSelectedConfigModelItem.ShowAbandonMessageOverriddenPropertiesWindowCommand}"/>
                                 </StackPanel>
                             </RadioButton>
 
                             <RadioButton Margin="5"
                                          VerticalAlignment="Center"
-                                         x:Name="DeadLetterCheckbox"
+                                         x:Name="DeadLetterMessageCheckbox"
                                          IsChecked="{Binding CurrentSelectedConfigModelItem.Item.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
                                             ConverterParameter={x:Static models:OnMessageReceiveEnumAction.MoveToDeadLetter}
@@ -173,11 +266,13 @@
                             >
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Deadletter" Margin="0,0,5,0" />
-                                    <!-- <Button Content="..." Height="20" Width="75" Margin="5,0,0,0" -->
-                                    <!--         IsEnabled="{Binding ElementName=DeadLetterCheckbox, Path=IsChecked}" /> -->
+                                    <Button Content="..." Height="20" Width="75" Margin="5,0,0,0"
+                                            IsEnabled="{Binding ElementName=DeadLetterMessageCheckbox, Path=IsChecked}"
+                                            Command="{Binding CurrentSelectedConfigModelItem.ShowDeadLetterMessageOverriddenPropertiesWindowCommand}"/>
                                 </StackPanel>
                             </RadioButton>
                         </StackPanel>
+                        -->
 
                     </GroupBox>
                 </Expander>
@@ -252,6 +347,13 @@
                                             Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
                                             Value="Listening">
                                             <Setter Property="Control.Foreground" Value="Green"></Setter>
+                                            <Setter Property="Control.FontWeight" Value="Bold"></Setter>
+                                        </DataTrigger>
+
+                                        <DataTrigger
+                                            Binding="{Binding CurrentSelectedConfigModelItem.ReceiverEnumStatus}"
+                                            Value="Initializing">
+                                            <Setter Property="Control.Foreground" Value="Orange"></Setter>
                                             <Setter Property="Control.FontWeight" Value="Bold"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>

@@ -9,6 +9,7 @@ using Main.ViewModels.Configs.Receivers;
 using Main.ViewModels.Configs.Senders;
 using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 using Main.Windows;
+using Main.Windows.MainWindow;
 
 namespace Main.Application;
 
@@ -40,7 +41,7 @@ public class ApplicationLogicRoot
         var messageSenderFactory = new MessageSenderFactory(_logger);
 
         var inGuiThreadActionCaller = new InGuiThreadActionCaller();
-        var messagePropertiesWindowFactory = new MessagePropertiesWindowProxyFactory();
+        var messagePropertiesWindowFactory = new SenderMessagePropertiesWindowProxyFactory();
         SendersSelectedConfigViewModel sendersViewModel = new SendersSelectedConfigViewModel(
             senderConfigElementsGuiMetadataManager,
             inGuiThreadActionCaller,
@@ -49,7 +50,13 @@ public class ApplicationLogicRoot
             _logger
         );
         var serviceBusMessageReceiverFactory = new ServiceBusMessageReceiverFactory(_logger);
-        ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(serviceBusMessageReceiverFactory);
+        var messageApplicationPropertiesFactory = new MessagePropertiesWindowProxyFactory();
+        var deadLetterMessagePropertiesWindowProxyFactory = new DeadLetterMessagePropertiesWindowProxyFactory();
+        ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(
+            serviceBusMessageReceiverFactory,
+            messageApplicationPropertiesFactory,
+            deadLetterMessagePropertiesWindowProxyFactory
+            );
 
         var leftPanelControlViewModel = new LeftPanelControlViewModel(
             serviceBusConfigsViewModel,

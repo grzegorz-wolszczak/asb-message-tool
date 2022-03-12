@@ -11,7 +11,7 @@ internal class DelegateCommand : ICommand
     public DelegateCommand(Action<object> onExecuteMethod, Predicate<object> onCanExecuteMethod = null)
     {
         _execute = onExecuteMethod;
-        _canExecute = onCanExecuteMethod ?? ((arg) => true);
+        _canExecute = onCanExecuteMethod ?? (arg => true);
     }
 
     public event EventHandler CanExecuteChanged

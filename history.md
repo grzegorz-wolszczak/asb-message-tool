@@ -1,5 +1,11 @@
 ﻿
 
+### v0.11.0
+- fix: don't show two exception windows
+- added validation when receiver starts - added new state "Initializing"
+-  when creating new Receiver/Sender, Service bus connection string is copied automatically to new config
+- removed expander from main window due to bug: - logs textbox was expanding when content was appended-  (but it shouldn't)
+
 #### v0.5.1
 - fix: user should not be able to decrease font size below some minimum value
 - added: history.md file

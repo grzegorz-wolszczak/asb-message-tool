@@ -3,10 +3,9 @@ using System.Windows.Threading;
 using Main.Application;
 using Main.ExceptionHandling;
 
-
 namespace Main;
 
-public partial class App
+public partial class App : System.Windows.Application
 {
     private ApplicationLogicRoot _applicationLogicRoot;
     private readonly WindowExceptionHandler _exceptionHandler;
@@ -25,17 +24,18 @@ public partial class App
     private void App_OnExit(object sender, ExitEventArgs e)
     {
         _applicationLogicRoot.Stop();
-
     }
+
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         e.Handled = true;
 
         MessageBox.Show(
-            $"During application shutdown, exception happened {e.Exception}",
-            "Application shutdown error",
+            $"Unhandled exception happened {e.Exception}\n\nApplication will close",
+            "Error",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
+        Current?.Shutdown();
     }
 }

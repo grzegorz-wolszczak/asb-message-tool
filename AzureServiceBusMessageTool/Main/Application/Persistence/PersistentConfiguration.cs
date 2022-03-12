@@ -11,27 +11,31 @@ public class PersistentConfiguration
     private string _configFilePath;
     private MySettings _settings;
 
+
     public PersistentConfiguration(IServiceBusHelperLogger logger, ApplicationBinaryInfo binaryInfo,
         ApplicationPersistentOptions options)
     {
         _logger = logger;
         _options = options;
         _configFilePath = $"{binaryInfo.ApplicationDirectory}{Path.DirectorySeparatorChar}{StaticConfig.ConfigFileName}";
+        _settings = JsonSettings.Configure<MySettings>(_configFilePath);
 
     }
 
     public void Load()
     {
         _logger.LogInfo($"Reading config from file '{_configFilePath}'");
-        _settings = JsonSettings.Load<MySettings>(_configFilePath);
+        _settings.Load();
         _options.ReadServiceBusConfigsFrom(_settings.ServiceBusConfigs);
         _options.ReadSendersConfigsFrom(_settings.SendersConfig);
         _options.ReadReceiversConfigFrom(_settings.ReceiversConfig);
         _options.ReadMainWindowSettings(_settings.MainWindowSettings);
+
     }
 
     public void Save()
     {
+
         _settings.ReceiversConfig = _options.GetReceiversConfigsToStore();
         _settings.ServiceBusConfigs = _options.GetServiceBusConfigsToStore();
         _settings.SendersConfig = _options.GetSendersConfigsToStore();

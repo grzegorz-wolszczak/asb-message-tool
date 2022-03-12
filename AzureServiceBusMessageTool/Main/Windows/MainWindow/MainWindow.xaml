@@ -1,4 +1,4 @@
-﻿<Window x:Class="Main.Windows.MainWindow"
+﻿<Window x:Class="Main.Windows.MainWindow.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -23,7 +23,7 @@
             <RowDefinition Height="Auto" /> <!-- menu -->
             <RowDefinition Height="300*" Name="MainContentRow"/>  <!-- main content -->
             <RowDefinition Height="Auto" /> <!-- grid splitter -->
-            <RowDefinition Height="Auto" Name="ExpanderRow"/> <!-- logs window  -->
+            <RowDefinition Height="100*" Name="ExpanderRow"/> <!-- logs window  -->
 
         </Grid.RowDefinitions>
 
@@ -92,31 +92,29 @@
                       ></GridSplitter>
 
         <!-- logs container -->
-        <Expander Header="Logs"
-                  Grid.Row="3"
-                  IsExpanded="False"
-                  x:Name="BottomExpander"
-                  Collapsed="BottomExpander_OnCollapsed"
-                  Expanded="BottomExpander_OnExpanded"
-                  >
-            <Grid >
+        <!-- <Expander Header="Logs" -->
+        <!--           Grid.Row="3" -->
+        <!--           IsExpanded="False" -->
+        <!--           x:Name="BottomExpander" -->
+        <!--           Collapsed="BottomExpander_OnCollapsed" -->
+        <!--           Expanded="BottomExpander_OnExpanded" -->
+        <!--           > -->
+            <Grid Grid.Row="3" >
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" /> <!-- TextBox -->
                 <RowDefinition Height="Auto" /> <!-- buttons and checkboxes -->
             </Grid.RowDefinitions>
 
-
-
-
-            <!-- TextWrapping="{Binding ShouldWordWrapLogContent }" -->
+            <Label Grid.Row="0" Grid.Column="0" Content="Logs" />
+                <!-- TextWrapping="{Binding ShouldWordWrapLogContent }" -->
             <TextBox Grid.Column="0"
-                     Grid.Row="0"
+                     Grid.Row="1"
                      Grid.ColumnSpan="2"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Visible"
@@ -130,11 +128,13 @@
                      FontSize="{Binding LogTextBoxFontSize}"
                      PreviewMouseWheel="LogContentTextBox_OnPreviewMouseWheel"
                      Style="{StaticResource TextBoxStyle}"
+
                      >
 
             </TextBox>
+
             <StackPanel Grid.Column="1"
-                        Grid.Row="1" Orientation="Horizontal">
+                        Grid.Row="2" Orientation="Horizontal">
                 <CheckBox Margin="5"
                           VerticalAlignment="Center"
                           IsChecked="{Binding ShouldScrollToEndOnLogContentChange}">
@@ -157,7 +157,7 @@
             </StackPanel>
 
         </Grid>
-        </Expander>
+
 
 
 

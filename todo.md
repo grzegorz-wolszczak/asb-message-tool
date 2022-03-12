@@ -1,17 +1,19 @@
 ﻿# TODO:
 
-- add when adding new sender receiver so that it copies data from already selected
+
 - add SetFont popup for all textBoxes and save this in config
 - set application icon
 - replace AvalonEdit with Scintilla.Net for better syntax highligting.
 - add hints over message properties button to display what are the current sb messages properties without the need to
   push the button and open the window
-- add posibility to define modified message properties for OnAbandon and OnDeadLetter message receive action
+
 - add validation rules to WPF controls where possible
-- create sender and receiver validator class that will validate configuration before sending/receiving messages
+- create sender validator class that will validate configuration before sending/receiving messages
 - warn if settings file is corrupted and cannot be read
 - add missing TimeToLive field to message properties
 - add missing ScheduledEnqueueTimeUtc field to message properties
+- rename all windows titles
+
 ## Bugs:
 
 

@@ -7,7 +7,7 @@ using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
 using Main.ViewModels.Configs.Senders;
 
-namespace Main.Windows;
+namespace Main.Windows.MainWindow;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -40,14 +40,14 @@ public partial class MainWindow : Window
         leftPanelControl.leftPanelReceiversConfigUserControl.DataContext = receiversViewModel;
         rightPanelControl.rightPanelReceiverConfigTab.DataContext = receiversViewModel;
 
-        Title = $"{StaticConfig.ApplicationName} ({StaticConfig.Version})";
+        Title = $"{StaticConfig.ApplicationName} ({VersionConfig.Version})";
     }
 
     private void LogContentTextBoxChanged(object sender, TextChangedEventArgs e)
     {
-        if (((ViewModels.MainViewModel) this.DataContext).ShouldScrollToEndOnLogContentChange)
+        if (((MainViewModel) DataContext).ShouldScrollToEndOnLogContentChange)
         {
-            this.LogContentTextBox.ScrollToEnd();
+            LogContentTextBox.ScrollToEnd();
         }
     }
 

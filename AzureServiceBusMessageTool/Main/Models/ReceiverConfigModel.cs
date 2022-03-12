@@ -1,15 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Main.Application;
+using Main.ViewModels.Configs.Receivers;
+using Main.ViewModels.Configs.Senders;
 
 namespace Main.Models;
 
-public enum OnMessageReceiveEnumAction
-{
-    Complete = 0,
-    Abandon = 1,
-    MoveToDeadLetter = 2
-}
 public sealed class ReceiverConfigModel : INotifyPropertyChanged
 {
     private string _configName;
@@ -20,7 +18,13 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
     private bool _shouldWordWrapLogContent;
     private int _msgBodyTextBoxFontSize = AppDefaults.DefaultTextBoxFontSize;
+    private IList<SBMessageApplicationProperty> _abandonMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
+    private IList<SBMessageApplicationProperty> _deadLetterMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
+    private SbDeadLetterMessageFields _sbDeadLetterMessageFields = new();
     private OnMessageReceiveEnumAction _onMessageReceiveAction;
+    private DeadLetterMessageFieldsOverrideEnumType _deadLetterMessageFieldsOverrideType;
+
+
     public string ConfigName
     {
         get => _configName;
@@ -39,6 +43,53 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
         {
             if (value == _onMessageReceiveAction) return;
             _onMessageReceiveAction = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public DeadLetterMessageFieldsOverrideEnumType DeadLetterMessageFieldsOverrideType
+    {
+        get => _deadLetterMessageFieldsOverrideType;
+        set
+        {
+            if (value == _deadLetterMessageFieldsOverrideType) return;
+            _deadLetterMessageFieldsOverrideType = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public SbDeadLetterMessageFields DeadLetterMessageFields
+    {
+        get => _sbDeadLetterMessageFields;
+        set
+        {
+            if (value == _sbDeadLetterMessageFields) return;
+            _sbDeadLetterMessageFields = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public IList<SBMessageApplicationProperty> AbandonMessageApplicationOverridenProperties
+    {
+        get => _abandonMessageApplicationOverridenProperties;
+        set
+        {
+            if (value == _abandonMessageApplicationOverridenProperties) return;
+            _abandonMessageApplicationOverridenProperties = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public IList<SBMessageApplicationProperty> DeadLetterMessageApplicationOverridenProperties
+    {
+        get => _deadLetterMessageApplicationOverridenProperties;
+        set
+        {
+            if (value == _deadLetterMessageApplicationOverridenProperties) return;
+            _deadLetterMessageApplicationOverridenProperties = value;
             OnPropertyChanged();
         }
     }

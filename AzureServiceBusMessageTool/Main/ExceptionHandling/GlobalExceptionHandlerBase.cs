@@ -11,7 +11,9 @@ public abstract class GlobalExceptionHandlerBase
     public GlobalExceptionHandlerBase()
     {
         AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
-        System.Windows.Application.Current.DispatcherUnhandledException += OnDispatcherUnhandledException;
+
+        // This handler is already hooked up to in App.xaml.cs file
+        //System.Windows.Application.Current.DispatcherUnhandledException += OnDispatcherUnhandledException;
         System.Windows.Application.Current.Dispatcher.UnhandledExceptionFilter += OnFilterDispatcherException;
 
         TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;

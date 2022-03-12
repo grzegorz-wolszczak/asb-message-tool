@@ -6,7 +6,7 @@ using Main.Application.Logging;
 using Main.Commands;
 using Main.Models;
 using Main.Utils;
-using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
+using Main.Windows.MessageToSend;
 
 namespace Main.ViewModels.Configs.Senders;
 
@@ -35,7 +35,7 @@ public class SenderConfigViewModel : INotifyPropertyChanged
     private TextDocument _msgToSendDocument = new TextDocument("");
 
     public readonly SenderConfigViewModelWrapper ViewModelWrapper;
-    private IMessagePropertiesWindowProxy _messagePropertiesWindowProxy;
+    private ISenderMessagePropertiesWindowProxy _senderMessagePropertiesWindowProxy;
 
     public ICommand DetachFromPanelCommand { get; }
     public ICommand SendMessageCommand { get; }
@@ -47,7 +47,7 @@ public class SenderConfigViewModel : INotifyPropertyChanged
         IMessageSender messageSender,
         IInGuiThreadActionCaller inGuiThreadActionCaller,
         IServiceBusHelperLogger logger,
-        IMessagePropertiesWindowProxy messagePropertiesWindowProxy)
+        ISenderMessagePropertiesWindowProxy senderMessagePropertiesWindowProxy)
     {
         _senderConfigWindowDetacher = senderConfigWindowDetacher;
         _messageSender = messageSender;
@@ -57,11 +57,11 @@ public class SenderConfigViewModel : INotifyPropertyChanged
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
         _logger = logger;
 
-        _messagePropertiesWindowProxy = messagePropertiesWindowProxy;
+        _senderMessagePropertiesWindowProxy = senderMessagePropertiesWindowProxy;
 
         ShowPropertiesWindowCommand = new DelegateCommand(_ =>
         {
-            _messagePropertiesWindowProxy.ShowDialog(new SbMessageFieldsViewModel(
+            _senderMessagePropertiesWindowProxy.ShowDialog(new SbMessageFieldsViewModel(
                 _item.ApplicationProperties,
                 _item.MessageFields));
 
@@ -70,7 +70,7 @@ public class SenderConfigViewModel : INotifyPropertyChanged
         SendMessageCommand = new SendServiceMessageCommand(_messageSender,
             msgProviderFunc: () =>
             {
-                return new MessageToSendData()
+                return new MessageToSendData
                 {
                     ConnectionString = Item.ServiceBusConnectionString,
                     MsgBody = Item.MsgBody,
@@ -79,9 +79,9 @@ public class SenderConfigViewModel : INotifyPropertyChanged
                     ApplicationProperties = Item.ApplicationProperties
                 };
             },
-            onErrorAction: (e) => { SetLastSendStatusErrorMessage(e.Message); },
-            onSuccessAction: (statusMessage) => { SetLastSendStatusSuccessMessage(statusMessage); },
-            onUnexpectedExceptionAction: (exception) =>
+            onErrorAction: e => { SetLastSendStatusErrorMessage(e.Message); },
+            onSuccessAction: statusMessage => { SetLastSendStatusSuccessMessage(statusMessage); },
+            onUnexpectedExceptionAction: exception =>
             {
                 _logger.LogException("While sending message exception happened: ", exception);
                 SetLastSendStatusErrorMessage("Unexpected error, see logs for details.");
