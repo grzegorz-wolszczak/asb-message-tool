@@ -7,14 +7,14 @@ using System.Windows.Input;
 using Main.Commands;
 using Main.ConfigsGuiMetadata;
 using Main.Models;
+using Main.Windows.DeadLetterMessage;
 
 namespace Main.ViewModels.Configs.Receivers;
 
-public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
+public sealed class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
 {
     private ReceiverConfigViewModel _currentSelectedItem;
     private bool _isReceiverConfigTabSelected;
-
 
     public bool IsReceiverConfigTabSelected
     {
@@ -32,18 +32,29 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
         settingsReceiversConfig.ForEach(AddNewConfig);
     }
 
-    public ReceiversSelectedConfigViewModel(ServiceBusMessageReceiverFactory serviceBusMessageReceiverFactory)
+    public ReceiversSelectedConfigViewModel(
+        ServiceBusMessageReceiverFactory serviceBusMessageReceiverFactory,
+        MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
+        DeadLetterMessagePropertiesWindowProxyFactory deadLetterMessagePropertiesWindowProxyFactory)
     {
         _serviceBusMessageReceiverFactory = serviceBusMessageReceiverFactory;
+        _messagePropertiesWindowProxyFactory = messagePropertiesWindowProxyFactory;
+        _deadLetterMessagePropertiesWindowProxyFactory = deadLetterMessagePropertiesWindowProxyFactory;
         _receiverConfigElementsGuiMetadataManager = new ReceiverConfigElementsGuiMetadataManager();
 
         AddReceiverConfigCommand = new DelegateCommand(_ =>
         {
-            var newConfig = new ReceiverConfigModel()
+            var newConfig = new ReceiverConfigModel
             {
                 ConfigId = Guid.NewGuid().ToString(),
                 ConfigName = "<config name not set>",
             };
+
+            // copy one field that is secret
+            if (_currentSelectedItem is { Item: { } })
+            {
+                newConfig.ServiceBusConnectionString = _currentSelectedItem.Item.ServiceBusConnectionString;
+            }
 
             AddNewConfig(newConfig);
         });
@@ -58,7 +69,11 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
 
     private void AddNewConfig(ReceiverConfigModel newConfig)
     {
-        var viewModel = new ReceiverConfigViewModel(_receiverConfigElementsGuiMetadataManager, _serviceBusMessageReceiverFactory)
+        var viewModel = new ReceiverConfigViewModel(
+            _receiverConfigElementsGuiMetadataManager,
+            _messagePropertiesWindowProxyFactory.Create(),
+            _deadLetterMessagePropertiesWindowProxyFactory.Create(),
+            _serviceBusMessageReceiverFactory.Create())
         {
             Item = newConfig
         };
@@ -68,7 +83,7 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
@@ -92,6 +107,8 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
 
     private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
     private ServiceBusMessageReceiverFactory _serviceBusMessageReceiverFactory;
+    private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
+    private DeadLetterMessagePropertiesWindowProxyFactory _deadLetterMessagePropertiesWindowProxyFactory;
 
     public bool IsEmbeddedSenderConfigUserControlForEditingEnabled
     {
@@ -107,4 +124,12 @@ public class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
 
     public ICommand AddReceiverConfigCommand { get; }
     public ICommand DeleteReceiverConfigCommand { get; }
+}
+
+public class DeadLetterMessagePropertiesWindowProxyFactory
+{
+    public IDeadLetterMessagePropertiesWindowProxy Create()
+    {
+        return new DeadLetterMessagePropertiesWindowProxy();
+    }
 }

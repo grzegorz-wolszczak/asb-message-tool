@@ -47,7 +47,7 @@
                 <Label
                     Grid.Column="1"
                     Grid.Row="2"
-                    Content="{Binding Source={x:Static application:StaticConfig.Version}}"
+                    Content="{Binding Source={x:Static application:VersionConfig.Version}}"
                        />
 
                 <Label Grid.Column="0" Grid.Row="3"  > License </Label>

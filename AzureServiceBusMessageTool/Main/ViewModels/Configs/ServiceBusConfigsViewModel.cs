@@ -41,7 +41,7 @@ public class ServiceBusSelectedConfigsViewModel : INotifyPropertyChanged
 
         AddServiceBusConfigCommand = new DelegateCommand(_ =>
         {
-            var newConfig = new ServiceBusConfigModel()
+            var newConfig = new ServiceBusConfigModel
             {
                 ConfigId = Guid.NewGuid().ToString(),
                 ConfigName = "<config name not set>",

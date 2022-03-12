@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Text;
 using Azure.Messaging.ServiceBus;
-using System.Collections.Specialized;
 
 namespace Main.Utils;
 
 public class ReceivedMessageFormatter
 {
-    private int _maxFieldWidth = 0;
+    private int _maxFieldWidth;
     private OrderedDictionary _fieldValues = new();
     // application properties will be displayed with additional indent
     // make room for it for standard message properties

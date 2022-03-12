@@ -11,6 +11,7 @@ public class StartMessageReceiveCommand : ICommand
     private readonly Action _onReceiverStarted;
     private readonly Action<Exception> _onReceiverFailure;
     private readonly Action _onReceiverStopped;
+    private readonly Action _onReceiverInitializing;
 
     private bool _canExecute = true;
 
@@ -20,7 +21,8 @@ public class StartMessageReceiveCommand : ICommand
         Action<ReceivedMessage> onMessageReceived,
         Action onReceiverStarted,
         Action<Exception> onReceiverFailure,
-        Action onReceiverStopped)
+        Action onReceiverStopped,
+        Action onReceiverInitializing)
     {
         _msgReceiver = msgReceiver;
         _serviceBusReceiverProviderFunc = serviceBusReceiverProviderFunc;
@@ -28,6 +30,7 @@ public class StartMessageReceiveCommand : ICommand
         _onReceiverStarted = onReceiverStarted;
         _onReceiverFailure = onReceiverFailure;
         _onReceiverStopped = onReceiverStopped;
+        _onReceiverInitializing = onReceiverInitializing;
     }
 
     public bool CanExecute(object parameter)
@@ -37,9 +40,9 @@ public class StartMessageReceiveCommand : ICommand
 
     public void Execute(object parameter)
     {
-        var callbacks = new ReceiverCallbacks()
+        var callbacks = new ReceiverCallbacks
         {
-            OnReceiverFailure = (exc)=>
+            OnReceiverFailure = exc=>
             {
                 _canExecute = true;
                 System.Windows.Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
@@ -52,7 +55,8 @@ public class StartMessageReceiveCommand : ICommand
                 System.Windows.Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
                 _onReceiverStopped.Invoke();
             },
-            OnReceiverStarted = _onReceiverStarted
+            OnReceiverStarted = _onReceiverStarted,
+            OnReceiverInitializing = _onReceiverInitializing,
         };
         _canExecute = false;
         System.Windows.Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);

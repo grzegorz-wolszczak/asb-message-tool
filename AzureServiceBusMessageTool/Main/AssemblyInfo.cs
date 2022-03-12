@@ -11,4 +11,4 @@ using Main.Application;
     // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: AssemblyVersion(StaticConfig.VersionString)]
+[assembly: AssemblyVersion(VersionConfig.VersionString)]

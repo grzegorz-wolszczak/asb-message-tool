@@ -45,7 +45,7 @@ public class MessageSender : IMessageSender
         catch (Exception e)
         {
             _logger.LogException(e);
-            return new MessageSendErrorInfo()
+            return new MessageSendErrorInfo
             {
                 Message = "Sending failed. See log for details"
             }.ToMaybe();
@@ -71,25 +71,25 @@ public class MessageSender : IMessageSender
             }
         }
 
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.ContentType, (ob) => { message.ContentType = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.CorrelationId, (ob) => { message.CorrelationId = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.MessageId, (ob) => { message.MessageId = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.PartitionKey, (ob) => { message.PartitionKey = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.ReplyTo, (ob) => { message.ReplyTo = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.ReplyToSessionId, (ob) => { message.ReplyToSessionId = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.SessionId, (ob) => { message.SessionId = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.Subject, (ob) => { message.Subject = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.To, (ob) => { message.To = ob;});
-        SetMessageFieldIfEnabled<string>(messageFieldsToSend.TransactionPartitionKey, (ob) => { message.TransactionPartitionKey = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.ContentType, ob => { message.ContentType = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.CorrelationId, ob => { message.CorrelationId = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.MessageId, ob => { message.MessageId = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.PartitionKey, ob => { message.PartitionKey = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.ReplyTo, ob => { message.ReplyTo = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.ReplyToSessionId, ob => { message.ReplyToSessionId = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.SessionId, ob => { message.SessionId = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.Subject, ob => { message.Subject = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.To, ob => { message.To = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.TransactionPartitionKey, ob => { message.TransactionPartitionKey = ob;});
 
         return message;
     }
 
-    private static void SetMessageFieldIfEnabled<FieldValueType>(SbMessageField<FieldValueType> field, Action<FieldValueType> messagePropertySetter)
+    private static void SetMessageFieldIfEnabled<TFieldValueType>(SbMessageField<TFieldValueType> field, Action<TFieldValueType> messagePropertySetter)
     {
         if (field.IsEnabled)
         {
-            messagePropertySetter((FieldValueType)field.ValueAsObject);
+            messagePropertySetter((TFieldValueType)field.ValueAsObject);
         }
     }
 

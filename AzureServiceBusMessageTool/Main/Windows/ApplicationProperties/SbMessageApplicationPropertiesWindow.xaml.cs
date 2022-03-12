@@ -2,15 +2,15 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using Main.ViewModels.Configs.Senders;
+using Main.ViewModels;
+using MessageBox = Xceed.Wpf.Toolkit.MessageBox;
 
-namespace Main.Windows;
+namespace Main.Windows.ApplicationProperties;
 
-public partial class MessagePropertiesWindow : Window
+public partial class SbMessageApplicationPropertiesWindow : Window
 {
-    private SbMessageFieldsViewModel _viewModel;
-
-    public MessagePropertiesWindow()
+    private SbMessageApplicationPropertiesViewModel _viewModel;
+    public SbMessageApplicationPropertiesWindow()
     {
         InitializeComponent();
     }
@@ -29,10 +29,10 @@ public partial class MessagePropertiesWindow : Window
         if (duplicatedPropertyNames.Count > 0)
         {
             var duplicatedNames = string.Join(", ", duplicatedPropertyNames.Select(e=>$"\"{e}\""));
-            Xceed.Wpf.Toolkit.MessageBox.Show(this,
-                $"Property names must be unique.\n" +
+            MessageBox.Show(this,
+                "Property names must be unique.\n" +
                 $"Found following duplicate names:\n\n{duplicatedNames}" +
-                $"\n\nRemove duplicates or rename them.",
+                "\n\nRemove duplicates or rename them.",
                 "Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -50,11 +50,11 @@ public partial class MessagePropertiesWindow : Window
         System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
     }
 
-
-    public void ShowDialogForDataContext(SbMessageFieldsViewModel dataContext)
+    public void ShowDialogForDataContext(SbMessageApplicationPropertiesViewModel dataContext)
     {
         _viewModel = dataContext;
         DataContext = dataContext;
         ShowDialog();
     }
 }
+

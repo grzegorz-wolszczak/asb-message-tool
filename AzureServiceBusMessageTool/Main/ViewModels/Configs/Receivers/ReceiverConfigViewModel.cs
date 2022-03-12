@@ -6,6 +6,8 @@ using Main.Application;
 using Main.Commands;
 using Main.Models;
 using Main.Utils;
+using Main.Windows.ApplicationProperties;
+using Main.Windows.DeadLetterMessage;
 
 namespace Main.ViewModels.Configs.Receivers;
 
@@ -13,16 +15,14 @@ public enum ReceiverEnumStatus
 {
     Idle =0,
     StoppedOnError,
-    Listening
+    Listening,
+    Initializing
 }
 
 public class ReceiverConfigViewModel : INotifyPropertyChanged
 {
     private readonly IReceiverConfigWindowDetacher _receiverConfigWindowDetacher;
     private ReceiverEnumStatus _receiverEnumStatus = ReceiverEnumStatus.Idle;
-    private bool _onReceiveMessageActionCompleteEnabled;
-    private bool _onReceiveMessageActionAbandonEnabled;
-    private bool _onReceiveMessageActionMoveToDeadLetterEnabled;
 
     private ReceiverConfigModel _item;
     private bool _isEmbeddedInsideRightPanel = true;
@@ -33,26 +33,32 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
     public ICommand StartMessageReceiveCommand { get; }
     public ICommand StopMessageReceiveCommand { get; }
     public ICommand ClearMessageContentCommand { get; }
+    public ICommand ShowAbandonMessageOverriddenPropertiesWindowCommand { get; }
+    public ICommand ShowDeadLetterMessageOverriddenPropertiesWindowCommand { get; }
 
     public readonly ReceiverConfigViewModelWrapper ViewModelWrapper;
-    private ServiceBusMessageReceiverFactory _messageReceiverFactory;
+    private IMessageApplicationPropertiesWindowProxy _messageApplicationPropertiesWindowProxy;
+    private readonly IDeadLetterMessagePropertiesWindowProxy _deadLetterMessagePropertiesWindowProxy;
+    private IServiceBusMessageReceiver _serviceBusMessageReceiver;
 
-    public ReceiverConfigViewModel(
-        IReceiverConfigWindowDetacher receiverConfigWindowDetacher,
-        ServiceBusMessageReceiverFactory serviceBusMessageReceiverFactory)
+    public ReceiverConfigViewModel(IReceiverConfigWindowDetacher receiverConfigWindowDetacher,
+        IMessageApplicationPropertiesWindowProxy messageApplicationPropertiesWindowProxy,
+        IDeadLetterMessagePropertiesWindowProxy deadLetterMessagePropertiesWindowProxy,
+        IServiceBusMessageReceiver serviceBusMessageReceiver)
     {
-        _messageReceiverFactory = serviceBusMessageReceiverFactory;
+        _messageApplicationPropertiesWindowProxy = messageApplicationPropertiesWindowProxy;
+        _deadLetterMessagePropertiesWindowProxy = deadLetterMessagePropertiesWindowProxy;
         _receiverConfigWindowDetacher = receiverConfigWindowDetacher;
 
         ViewModelWrapper = new ReceiverConfigViewModelWrapper(this);
 
         DetachFromPanelCommand = new DelegateCommand(onExecuteMethod: _ => { _receiverConfigWindowDetacher.DetachFromPanel(ViewModelWrapper); });
         ClearMessageContentCommand = new DelegateCommand(_ => { ReceivedMessagesContent = string.Empty; });
-        IServiceBusMessageReceiver serviceBusMessageReceiver = _messageReceiverFactory.Create();
+        _serviceBusMessageReceiver = serviceBusMessageReceiver;
 
 
-        StartMessageReceiveCommand = new StartMessageReceiveCommand(serviceBusMessageReceiver,
-            serviceBusReceiverProviderFunc: () => new ServiceBusReceiverSettings()
+        StartMessageReceiveCommand = new StartMessageReceiveCommand(_serviceBusMessageReceiver,
+            serviceBusReceiverProviderFunc: () => new ServiceBusReceiverSettings
             {
                 ConfigName = Item.ConfigName,
                 ConnectionString = Item.ServiceBusConnectionString,
@@ -60,41 +66,66 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
                 TopicName = Item.InputTopicName,
                 IsDeadLetterQueue = Item.IsAttachedToDeadLetterSubqueue,
                 MessageReceiveDelayPeriod = StaticConfig.NextMessageReceiveDelayTimeSpan, // todo: support this from gui,
-                OnMessageReceiveEnumAction = Item.OnMessageReceiveAction
+                OnMessageReceiveEnumAction = Item.OnMessageReceiveAction,
+                AbandonMessageOverriddenApplicationProperties = Item.AbandonMessageApplicationOverridenProperties,
+                DeadLetterMessageOverriddenApplicationProperties = Item.DeadLetterMessageApplicationOverridenProperties,
+                DeadLetterMessageFields = Item.DeadLetterMessageFields,
+                DeadLetterMessageFieldsOverrideType = Item.DeadLetterMessageFieldsOverrideType,
             },
             onMessageReceived: AppendReceivedMessageToOutput,
-            onReceiverStarted: SetListeningReceiverStatus,
-            onReceiverFailure: SetStoppedOnErrorReceiverStatus,
-            onReceiverStopped: SetIdleReceiverStatus
+            onReceiverStarted: SetReceiverListeningStatus,
+            onReceiverFailure: SetReceiverStoppedOnErrorStatus,
+            onReceiverStopped: SetSetReceiverIdleStatus,
+            onReceiverInitializing: SetReceiverInitializingStatus
         );
 
-        StopMessageReceiveCommand = new DelegateCommand(_ => { serviceBusMessageReceiver.Stop(); },
+        StopMessageReceiveCommand = new DelegateCommand(_ => { _serviceBusMessageReceiver.Stop(); },
             _ => !StartMessageReceiveCommand.CanExecute(default));
+
+        ShowAbandonMessageOverriddenPropertiesWindowCommand = new DelegateCommand(_ =>
+        {
+            _messageApplicationPropertiesWindowProxy.ShowDialog(new SbMessageApplicationPropertiesViewModel(
+                _item.AbandonMessageApplicationOverridenProperties
+                ));
+        });
+
+        ShowDeadLetterMessageOverriddenPropertiesWindowCommand = new DelegateCommand(_ =>
+        {
+            _deadLetterMessagePropertiesWindowProxy.ShowDialog(
+                new DeadLetterMessagePropertiesViewModel(_item));
+
+        });
     }
 
-    private void SetIdleReceiverStatus()
+    private void SetSetReceiverIdleStatus()
     {
         ReceiverStatusText = "Idle";
         ReceiverEnumStatus = ReceiverEnumStatus.Idle;
     }
 
-    private void SetStoppedOnErrorReceiverStatus(Exception exception)
+    private void SetReceiverStoppedOnErrorStatus(Exception exception)
     {
         ReceiverStatusText = "Stopped because of error";
         ReceiverEnumStatus = ReceiverEnumStatus.StoppedOnError;
     }
 
-    private void SetListeningReceiverStatus()
+    private void SetReceiverListeningStatus()
     {
         ReceiverStatusText = "Listening...";
         ReceiverEnumStatus = ReceiverEnumStatus.Listening;
+    }
+
+    private void SetReceiverInitializingStatus()
+    {
+        ReceiverStatusText = "Initializing...";
+        ReceiverEnumStatus = ReceiverEnumStatus.Initializing;
     }
 
     private void AppendReceivedMessageToOutput(ReceivedMessage msg)
     {
         ReceivedMessagesContent += $"{TimeUtils.GetShortTimestamp()} received message: \n" +
                                    $"{msg.Body}" +
-                                   $"\n----------------------------------\n";
+                                   "\n----------------------------------\n";
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

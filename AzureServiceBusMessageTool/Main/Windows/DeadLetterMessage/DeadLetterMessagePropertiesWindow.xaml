@@ -1,0 +1,85 @@
+﻿<Window x:Class="Main.Windows.DeadLetterMessage.DeadLetterMessagePropertiesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:Main.Windows.DeadLetterMessage"
+        xmlns:messageProperties="clr-namespace:Main.UserControls.MessageProperties"
+        xmlns:converters="clr-namespace:Main.Converters"
+        xmlns:models="clr-namespace:Main.Models"
+        mc:Ignorable="d"
+        Title="DeadLetterMesssagePropertiesWindow" Height="450" Width="800">
+    <Window.Resources>
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <converters:BooleanToReversedVisibilityConverter x:Key="BooleanToReversedVisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Dead letter message fields overrides" Grid.Row="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <RadioButton
+                    x:Name="ApplicationPropertiesChoiceCheckBox"
+                    IsChecked="{Binding
+                                Path=DeadLetterMessageFieldsOverrideType,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:DeadLetterMessageFieldsOverrideEnumType.OverrideApplicationPropertiesFields} }"
+
+                    Grid.Row="0"
+                    Margin="5"
+                    Content="Application Properties" />
+
+                <RadioButton
+                    IsChecked="{Binding
+                                Path=DeadLetterMessageFieldsOverrideType,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:DeadLetterMessageFieldsOverrideEnumType.OverrideDeadLetterErrorRelatedFields} }"
+                    x:Name="DeadLetterDescriptionChoiceCheckBox"
+                    Grid.Row="1"
+                    Margin="5"
+                    Content="DeadLetter reason and description" />
+            </Grid>
+
+        </GroupBox>
+
+
+        <TabControl Grid.Row="1">
+            <!-- hide tab items headers -->
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <TabItem Header="Application properties"
+                     Visibility="{Binding ElementName=DeadLetterDescriptionChoiceCheckBox, Path=IsChecked, Converter={StaticResource BooleanToReversedVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                     IsSelected="{Binding ElementName=DeadLetterDescriptionChoiceCheckBox, Path=IsChecked,  UpdateSourceTrigger=PropertyChanged}">
+
+                <messageProperties:DeadLetterMessagePropertiesControl
+                    DataContext="{Binding DeadLetterMessageFields}" />
+            </TabItem>
+            <TabItem
+                Header="Dead letter reason"
+                Visibility="{Binding ElementName=ApplicationPropertiesChoiceCheckBox, Path=IsChecked, Converter={StaticResource BooleanToReversedVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                IsSelected="{Binding ElementName=ApplicationPropertiesChoiceCheckBox, Path=IsChecked,  UpdateSourceTrigger=PropertyChanged}">
+                <messageProperties:ApplicationPropertiesControl />
+
+            </TabItem>
+
+        </TabControl>
+
+    </Grid>
+</Window>

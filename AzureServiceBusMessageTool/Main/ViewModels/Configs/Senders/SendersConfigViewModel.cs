@@ -40,22 +40,27 @@ public class SendersSelectedConfigViewModel : INotifyPropertyChanged
         SenderConfigElementsGuiMetadataManager senderConfigElementsGuiMetadataManager,
         InGuiThreadActionCaller inGuiThreadActionCaller,
         MessageSenderFactory messageSenderFactory,
-        MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
+        SenderMessagePropertiesWindowProxyFactory senderMessagePropertiesWindowProxyFactory,
         IServiceBusHelperLogger logger)
     {
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
         _messageSenderFactory = messageSenderFactory;
-        _messagePropertiesWindowProxyFactory = messagePropertiesWindowProxyFactory;
+        _senderMessagePropertiesWindowProxyFactory = senderMessagePropertiesWindowProxyFactory;
         _logger = logger;
         _senderConfigElementsGuiMetadataManager = senderConfigElementsGuiMetadataManager;
 
         AddSenderConfigCommand = new DelegateCommand(_ =>
         {
-            var newConfig = new SenderConfigModel()
+            var newConfig = new SenderConfigModel
             {
                 ConfigId = Guid.NewGuid().ToString(),
                 ConfigName = "<config name not set>",
             };
+            // copy secret field
+            if (_currentSelectedItem != null && _currentSelectedItem.Item != null)
+            {
+                newConfig.ServiceBusConnectionString = _currentSelectedItem.Item.ServiceBusConnectionString;
+            }
             AddNewConfig(newConfig);
         });
 
@@ -74,7 +79,7 @@ public class SendersSelectedConfigViewModel : INotifyPropertyChanged
             _messageSenderFactory.Create(),
             _inGuiThreadActionCaller,
             _logger,
-            _messagePropertiesWindowProxyFactory.Create())
+            _senderMessagePropertiesWindowProxyFactory.Create())
         {
             Item = newConfig
         };
@@ -110,7 +115,7 @@ public class SendersSelectedConfigViewModel : INotifyPropertyChanged
     private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
     private InGuiThreadActionCaller _inGuiThreadActionCaller;
     private readonly MessageSenderFactory _messageSenderFactory;
-    private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
+    private readonly SenderMessagePropertiesWindowProxyFactory _senderMessagePropertiesWindowProxyFactory;
     private readonly IServiceBusHelperLogger _logger;
 
     public bool IsEmbeddedSenderConfigUserControlForEditingEnabled
