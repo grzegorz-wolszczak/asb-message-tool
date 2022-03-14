@@ -70,13 +70,14 @@ public class SenderConfigViewModel : INotifyPropertyChanged
         SendMessageCommand = new SendServiceMessageCommand(_messageSender,
             msgProviderFunc: () =>
             {
-                return new MessageToSendData
+                return new ServiceBusMessageSendData
                 {
                     ConnectionString = Item.ServiceBusConnectionString,
                     MsgBody = Item.MsgBody,
                     TopicName = Item.OutputTopicName,
                     Fields = Item.MessageFields,
-                    ApplicationProperties = Item.ApplicationProperties
+                    ApplicationProperties = Item.ApplicationProperties,
+                    ConfigName = Item.ConfigName
                 };
             },
             onErrorAction: e => { SetLastSendStatusErrorMessage(e.Message); },

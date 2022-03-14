@@ -8,10 +8,11 @@ using Main.Application.Logging;
 using Main.ExceptionHandling;
 using Main.Models;
 using Main.Utils;
+using Main.Validations;
 
 namespace Main.ViewModels.Configs.Receivers;
 
-public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
+public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDisposable, IAsyncDisposable
 {
     private readonly IServiceBusHelperLogger _logger;
     private readonly IReceiverSettingsValidator _receiversSettingsValidator;
@@ -59,10 +60,7 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
                 {
                     await ValidateConfigOrThrow(_config, token);
                     _client = new ServiceBusClient(_config.ConnectionString);
-
                     var serviceBusReceiverOptions = GetServiceBusReceiverOptionsBasedOnConfig();
-
-
                     await ReceiveUntilCancelledOrStopped(serviceBusReceiverOptions, token);
                 }
                 catch (TaskCanceledException)
@@ -118,7 +116,7 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
                 await FinalizeMessageReceiveForPickLockMode(message, receiver, token);
             }
 
-            await Task.Delay(_config.MessageReceiveDelayPeriod);
+            await Task.Delay(_config.MessageReceiveDelayPeriod, token);
         }
     }
 
@@ -131,7 +129,6 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
 
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource = null;
-        _client?.DisposeAsync();
     }
 
     private async Task ValidateConfigOrThrow(ServiceBusReceiverSettings config, CancellationToken token)
@@ -206,7 +203,8 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
         ServiceBusReceiver serviceBusReceiver,
         CancellationToken cancellationToken)
     {
-        await serviceBusReceiver.AbandonMessageAsync(message, _config.AbandonMessageOverriddenApplicationProperties.AsPropertyDictionary(), cancellationToken);
+        await serviceBusReceiver.AbandonMessageAsync(message, _config.AbandonMessageOverriddenApplicationProperties.AsPropertyDictionary(),
+            cancellationToken);
     }
 
     private ServiceBusReceiverOptions GetServiceBusReceiverOptionsBasedOnConfig()
@@ -232,9 +230,18 @@ public class ServiceBusMessageReceiver : IServiceBusMessageReceiver
         _stopReason = StopReason.Intentional;
         StopReceiver();
     }
-}
 
-public class ReceivedMessage
-{
-    public string Body { get; init; }
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Dispose();
+        if (_client != null)
+        {
+            await _client.DisposeAsync();
+        }
+    }
 }

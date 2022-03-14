@@ -1,55 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using Azure.Messaging.ServiceBus;
 using Core.Maybe;
 using Main.Application.Logging;
+using Main.Validations;
 using Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
 namespace Main.ViewModels.Configs.Senders;
 
-public record MessageToSendData
+public record ServiceBusMessageSendData
 {
     public string ConnectionString { get; init; }
     public string TopicName { get; init; }
     public string MsgBody { get; init; }
     public SbMessageStandardFields Fields { get; init; }
     public IList<SBMessageApplicationProperty> ApplicationProperties { get; init; }
+    public string ConfigName { get; init; }
 }
 
 public class MessageSender : IMessageSender
 {
     private Dictionary<string /* connection string */, ServiceBusClient> _serviceBusClientsCache = new();
     private Dictionary<(string /* connection string */, string /*topicName*/), ServiceBusSender> _serviceBusSendersCache = new();
+    private readonly SenderSettingsValidator _senderSettingsValidator;
     private readonly IServiceBusHelperLogger _logger;
 
-    public MessageSender(IServiceBusHelperLogger logger)
+    public MessageSender(SenderSettingsValidator senderSettingsValidator, IServiceBusHelperLogger logger)
     {
+        _senderSettingsValidator = senderSettingsValidator;
         _logger = logger;
     }
 
-    public Maybe<MessageSendErrorInfo> Send(MessageToSendData msgToSend)
+    public async Task<Maybe<MessageSendErrorInfo>> Send(ServiceBusMessageSendData senderConfig)
     {
         try
         {
-            var msgBody = msgToSend.MsgBody;
+            var validationResult = await _senderSettingsValidator.Validate(senderConfig, CancellationToken.None);
+            if (validationResult.IsSomething())
+            {
+                _logger.LogError($"Sender '{senderConfig.ConfigName}' config validation failed: '{validationResult.Value().ErrorMsg}'");
+                return new MessageSendErrorInfo
+                {
+                    Message = "Send data validation failed. See log for details"
+                }.ToMaybe();
+            }
 
-            var client = GetClientForConnectionString(msgToSend.ConnectionString);
-            var sender = GetSenderForClient(client, msgToSend.TopicName, msgToSend.ConnectionString);
-            _logger.LogInfo($"Sending message to topic '{msgToSend.TopicName}\nwith content :'{msgBody}'");
-
-            var message = FillAllMessageFields(msgBody, msgToSend.Fields, msgToSend.ApplicationProperties);
-
-            sender.SendMessageAsync(message).GetAwaiter().GetResult();
-            return Maybe<MessageSendErrorInfo>.Nothing;
+            return await SendInternal(senderConfig);
         }
         catch (Exception e)
         {
             _logger.LogException(e);
-            return new MessageSendErrorInfo
+            var maybe = new MessageSendErrorInfo
             {
                 Message = "Sending failed. See log for details"
             }.ToMaybe();
+            return maybe;
         }
+    }
+
+    private async Task<Maybe<MessageSendErrorInfo>> SendInternal(ServiceBusMessageSendData msgSend)
+    {
+        var msgBody = msgSend.MsgBody;
+
+        var client = GetClientForConnectionString(msgSend.ConnectionString);
+        var sender = GetSenderForClient(client, msgSend.TopicName, msgSend.ConnectionString);
+        _logger.LogInfo($"Sending message to topic '{msgSend.TopicName}\nwith content :'{msgBody}'");
+
+        var message = FillAllMessageFields(msgBody, msgSend.Fields, msgSend.ApplicationProperties);
+
+        await sender.SendMessageAsync(message);
+        return Maybe<MessageSendErrorInfo>.Nothing;
     }
 
     private static ServiceBusMessage FillAllMessageFields(string msgBody,
@@ -71,21 +94,22 @@ public class MessageSender : IMessageSender
             }
         }
 
-        SetMessageFieldIfEnabled(messageFieldsToSend.ContentType, ob => { message.ContentType = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.CorrelationId, ob => { message.CorrelationId = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.MessageId, ob => { message.MessageId = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.PartitionKey, ob => { message.PartitionKey = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.ReplyTo, ob => { message.ReplyTo = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.ReplyToSessionId, ob => { message.ReplyToSessionId = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.SessionId, ob => { message.SessionId = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.Subject, ob => { message.Subject = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.To, ob => { message.To = ob;});
-        SetMessageFieldIfEnabled(messageFieldsToSend.TransactionPartitionKey, ob => { message.TransactionPartitionKey = ob;});
+        SetMessageFieldIfEnabled(messageFieldsToSend.ContentType, ob => { message.ContentType = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.CorrelationId, ob => { message.CorrelationId = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.MessageId, ob => { message.MessageId = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.PartitionKey, ob => { message.PartitionKey = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.ReplyTo, ob => { message.ReplyTo = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.ReplyToSessionId, ob => { message.ReplyToSessionId = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.SessionId, ob => { message.SessionId = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.Subject, ob => { message.Subject = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.To, ob => { message.To = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.TransactionPartitionKey, ob => { message.TransactionPartitionKey = ob; });
 
         return message;
     }
 
-    private static void SetMessageFieldIfEnabled<TFieldValueType>(SbMessageField<TFieldValueType> field, Action<TFieldValueType> messagePropertySetter)
+    private static void SetMessageFieldIfEnabled<TFieldValueType>(SbMessageField<TFieldValueType> field,
+        Action<TFieldValueType> messagePropertySetter)
     {
         if (field.IsEnabled)
         {

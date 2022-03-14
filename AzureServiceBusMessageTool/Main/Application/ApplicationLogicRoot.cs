@@ -3,6 +3,7 @@ using Main.Application.Logging;
 using Main.Application.Persistence;
 using Main.Commands;
 using Main.ConfigsGuiMetadata;
+using Main.Validations;
 using Main.ViewModels;
 using Main.ViewModels.Configs;
 using Main.ViewModels.Configs.Receivers;
@@ -105,6 +106,7 @@ public class MessageSenderFactory
 
     public IMessageSender Create()
     {
-        return new MessageSender(_logger);
+        var validator = new SenderSettingsValidator();
+        return new MessageSender(validator,_logger);
     }
 }

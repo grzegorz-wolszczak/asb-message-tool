@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Core.Maybe;
 
 namespace Main.ViewModels.Configs.Senders;
 
 public interface IMessageSender
 {
-    Maybe<MessageSendErrorInfo> Send(MessageToSendData msgToSend);
+    Task<Maybe<MessageSendErrorInfo>> Send(ServiceBusMessageSendData senderConfig);
 }
 
 public class MessageSendErrorInfo
