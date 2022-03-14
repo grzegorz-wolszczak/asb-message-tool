@@ -1,5 +1,9 @@
 ﻿
-
+### v0.12.0
+ - fix: bringing back main bottom window expander. 
+    Log TextBox is not resizing automatically when new logs appear.
+ - added validation before sending message
+ - making sending async
 ### v0.11.0
 - fix: don't show two exception windows
 - added validation when receiver starts - added new state "Initializing"

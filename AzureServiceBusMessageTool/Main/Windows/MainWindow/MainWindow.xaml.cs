@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Main.Application;
@@ -14,7 +15,7 @@ namespace Main.Windows.MainWindow;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private GridLength _expanderHightBeforeCollapsing;
+    private double lastExpandedExpanderHeight;
 
     public MainWindow(
         MainViewModel mainViewModel,
@@ -82,17 +83,37 @@ public partial class MainWindow : Window
 
     private void BottomExpander_OnCollapsed(object sender, RoutedEventArgs e)
     {
-        _expanderHightBeforeCollapsing = ExpanderRow.Height;
         MainContentRow.Height = new GridLength(1, GridUnitType.Star);
         ExpanderRow.Height = new GridLength(1, GridUnitType.Auto);
-        ExpanderRow.MinHeight = 0;
     }
 
     private void BottomExpander_OnExpanded(object sender, RoutedEventArgs e)
     {
-        ExpanderRow.Height = _expanderHightBeforeCollapsing;
-        // todo: MinimumLogExpanderHeight value should be somehow calculated and be absolute value
-        // don't know how to do it yet
-        ExpanderRow.MinHeight = AppDefaults.MinimumLogExpanderHeight;
+        // if it was never assigned , it will be zero
+        // in that case calculate ExpanderRow differently
+        if (lastExpandedExpanderHeight <= 0)
+        {
+            ExpanderRow.Height = new GridLength(0.3, GridUnitType.Star);
+        }
+        else
+        {
+            ExpanderRow.Height = new GridLength(lastExpandedExpanderHeight);
+
+        }
+    }
+
+    private void BottomExpander_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (!LogTextBoxExpander.IsExpanded)
+        {
+            return;
+        }
+
+        if (!e.HeightChanged)
+        {
+            return;
+        }
+
+        lastExpandedExpanderHeight = e.NewSize.Height;
     }
 }

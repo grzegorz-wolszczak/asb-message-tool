@@ -8,7 +8,7 @@ namespace Main.Commands;
 public class SendServiceMessageCommand : ICommand
 {
     private readonly IMessageSender _messageSender;
-    private readonly Func<MessageToSendData> _msgProviderFunc;
+    private readonly Func<ServiceBusMessageSendData> _msgProviderFunc;
     private readonly Action<MessageSendErrorInfo> _onErrorAction;
     private readonly Action<string> _onSuccessAction;
     private readonly Action<Exception> _onUnexpectedExceptionAction;
@@ -16,7 +16,7 @@ public class SendServiceMessageCommand : ICommand
     private bool _canExecute = true;
 
     public SendServiceMessageCommand(IMessageSender messageSender,
-        Func<MessageToSendData> msgProviderFunc,
+        Func<ServiceBusMessageSendData> msgProviderFunc,
         Action<MessageSendErrorInfo> onErrorAction,
         Action<string> onSuccessAction,
         Action<Exception> onUnexpectedExceptionAction,
@@ -37,21 +37,21 @@ public class SendServiceMessageCommand : ICommand
 
     public void Execute(object parameter)
     {
-        Task.Factory.StartNew(() =>
+        Task.Factory.StartNew(async () =>
         {
             try
             {
                 _canExecute = false;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-                MessageToSendData messageToSendData = _msgProviderFunc.Invoke();
-                var maybeError = _messageSender.Send(messageToSendData);
+                ServiceBusMessageSendData serviceBusMessageSendData = _msgProviderFunc.Invoke();
+                var maybeError = await _messageSender.Send(serviceBusMessageSendData);
                 if (maybeError.HasValue)
                 {
                     _onErrorAction(maybeError.Value());
                 }
                 else
                 {
-                    _onSuccessAction("Ok: message sent successfully");
+                    _onSuccessAction("Message sent successfully");
                 }
             }
             catch (Exception e)
