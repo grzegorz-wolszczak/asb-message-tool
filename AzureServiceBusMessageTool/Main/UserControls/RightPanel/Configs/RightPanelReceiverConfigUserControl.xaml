@@ -372,7 +372,12 @@
                                   IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent }">
                             Word wrap
                         </CheckBox>
-
+                        <CheckBox
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldShowOnlyBodyAsJson }">
+                            Show only body (as JSON)
+                        </CheckBox>
 
                     </StackPanel>
 

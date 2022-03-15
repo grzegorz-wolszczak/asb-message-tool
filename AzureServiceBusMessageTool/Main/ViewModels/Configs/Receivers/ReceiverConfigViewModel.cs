@@ -40,12 +40,15 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
     private IMessageApplicationPropertiesWindowProxy _messageApplicationPropertiesWindowProxy;
     private readonly IDeadLetterMessagePropertiesWindowProxy _deadLetterMessagePropertiesWindowProxy;
     private IServiceBusMessageReceiver _serviceBusMessageReceiver;
+    private readonly ReceivedMessageFormatter _receivedMessageFormatter;
 
     public ReceiverConfigViewModel(IReceiverConfigWindowDetacher receiverConfigWindowDetacher,
         IMessageApplicationPropertiesWindowProxy messageApplicationPropertiesWindowProxy,
         IDeadLetterMessagePropertiesWindowProxy deadLetterMessagePropertiesWindowProxy,
-        IServiceBusMessageReceiver serviceBusMessageReceiver)
+        IServiceBusMessageReceiver serviceBusMessageReceiver,
+        ReceivedMessageFormatter receivedMessageFormatter)
     {
+        _receivedMessageFormatter = receivedMessageFormatter;
         _messageApplicationPropertiesWindowProxy = messageApplicationPropertiesWindowProxy;
         _deadLetterMessagePropertiesWindowProxy = deadLetterMessagePropertiesWindowProxy;
         _receiverConfigWindowDetacher = receiverConfigWindowDetacher;
@@ -71,6 +74,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
                 DeadLetterMessageOverriddenApplicationProperties = Item.DeadLetterMessageApplicationOverridenProperties,
                 DeadLetterMessageFields = Item.DeadLetterMessageFields,
                 DeadLetterMessageFieldsOverrideType = Item.DeadLetterMessageFieldsOverrideType,
+                ShouldShowOnlyMessageBodyAsJson = Item.ShouldShowOnlyBodyAsJson
             },
             onMessageReceived: AppendReceivedMessageToOutput,
             onReceiverStarted: SetReceiverListeningStatus,
@@ -123,8 +127,9 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
 
     private void AppendReceivedMessageToOutput(ReceivedMessage msg)
     {
+        var msgBody = _receivedMessageFormatter.Format(msg.OriginalMessage, Item.ShouldShowOnlyBodyAsJson);
         ReceivedMessagesContent += $"{TimeUtils.GetShortTimestamp()} received message: \n" +
-                                   $"{msg.Body}" +
+                                   $"{msgBody}" +
                                    "\n----------------------------------\n";
     }
 

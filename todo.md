@@ -12,7 +12,8 @@
 - add missing TimeToLive field to message properties
 - add missing ScheduledEnqueueTimeUtc field to message properties
 - rename all windows titles
-
+- add sending to topic or queue (just change the label, it is already sending to topic or queue)
+- add receiving from topic/subscription or queue
 ## Bugs:
 
 

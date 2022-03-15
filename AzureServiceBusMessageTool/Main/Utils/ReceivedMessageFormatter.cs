@@ -3,18 +3,26 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using Azure.Messaging.ServiceBus;
+using Main.Application.Logging;
+using Newtonsoft.Json;
 
 namespace Main.Utils;
 
 public class ReceivedMessageFormatter
 {
+    private readonly IServiceBusHelperLogger _logger;
     private int _maxFieldWidth;
     private OrderedDictionary _fieldValues = new();
     // application properties will be displayed with additional indent
     // make room for it for standard message properties
     private readonly string applicationPropertiesIndent = new String(' ', 3);
 
-    public string Format(ServiceBusReceivedMessage msg)
+    public ReceivedMessageFormatter(IServiceBusHelperLogger logger)
+    {
+        _logger = logger;
+    }
+
+    public string Format(ServiceBusReceivedMessage msg, bool configShouldShowOnlyMessageBodyAsJson)
     {
         _fieldValues.Clear();
         _maxFieldWidth = 0;
@@ -23,9 +31,39 @@ public class ReceivedMessageFormatter
         CalculateMaxFieldWidth(msg);
 
         var sb = new StringBuilder();
+
+        if (!configShouldShowOnlyMessageBodyAsJson)
+        {
+            AppendAllFieldsWithoutJsonBodyDeserialization(msg, sb);
+        }
+        else
+        {
+            var msbBody = msg.Body.ToString();
+            try
+            {
+
+                dynamic parsedJson = JsonConvert.DeserializeObject(msbBody);
+                var readOnlyMemory = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                sb.Append(readOnlyMemory);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError($"While formatting received message, deserialization body field (as json):\n" +
+                                 $"'{msbBody}'\n" +
+                                 $"failed with error : '{e.Message}', falling back to full message formatting.");
+                AppendAllFieldsWithoutJsonBodyDeserialization(msg, sb);
+            }
+
+        }
+
+        return sb.ToString();
+    }
+
+    private void AppendAllFieldsWithoutJsonBodyDeserialization(ServiceBusReceivedMessage msg, StringBuilder sb)
+    {
         var enumerator = _fieldValues.GetEnumerator();
-        var formatString = $"{{0,-{_maxFieldWidth }}}";
-        var appPropertyFormatString = $"{{0,-{_maxFieldWidth -applicationPropertiesIndent.Length }}}";
+        var formatString = $"{{0,-{_maxFieldWidth}}}";
+        var appPropertyFormatString = $"{{0,-{_maxFieldWidth - applicationPropertiesIndent.Length}}}";
         while (enumerator.MoveNext())
         {
             sb.Append($"{String.Format(formatString, enumerator.Key)} : '{enumerator.Value}'\n");
@@ -33,7 +71,7 @@ public class ReceivedMessageFormatter
 
         var appProperties = msg.ApplicationProperties;
 
-        if (appProperties != null && appProperties.Count>0)
+        if (appProperties != null && appProperties.Count > 0)
         {
             sb.Append("\n####### Application properties:\n");
 
@@ -41,13 +79,11 @@ public class ReceivedMessageFormatter
             {
                 sb.Append($"{applicationPropertiesIndent}{String.Format(appPropertyFormatString, appProperty.Key)} : '{appProperty.Value}'\n");
             }
+
             sb.Append('\n');
         }
 
         sb.Append($"{String.Format(formatString, "Body")} : '{msg.Body.ToString()}'\n");
-
-
-        return sb.ToString();
     }
 
     private void CalculateMaxFieldWidth(ServiceBusReceivedMessage msg)
