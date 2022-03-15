@@ -7,7 +7,6 @@ using Main.Application;
 using Main.Application.Logging;
 using Main.ExceptionHandling;
 using Main.Models;
-using Main.Utils;
 using Main.Validations;
 
 namespace Main.ViewModels.Configs.Receivers;
@@ -90,13 +89,12 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
         }
     }
 
-    private async Task ReceiveUntilCancelledOrStopped(ServiceBusReceiverOptions serviceBusReceiverOptions,
+    private async Task ReceiveUntilCancelledOrStopped(
+        ServiceBusReceiverOptions serviceBusReceiverOptions,
         CancellationToken token)
     {
-        await using var receiver = _client.CreateReceiver(
-            _config.TopicName,
-            _config.SubscriptionName,
-            serviceBusReceiverOptions);
+        await using var receiver = CreateReceiverForReceiveServiceType(serviceBusReceiverOptions);
+
 
         _logger.LogInfo($"Receiver '{_config.ConfigName}' started.");
         _callbacks.OnReceiverStarted.Invoke();
@@ -116,6 +114,24 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
 
             await Task.Delay(_config.MessageReceiveDelayPeriod, token);
         }
+    }
+
+    private ServiceBusReceiver CreateReceiverForReceiveServiceType(ServiceBusReceiverOptions serviceBusReceiverOptions)
+    {
+        if (_config.ReceiverDataSourceType == ReceiverDataSourceType.Topic)
+        {
+            return _client.CreateReceiver(
+                _config.TopicName,
+                _config.SubscriptionName,
+                serviceBusReceiverOptions);
+        }
+
+        if (_config.ReceiverDataSourceType == ReceiverDataSourceType.Queue)
+        {
+            return _client.CreateReceiver(_config.ReceiverQueueName, serviceBusReceiverOptions);
+        }
+
+        throw new AsbMessageToolException($"InternalError: Unhandled enum :'{_config.ReceiverDataSourceType}'");
     }
 
     private void StopReceiver()

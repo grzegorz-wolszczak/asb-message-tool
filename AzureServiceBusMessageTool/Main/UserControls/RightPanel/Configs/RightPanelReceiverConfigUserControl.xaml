@@ -101,30 +101,117 @@
                          Mode=TwoWay,
                          UpdateSourceTrigger=PropertyChanged}" />
 
+                <GroupBox  Margin="5,2,5,2"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="3"
+                           Grid.Row="2"
+                           Grid.RowSpan="2">
+                     <Grid >
 
-                <Label Grid.Column="0"
-                       Grid.Row="2"
-                       Margin="5,2,5,2"
-                       Content="Input topic name" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-                <TextBox Grid.Column="1"
-                         Grid.Row="2"
-                         Margin="5,2,5,2"
-                         Grid.ColumnSpan="2"
-                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicName,
+                    <GroupBox
+                              Grid.Row="0"
+                              Header = "Receive source">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Margin="5,2,5,2" Content="Topic" Name="TopicConfiguredRadioButton"
+                                         IsChecked="{Binding
+                                Path=CurrentSelectedConfigModelItem.Item.ReceiverDataSourceType,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:ReceiverDataSourceType.Topic} }"
+
+
+                                         />
+                            <RadioButton Margin="5,2,5,2" Content="Queue" Name="QueueConfiguredRadioButton"
+                                         IsChecked="{Binding
+                                Path=CurrentSelectedConfigModelItem.Item.ReceiverDataSourceType,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:ReceiverDataSourceType.Queue} }"
+
+                                         />
+                        </StackPanel>
+
+                    </GroupBox>
+
+                         <GroupBox Grid.Row="1" Name="TopicConfiguredGroupBox"
+                                   Visibility="{Binding ElementName=TopicConfiguredRadioButton, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                   >
+                             <Grid>
+                                 <Grid.RowDefinitions>
+                                     <RowDefinition/>
+                                     <RowDefinition/>
+                                 </Grid.RowDefinitions>
+
+                                 <Grid.ColumnDefinitions>
+                                     <ColumnDefinition Width="Auto" />
+                                     <ColumnDefinition />
+                                     <ColumnDefinition />
+                                 </Grid.ColumnDefinitions>
+
+                                 <Label Grid.Column="0"
+                                        Grid.Row="0"
+                                        Margin="5,2,5,2"
+                                        Content="Topic name" />
+
+                                 <TextBox Grid.Column="1"
+                                          Grid.Row="0"
+                                          Margin="5,2,5,2"
+                                          Grid.ColumnSpan="2"
+                                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicName,
                          UpdateSourceTrigger=PropertyChanged}" />
 
-                <Label Grid.Column="0"
-                       Grid.Row="3"
-                       Margin="5,2,5,2"
-                       Content="Input topic subscription name" />
+                                 <Label Grid.Column="0"
+                                        Grid.Row="1"
+                                        Margin="5,2,5,2"
+                                        Content="Topic subscription name" />
 
-                <TextBox Grid.Column="1"
-                         Grid.Row="3"
-                         Margin="5,2,5,2"
-                         Grid.ColumnSpan="2"
-                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName,
+                                 <TextBox Grid.Column="1"
+                                          Grid.Row="1"
+                                          Margin="5,2,5,2"
+                                          Grid.ColumnSpan="2"
+                                          Text="{Binding Path=CurrentSelectedConfigModelItem.Item.InputTopicSubscriptionName,
                          UpdateSourceTrigger=PropertyChanged}" />
+                             </Grid>
+                         </GroupBox>
+
+                    <GroupBox Grid.Row="1" Name="QueueConfiguredGroupBox"
+                              Visibility="{Binding ElementName=QueueConfiguredRadioButton, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                              >
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Column="0"
+                                       Grid.Row="0"
+                                       Margin="5,2,5,2"
+                                       Content="Queue name" />
+
+                                <TextBox Grid.Column="1"
+                                         Grid.Row="0"
+                                         Margin="5,2,5,2"
+                                         Grid.ColumnSpan="2"
+                                         Text="{Binding Path=CurrentSelectedConfigModelItem.Item.ReceiverQueueName,
+                         UpdateSourceTrigger=PropertyChanged}" />
+
+                            </Grid>
+                    </GroupBox>
+                </Grid>
+
+                </GroupBox>
+
+
+
 
                 <CheckBox Grid.Column="0"
                           Grid.Row="4"

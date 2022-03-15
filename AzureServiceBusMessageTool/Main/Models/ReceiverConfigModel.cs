@@ -15,6 +15,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private string _inputTopicName;
     private string _inputTopicSubscriptionName;
     private bool _isAttachedToDeadLetterSubqueue;
+    private string _receiverQueueName;
     private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
     private bool _shouldWordWrapLogContent;
     private bool _shouldShowOnlyMessageBodyAsJson;
@@ -24,6 +25,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private SbDeadLetterMessageFields _sbDeadLetterMessageFields = new();
     private OnMessageReceiveEnumAction _onMessageReceiveAction;
     private DeadLetterMessageFieldsOverrideEnumType _deadLetterMessageFieldsOverrideType;
+    private ReceiverDataSourceType _receiverDataSourceType;
 
 
     public string ConfigName
@@ -33,6 +35,17 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
         {
             if (value == _configName) return;
             _configName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ReceiverQueueName
+    {
+        get => _receiverQueueName;
+        set
+        {
+            if (value == _receiverQueueName) return;
+            _receiverQueueName = value;
             OnPropertyChanged();
         }
     }
@@ -48,6 +61,16 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
         }
     }
 
+    public ReceiverDataSourceType ReceiverDataSourceType
+    {
+        get => _receiverDataSourceType;
+        set
+        {
+            if (value == _receiverDataSourceType) return;
+            _receiverDataSourceType = value;
+            OnPropertyChanged();
+        }
+    }
 
     public DeadLetterMessageFieldsOverrideEnumType DeadLetterMessageFieldsOverrideType
     {

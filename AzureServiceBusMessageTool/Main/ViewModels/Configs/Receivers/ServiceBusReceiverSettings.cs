@@ -21,6 +21,10 @@ public record ServiceBusReceiverSettings
     public SbDeadLetterMessageFields DeadLetterMessageFields { get; init; }
     public DeadLetterMessageFieldsOverrideEnumType DeadLetterMessageFieldsOverrideType { get; init; }
     public bool ShouldShowOnlyMessageBodyAsJson { get; init; }
+
+    public string ReceiverQueueName { get; init; }
+
+    public ReceiverDataSourceType ReceiverDataSourceType { get; init; }
 }
 
 public static class Extensions

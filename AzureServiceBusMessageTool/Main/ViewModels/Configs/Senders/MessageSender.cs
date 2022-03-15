@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using Azure.Messaging.ServiceBus;
 using Core.Maybe;
 using Main.Application.Logging;
@@ -14,7 +13,7 @@ namespace Main.ViewModels.Configs.Senders;
 public record ServiceBusMessageSendData
 {
     public string ConnectionString { get; init; }
-    public string TopicName { get; init; }
+    public string QueueOrTopicName { get; init; }
     public string MsgBody { get; init; }
     public SbMessageStandardFields Fields { get; init; }
     public IList<SBMessageApplicationProperty> ApplicationProperties { get; init; }
@@ -66,8 +65,8 @@ public class MessageSender : IMessageSender
         var msgBody = msgSend.MsgBody;
 
         var client = GetClientForConnectionString(msgSend.ConnectionString);
-        var sender = GetSenderForClient(client, msgSend.TopicName, msgSend.ConnectionString);
-        _logger.LogInfo($"Sending message to topic '{msgSend.TopicName}\nwith content :'{msgBody}'");
+        var sender = GetSenderForClient(client, msgSend.QueueOrTopicName, msgSend.ConnectionString);
+        _logger.LogInfo($"Sending message to topic '{msgSend.QueueOrTopicName}\nwith content :'{msgBody}'");
 
         var message = FillAllMessageFields(msgBody, msgSend.Fields, msgSend.ApplicationProperties);
 

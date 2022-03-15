@@ -1,9 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Core.Maybe;
 using Main.Application.Logging;
+using Main.ExceptionHandling;
+using Main.Models;
 using Main.ViewModels.Configs.Receivers;
 
 namespace Main.Validations;
@@ -20,36 +21,38 @@ public class ReceiverSettingsValidator : IReceiverSettingsValidator
     public async Task<Maybe<ValidationErrorResult>> Validate(ServiceBusReceiverSettings settings, CancellationToken token)
     {
         var sbClient = new ServiceBusAdministrationClient(settings.ConnectionString);
-        if (string.IsNullOrWhiteSpace(settings.TopicName))
+        if (settings.ReceiverDataSourceType == ReceiverDataSourceType.Topic)
         {
-            return new ValidationErrorResult("Topic name is null or whitespace").ToMaybe();
+            return await ValidateTopicWithSubscriptionConfiguration(sbClient, settings.TopicName, settings.SubscriptionName, token);
         }
 
-        if (string.IsNullOrWhiteSpace(settings.SubscriptionName))
+        if (settings.ReceiverDataSourceType == ReceiverDataSourceType.Queue)
         {
-            return new ValidationErrorResult("Subscription is null or whitespace").ToMaybe();
+            return await ValidateQueueConfiguration(settings, sbClient, token);
         }
 
-        try
-        {
-            await sbClient.GetTopicAsync(settings.TopicName, token);
-        }
-        catch (ServiceBusException e)
-        {
-            if (e.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
-            {
-                return new ValidationErrorResult($"Topic '{settings.TopicName}' does not exist").ToMaybe();
-            }
+        throw new AsbMessageToolException($"Internal error: unhandled enum value '{settings.ReceiverDataSourceType}'");
+    }
 
-            return new ValidationErrorResult($"ServiceBus exception happened: {e}").ToMaybe();
-        }
+    private async Task<Maybe<ValidationErrorResult>> ValidateQueueConfiguration(ServiceBusReceiverSettings settings,
+        ServiceBusAdministrationClient sbClient,
+        CancellationToken token)
+    {
+        return await ServiceBusValidations.ValidateQueue(sbClient, settings.ReceiverQueueName, token);
+    }
 
-        var subscriptionExists = await sbClient.SubscriptionExistsAsync(settings.TopicName, settings.SubscriptionName, token);
-        if (false == subscriptionExists)
+
+    private static async Task<Maybe<ValidationErrorResult>> ValidateTopicWithSubscriptionConfiguration(ServiceBusAdministrationClient sbClient,
+        string topicName,
+        string subscriptionName,
+        CancellationToken token)
+    {
+        var topicValidationResult = await ServiceBusValidations.ValidateTopic(sbClient, topicName, token);
+        if (topicValidationResult.HasValue)
         {
-            return new ValidationErrorResult($"Subscription '{settings.SubscriptionName}' in topic '{settings.TopicName}' does not exist").ToMaybe();
+            return topicValidationResult;
         }
 
-        return Maybe<ValidationErrorResult>.Nothing;
+        return await ServiceBusValidations.ValidateSubscription(sbClient, topicName, subscriptionName, token);
     }
 }
