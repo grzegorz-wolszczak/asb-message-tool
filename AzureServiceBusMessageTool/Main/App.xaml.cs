@@ -23,7 +23,8 @@ public partial class App : System.Windows.Application
 
     private void App_OnExit(object sender, ExitEventArgs e)
     {
-        _applicationLogicRoot.Stop();
+        // this can be null if we exception occured in OnStartup and applicationLogicRootObject was never created
+        _applicationLogicRoot?.Stop();
     }
 
 

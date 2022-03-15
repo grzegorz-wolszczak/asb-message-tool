@@ -74,7 +74,9 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
                 DeadLetterMessageOverriddenApplicationProperties = Item.DeadLetterMessageApplicationOverridenProperties,
                 DeadLetterMessageFields = Item.DeadLetterMessageFields,
                 DeadLetterMessageFieldsOverrideType = Item.DeadLetterMessageFieldsOverrideType,
-                ShouldShowOnlyMessageBodyAsJson = Item.ShouldShowOnlyBodyAsJson
+                ShouldShowOnlyMessageBodyAsJson = Item.ShouldShowOnlyBodyAsJson,
+                ReceiverQueueName = Item.ReceiverQueueName,
+                ReceiverDataSourceType = Item.ReceiverDataSourceType
             },
             onMessageReceived: AppendReceivedMessageToOutput,
             onReceiverStarted: SetReceiverListeningStatus,

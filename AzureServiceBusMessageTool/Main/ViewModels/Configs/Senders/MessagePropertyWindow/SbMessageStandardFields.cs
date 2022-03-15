@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Main.ViewModels.Configs.Senders.MessagePropertyWindow;
+﻿namespace Main.ViewModels.Configs.Senders.MessagePropertyWindow;
 
 public interface ISbMessageField
 {

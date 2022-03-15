@@ -74,7 +74,7 @@ public class SenderConfigViewModel : INotifyPropertyChanged
                 {
                     ConnectionString = Item.ServiceBusConnectionString,
                     MsgBody = Item.MsgBody,
-                    TopicName = Item.OutputTopicName,
+                    QueueOrTopicName = Item.OutputTopicName,
                     Fields = Item.MessageFields,
                     ApplicationProperties = Item.ApplicationProperties,
                     ConfigName = Item.ConfigName

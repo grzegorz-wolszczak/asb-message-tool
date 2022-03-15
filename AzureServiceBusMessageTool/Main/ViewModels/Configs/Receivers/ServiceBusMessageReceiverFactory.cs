@@ -1,5 +1,4 @@
-﻿using System;
-using Main.Application.Logging;
+﻿using Main.Application.Logging;
 using Main.Validations;
 
 namespace Main.ViewModels.Configs.Receivers;
