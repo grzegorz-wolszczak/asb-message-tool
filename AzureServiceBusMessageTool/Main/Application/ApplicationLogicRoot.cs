@@ -3,6 +3,7 @@ using Main.Application.Logging;
 using Main.Application.Persistence;
 using Main.Commands;
 using Main.ConfigsGuiMetadata;
+using Main.Utils;
 using Main.Validations;
 using Main.ViewModels;
 using Main.ViewModels.Configs;
@@ -53,11 +54,11 @@ public class ApplicationLogicRoot
         var serviceBusMessageReceiverFactory = new ServiceBusMessageReceiverFactory(_logger);
         var messageApplicationPropertiesFactory = new MessagePropertiesWindowProxyFactory();
         var deadLetterMessagePropertiesWindowProxyFactory = new DeadLetterMessagePropertiesWindowProxyFactory();
+        var receivedMessageFormatter = new ReceivedMessageFormatter(_logger);
         ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(
             serviceBusMessageReceiverFactory,
             messageApplicationPropertiesFactory,
-            deadLetterMessagePropertiesWindowProxyFactory
-            );
+            deadLetterMessagePropertiesWindowProxyFactory, receivedMessageFormatter);
 
         var leftPanelControlViewModel = new LeftPanelControlViewModel(
             serviceBusConfigsViewModel,

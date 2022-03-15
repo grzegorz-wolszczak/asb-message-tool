@@ -20,6 +20,7 @@ public record ServiceBusReceiverSettings
     public IList<SBMessageApplicationProperty> DeadLetterMessageOverriddenApplicationProperties { get; init; }
     public SbDeadLetterMessageFields DeadLetterMessageFields { get; init; }
     public DeadLetterMessageFieldsOverrideEnumType DeadLetterMessageFieldsOverrideType { get; init; }
+    public bool ShouldShowOnlyMessageBodyAsJson { get; init; }
 }
 
 public static class Extensions

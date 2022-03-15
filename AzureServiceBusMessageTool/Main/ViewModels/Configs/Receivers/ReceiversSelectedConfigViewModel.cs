@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Main.Commands;
 using Main.ConfigsGuiMetadata;
 using Main.Models;
+using Main.Utils;
 using Main.Windows.DeadLetterMessage;
 
 namespace Main.ViewModels.Configs.Receivers;
@@ -15,6 +16,11 @@ public sealed class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
 {
     private ReceiverConfigViewModel _currentSelectedItem;
     private bool _isReceiverConfigTabSelected;
+    private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
+    private ServiceBusMessageReceiverFactory _serviceBusMessageReceiverFactory;
+    private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
+    private DeadLetterMessagePropertiesWindowProxyFactory _deadLetterMessagePropertiesWindowProxyFactory;
+    private readonly ReceivedMessageFormatter _receivedMessageFormatter;
 
     public bool IsReceiverConfigTabSelected
     {
@@ -35,13 +41,14 @@ public sealed class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
     public ReceiversSelectedConfigViewModel(
         ServiceBusMessageReceiverFactory serviceBusMessageReceiverFactory,
         MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
-        DeadLetterMessagePropertiesWindowProxyFactory deadLetterMessagePropertiesWindowProxyFactory)
+        DeadLetterMessagePropertiesWindowProxyFactory deadLetterMessagePropertiesWindowProxyFactory,
+        ReceivedMessageFormatter receivedMessageFormatter)
     {
         _serviceBusMessageReceiverFactory = serviceBusMessageReceiverFactory;
         _messagePropertiesWindowProxyFactory = messagePropertiesWindowProxyFactory;
         _deadLetterMessagePropertiesWindowProxyFactory = deadLetterMessagePropertiesWindowProxyFactory;
         _receiverConfigElementsGuiMetadataManager = new ReceiverConfigElementsGuiMetadataManager();
-
+        _receivedMessageFormatter = receivedMessageFormatter;
         AddReceiverConfigCommand = new DelegateCommand(_ =>
         {
             var newConfig = new ReceiverConfigModel
@@ -65,6 +72,7 @@ public sealed class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
                 ReceiversConfigs.Remove(CurrentSelectedConfigModelItem);
             },
             _ => CurrentSelectedConfigModelItem != null);
+        ;
     }
 
     private void AddNewConfig(ReceiverConfigModel newConfig)
@@ -73,7 +81,8 @@ public sealed class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
             _receiverConfigElementsGuiMetadataManager,
             _messagePropertiesWindowProxyFactory.Create(),
             _deadLetterMessagePropertiesWindowProxyFactory.Create(),
-            _serviceBusMessageReceiverFactory.Create())
+            _serviceBusMessageReceiverFactory.Create(),
+            _receivedMessageFormatter)
         {
             Item = newConfig
         };
@@ -105,10 +114,7 @@ public sealed class ReceiversSelectedConfigViewModel : INotifyPropertyChanged
         }
     }
 
-    private bool _isEmbeddedSenderConfigUserControlForEditingEnabled;
-    private ServiceBusMessageReceiverFactory _serviceBusMessageReceiverFactory;
-    private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
-    private DeadLetterMessagePropertiesWindowProxyFactory _deadLetterMessagePropertiesWindowProxyFactory;
+
 
     public bool IsEmbeddedSenderConfigUserControlForEditingEnabled
     {

@@ -21,14 +21,12 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
     private ReceiverCallbacks _callbacks;
     private ServiceBusClient _client;
     private StopReason _stopReason = StopReason.Intentional;
-    private ReceivedMessageFormatter _msgFormatter;
 
     public ServiceBusMessageReceiver(IServiceBusHelperLogger logger,
         IReceiverSettingsValidator receiversSettingsValidator)
     {
         _logger = logger;
         _receiversSettingsValidator = receiversSettingsValidator;
-        _msgFormatter = new ReceivedMessageFormatter();
     }
 
     private enum StopReason
@@ -104,13 +102,13 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
         _callbacks.OnReceiverStarted.Invoke();
         while (!token.IsCancellationRequested)
         {
-            var message = await receiver.ReceiveMessageAsync(StaticConfig.MessageReceiverReceiveTimeout, token);
+            ServiceBusReceivedMessage message = await receiver.ReceiveMessageAsync(StaticConfig.MessageReceiverReceiveTimeout, token);
 
             if (message != null)
             {
                 var receivedMessage = new ReceivedMessage
                 {
-                    Body = _msgFormatter.Format(message)
+                    OriginalMessage = message
                 };
                 _callbacks.OnMessageReceive(receivedMessage);
                 await FinalizeMessageReceiveForPickLockMode(message, receiver, token);

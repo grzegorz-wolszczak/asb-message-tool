@@ -17,6 +17,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private bool _isAttachedToDeadLetterSubqueue;
     private bool _shouldScrollTextBoxToEndOnNewMessageReceive;
     private bool _shouldWordWrapLogContent;
+    private bool _shouldShowOnlyMessageBodyAsJson;
     private int _msgBodyTextBoxFontSize = AppDefaults.DefaultTextBoxFontSize;
     private IList<SBMessageApplicationProperty> _abandonMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
     private IList<SBMessageApplicationProperty> _deadLetterMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
@@ -124,6 +125,17 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
         {
             if (value == _shouldWordWrapLogContent) return;
             _shouldWordWrapLogContent = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShouldShowOnlyBodyAsJson
+    {
+        get => _shouldShowOnlyMessageBodyAsJson;
+        set
+        {
+            if (value == _shouldShowOnlyMessageBodyAsJson) return;
+            _shouldShowOnlyMessageBodyAsJson = value;
             OnPropertyChanged();
         }
     }
