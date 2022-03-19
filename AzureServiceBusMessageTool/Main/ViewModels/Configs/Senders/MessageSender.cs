@@ -66,7 +66,7 @@ public class MessageSender : IMessageSender
 
         var client = GetClientForConnectionString(msgSend.ConnectionString);
         var sender = GetSenderForClient(client, msgSend.QueueOrTopicName, msgSend.ConnectionString);
-        _logger.LogInfo($"Sending message to topic '{msgSend.QueueOrTopicName}\nwith content :'{msgBody}'");
+        _logger.LogInfo($"Sending message to queue/topic '{msgSend.QueueOrTopicName}' with content\n: '{msgBody}'");
 
         var message = FillAllMessageFields(msgBody, msgSend.Fields, msgSend.ApplicationProperties);
 

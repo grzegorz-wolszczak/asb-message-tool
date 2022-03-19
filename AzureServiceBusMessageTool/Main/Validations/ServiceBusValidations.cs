@@ -14,9 +14,10 @@ public static class ServiceBusValidations
         string topicName,
         CancellationToken token)
     {
+        var errorMessagePrefix = $"While validating topic name '{topicName}'";
         if (string.IsNullOrWhiteSpace(topicName))
         {
-            return new ValidationErrorResult("Topic name is null or whitespace").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: topic name is null or whitespace").ToMaybe();
         }
 
         try
@@ -31,12 +32,12 @@ public static class ServiceBusValidations
                     optionalInfo = " (but queue with that name exists!)";
                 }
 
-                return new ValidationErrorResult($"Topic '{topicName}' does not exist{optionalInfo}.").ToMaybe();
+                return new ValidationErrorResult($"{errorMessagePrefix}: topic does not exist{optionalInfo}.").ToMaybe();
             }
         }
         catch (ServiceBusException e)
         {
-            return new ValidationErrorResult($"ServiceBus exception happened (invalid connection string?): {e}").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: exception happened (invalid connection string?): {e}").ToMaybe();
         }
 
         return Maybe<ValidationErrorResult>.Nothing;
@@ -48,14 +49,15 @@ public static class ServiceBusValidations
         string subscriptionName,
         CancellationToken token)
     {
+        var errorMessagePrefix = $"While validating subscription name '{subscriptionName}' for topic name '{topicName}'";
         if (string.IsNullOrWhiteSpace(subscriptionName))
         {
-            return new ValidationErrorResult("Subscription is null or whitespace").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: subscription name is null or whitespace").ToMaybe();
         }
 
         if (!await sbClient.SubscriptionExistsAsync(topicName, subscriptionName, token))
         {
-            return new ValidationErrorResult($"Subscription '{subscriptionName}' for topic '{topicName}' does not exist").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: subscription '{subscriptionName}' for topic '{topicName}' does not exist").ToMaybe();
         }
 
         return Maybe<ValidationErrorResult>.Nothing;
@@ -66,9 +68,10 @@ public static class ServiceBusValidations
         string queueName,
         CancellationToken token)
     {
+        var errorMessagePrefix = $"While validating queue name '{queueName}'";
         if (string.IsNullOrWhiteSpace(queueName))
         {
-            return new ValidationErrorResult("Queue name is null or whitespace").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: queue name is null or whitespace").ToMaybe();
         }
 
         try
@@ -86,11 +89,40 @@ public static class ServiceBusValidations
                 optionalTopicInfo = " (but topic with that name exists!)";
             }
 
-            return new ValidationErrorResult($"Queue '{queueName}' does not exist{optionalTopicInfo}.").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: queue does not exist{optionalTopicInfo}.").ToMaybe();
         }
         catch (Exception e)
         {
-            return new ValidationErrorResult($"ServiceBus exception happened (invalid connection string?): {e}").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: exception happened (invalid connection string?): {e}").ToMaybe();
+        }
+    }
+
+    public static async Task<Maybe<ValidationErrorResult>> ValidateQueueOrTopicName(
+        ServiceBusAdministrationClient sbClient,
+        string queueOrTopicName,
+        CancellationToken token)
+    {
+        var errorMessagePrefix = $"While validating queue/topic name '{queueOrTopicName}'";
+        if (string.IsNullOrWhiteSpace(queueOrTopicName))
+        {
+            return new ValidationErrorResult($"{errorMessagePrefix}: queue/topic name is null or whitespace").ToMaybe();
+        }
+
+        try
+        {
+            var queueExists = await sbClient.QueueExistsAsync(queueOrTopicName, token);
+            var topicExists = await sbClient.TopicExistsAsync(queueOrTopicName, token);
+            if (queueExists || topicExists)
+            {
+                return Maybe<ValidationErrorResult>.Nothing;
+            }
+
+            return new ValidationErrorResult($"{errorMessagePrefix}: neither queue nor topic that name exist").ToMaybe();
+        }
+        catch (Exception e)
+        {
+            return new ValidationErrorResult($"{errorMessagePrefix}: exception happened (invalid connection string?): {e}")
+                .ToMaybe();
         }
     }
 }
