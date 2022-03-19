@@ -14,12 +14,14 @@ public class SenderSettingsValidator : ISenderSettingsValidator
     {
         var sbClient = new ServiceBusAdministrationClient(settings.ConnectionString);
         var queueOrTopicName = settings.QueueOrTopicName;
-        var topicValidationResult = await ServiceBusValidations.ValidateTopic(sbClient, queueOrTopicName, token);
-        if (topicValidationResult.IsNothing())
-        {
-            return topicValidationResult;
-        }
+        // var topicValidationResult = await ServiceBusValidations.ValidateTopic(sbClient, queueOrTopicName, token);
+        // if (topicValidationResult.IsNothing())
+        // {
+        //     return topicValidationResult;
+        // }
 
-        return await ServiceBusValidations.ValidateQueue(sbClient, queueOrTopicName, token);
+        //return await ServiceBusValidations.ValidateQueue(sbClient, queueOrTopicName, token);
+
+        return await ServiceBusValidations.ValidateQueueOrTopicName(sbClient, queueOrTopicName, token);
     }
 }

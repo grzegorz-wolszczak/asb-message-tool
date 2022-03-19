@@ -2,6 +2,8 @@
 ## asb-message-tool
 Application to send and receive messages from Azure service bus.
 
+- ![received-message](./Doc/Images/message-received.jpg)
+
 ### How to
  - [send message](./Doc/sending_messages.md)
  - [receive message](./Doc/receiving_messages.md)
