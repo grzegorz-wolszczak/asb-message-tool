@@ -14,17 +14,20 @@ public class ApplicationPersistentOptions
     private readonly ServiceBusSelectedConfigsViewModel _serviceBusConfigsViewModel;
     private readonly SendersSelectedConfigViewModel _sendersSelectedConfigViewModel;
     private readonly ReceiversSelectedConfigViewModel _receiversSelectedConfigViewModel;
+    private readonly LeftPanelControlViewModel _leftPanelControlViewModel;
 
     public ApplicationPersistentOptions(
         MainViewModel mainViewModel,
         ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel,
         SendersSelectedConfigViewModel sendersSelectedConfigViewModel,
-        ReceiversSelectedConfigViewModel receiversSelectedConfigViewModel)
+        ReceiversSelectedConfigViewModel receiversSelectedConfigViewModel,
+        LeftPanelControlViewModel leftPanelControlViewModel)
     {
         _mainViewModel = mainViewModel;
         _serviceBusConfigsViewModel = serviceBusConfigsViewModel;
         _sendersSelectedConfigViewModel = sendersSelectedConfigViewModel;
         _receiversSelectedConfigViewModel = receiversSelectedConfigViewModel;
+        _leftPanelControlViewModel = leftPanelControlViewModel;
     }
 
     public List<ServiceBusConfigModel> GetServiceBusConfigsToStore()
@@ -66,7 +69,8 @@ public class ApplicationPersistentOptions
         {
             ShouldScrollToEndOnLogContentChange = _mainViewModel.ShouldScrollToEndOnLogContentChange,
             ShouldWordWrapLogContent = _mainViewModel.ShouldWordWrapLogContent,
-            LogTextBoxFontSize = _mainViewModel.LogTextBoxFontSize
+            LogTextBoxFontSize = _mainViewModel.LogTextBoxFontSize,
+            SelectedLeftPanelTabIndex = _leftPanelControlViewModel.SelectedLeftPanelTabIndex
         };
     }
 
@@ -76,5 +80,6 @@ public class ApplicationPersistentOptions
         _mainViewModel.ShouldScrollToEndOnLogContentChange = mainWindowSettings.ShouldScrollToEndOnLogContentChange;
         _mainViewModel.ShouldWordWrapLogContent = mainWindowSettings.ShouldWordWrapLogContent;
         _mainViewModel.LogTextBoxFontSize = mainWindowSettings.LogTextBoxFontSize;
+        _leftPanelControlViewModel.SelectedLeftPanelTabIndex = mainWindowSettings.SelectedLeftPanelTabIndex;
     }
 }
