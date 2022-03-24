@@ -15,7 +15,7 @@ public class LeftPanelControlViewModel : INotifyPropertyChanged
     private bool _leftPanelServiceBusConfigTabIsSelected;
     private bool _leftPanelSenderConfigTabIsSelected;
     private bool _leftPanelReceiversConfigTabIsSelected;
-    private int _selectedLeftPanelTab;
+    private int _selectedLeftPanelTabIndex;
     
     public event PropertyChangedEventHandler PropertyChanged;
     
@@ -80,13 +80,13 @@ public class LeftPanelControlViewModel : INotifyPropertyChanged
         }
     }
     
-    public int SelectedLeftPanelTab
+    public int SelectedLeftPanelTabIndex
     {
-        get => _selectedLeftPanelTab;
+        get => _selectedLeftPanelTabIndex;
         set
         {
-            if (value == _selectedLeftPanelTab) return;
-            _selectedLeftPanelTab = value;
+            if (value == _selectedLeftPanelTabIndex) return;
+            _selectedLeftPanelTabIndex = value;
             OnPropertyChanged();
         }
     }

@@ -20,5 +20,5 @@ public class MainWindowSettings
     public bool ShouldScrollToEndOnLogContentChange { get; set; }
     public bool ShouldWordWrapLogContent { get; set; }
     public int LogTextBoxFontSize { get; set; } = DefaultTextBoxFontSize;
-    public int SelectedLeftPanelTab { get; set; }
+    public int SelectedLeftPanelTabIndex { get; set; }
 }

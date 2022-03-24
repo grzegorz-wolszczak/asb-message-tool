@@ -70,7 +70,7 @@ public class ApplicationPersistentOptions
             ShouldScrollToEndOnLogContentChange = _mainViewModel.ShouldScrollToEndOnLogContentChange,
             ShouldWordWrapLogContent = _mainViewModel.ShouldWordWrapLogContent,
             LogTextBoxFontSize = _mainViewModel.LogTextBoxFontSize,
-            SelectedLeftPanelTab = _leftPanelControlViewModel.SelectedLeftPanelTab
+            SelectedLeftPanelTabIndex = _leftPanelControlViewModel.SelectedLeftPanelTabIndex
         };
     }
 
@@ -80,6 +80,6 @@ public class ApplicationPersistentOptions
         _mainViewModel.ShouldScrollToEndOnLogContentChange = mainWindowSettings.ShouldScrollToEndOnLogContentChange;
         _mainViewModel.ShouldWordWrapLogContent = mainWindowSettings.ShouldWordWrapLogContent;
         _mainViewModel.LogTextBoxFontSize = mainWindowSettings.LogTextBoxFontSize;
-        _leftPanelControlViewModel.SelectedLeftPanelTab = mainWindowSettings.SelectedLeftPanelTab;
+        _leftPanelControlViewModel.SelectedLeftPanelTabIndex = mainWindowSettings.SelectedLeftPanelTabIndex;
     }
 }
