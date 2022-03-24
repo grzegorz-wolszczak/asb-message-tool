@@ -9,9 +9,7 @@
     <Grid>
 
 
-        <TabControl
-
-            >
+        <TabControl SelectedIndex="{Binding SelectedLeftPanelTab}">
             <!-- service bus config -->
             <TabItem Header="Service Bus Config" x:Name="leftPanelServiceBusConfigTabItem"
                      IsSelected="{Binding LeftPanelServiceBusConfigTabIsSelected}"

@@ -31,7 +31,7 @@ public class ApplicationLogicRoot
             StaticConfig.ApplicationName,
             Process.GetCurrentProcess().MainModule.FileName);
 
-        ServiceBusSelectedConfigsViewModel serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();
+        var serviceBusConfigsViewModel = new ServiceBusSelectedConfigsViewModel();
         var senderConfigElementsGuiMetadataManager = new SenderConfigElementsGuiMetadataManager();
 
         _aboutWindow = new AboutWindow(new AboutWindowViewModel(binaryInfo));
@@ -44,7 +44,7 @@ public class ApplicationLogicRoot
 
         var inGuiThreadActionCaller = new InGuiThreadActionCaller();
         var messagePropertiesWindowFactory = new SenderMessagePropertiesWindowProxyFactory();
-        SendersSelectedConfigViewModel sendersViewModel = new SendersSelectedConfigViewModel(
+        var sendersViewModel = new SendersSelectedConfigViewModel(
             senderConfigElementsGuiMetadataManager,
             inGuiThreadActionCaller,
             messageSenderFactory,
@@ -55,7 +55,7 @@ public class ApplicationLogicRoot
         var messageApplicationPropertiesFactory = new MessagePropertiesWindowProxyFactory();
         var deadLetterMessagePropertiesWindowProxyFactory = new DeadLetterMessagePropertiesWindowProxyFactory();
         var receivedMessageFormatter = new ReceivedMessageFormatter(_logger);
-        ReceiversSelectedConfigViewModel receiversViewModel = new ReceiversSelectedConfigViewModel(
+        var receiversViewModel = new ReceiversSelectedConfigViewModel(
             serviceBusMessageReceiverFactory,
             messageApplicationPropertiesFactory,
             deadLetterMessagePropertiesWindowProxyFactory, receivedMessageFormatter);
@@ -68,10 +68,10 @@ public class ApplicationLogicRoot
         var persistentOptions = new ApplicationPersistentOptions(mainViewModel,
             serviceBusConfigsViewModel,
             sendersViewModel,
-            receiversViewModel);
+            receiversViewModel,
+            leftPanelControlViewModel);
 
-        _persistenConfig = new PersistentConfiguration(_logger,binaryInfo,
-            persistentOptions);
+        _persistenConfig = new PersistentConfiguration(_logger, binaryInfo, persistentOptions);
 
         _mainWindow = new MainWindow(mainViewModel,
             serviceBusConfigsViewModel,
@@ -83,8 +83,8 @@ public class ApplicationLogicRoot
     public void Start()
     {
         _mainWindow.InitializeComponent();
-        _persistenConfig.Load();
         _mainWindow.Show();
+        _persistenConfig.Load();
 
         // below line is needed, without that , after closing main window process still exists;
         _aboutWindow.Owner = _mainWindow;
