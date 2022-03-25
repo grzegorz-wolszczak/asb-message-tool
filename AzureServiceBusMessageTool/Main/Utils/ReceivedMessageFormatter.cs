@@ -12,7 +12,9 @@ public class ReceivedMessageFormatter
 {
     private readonly IServiceBusHelperLogger _logger;
     private int _maxFieldWidth;
+
     private OrderedDictionary _fieldValues = new();
+
     // application properties will be displayed with additional indent
     // make room for it for standard message properties
     private readonly string applicationPropertiesIndent = new String(' ', 3);
@@ -22,7 +24,10 @@ public class ReceivedMessageFormatter
         _logger = logger;
     }
 
-    public string Format(ServiceBusReceivedMessage msg, bool configShouldShowOnlyMessageBodyAsJson)
+    public string Format(
+        ServiceBusReceivedMessage msg,
+        bool configShouldShowOnlyMessageBodyAsJson,
+        bool replaceTextNewLineSequencesWithRealNewLine)
     {
         _fieldValues.Clear();
         _maxFieldWidth = 0;
@@ -34,32 +39,48 @@ public class ReceivedMessageFormatter
 
         if (!configShouldShowOnlyMessageBodyAsJson)
         {
-            AppendAllFieldsWithoutJsonBodyDeserialization(msg, sb);
+            AppendAllFieldsWithoutJsonBodyDeserialization(msg, sb, replaceTextNewLineSequencesWithRealNewLine);
         }
         else
         {
-            var msbBody = msg.Body.ToString();
+            var msgBody = msg.Body.ToString();
+
             try
             {
-
-                dynamic parsedJson = JsonConvert.DeserializeObject(msbBody);
-                var readOnlyMemory = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-                sb.Append(readOnlyMemory);
+                dynamic parsedJson = JsonConvert.DeserializeObject(msgBody);
+                var formattedMsgBody = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                formattedMsgBody = ReplaceTextNewLineSquencesWithRealNewlineCharacter(formattedMsgBody, replaceTextNewLineSequencesWithRealNewLine);
+                sb.Append(formattedMsgBody);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError($"While formatting received message, deserialization body field (as json):\n" +
-                                 $"'{msbBody}'\n" +
+                                 $"'{msgBody}'\n" +
                                  $"failed with error : '{e.Message}', falling back to full message formatting.");
-                AppendAllFieldsWithoutJsonBodyDeserialization(msg, sb);
+                AppendAllFieldsWithoutJsonBodyDeserialization(msg, sb, replaceTextNewLineSequencesWithRealNewLine);
             }
-
         }
 
         return sb.ToString();
     }
 
-    private void AppendAllFieldsWithoutJsonBodyDeserialization(ServiceBusReceivedMessage msg, StringBuilder sb)
+    private string ReplaceTextNewLineSquencesWithRealNewlineCharacter(string msgBody,
+        bool itemShouldReplaceTextNewLineSequencesWithRealNewLineCharacter)
+    {
+        if (itemShouldReplaceTextNewLineSequencesWithRealNewLineCharacter)
+        {
+            msgBody = msgBody.Replace("\\r\\n", Environment.NewLine, StringComparison.Ordinal);
+            msgBody = msgBody.Replace("\\r", Environment.NewLine, StringComparison.Ordinal);
+            msgBody = msgBody.Replace("\\n", Environment.NewLine, StringComparison.Ordinal);
+        }
+
+        return msgBody;
+    }
+
+    private void AppendAllFieldsWithoutJsonBodyDeserialization(
+        ServiceBusReceivedMessage msg,
+        StringBuilder sb,
+        bool replaceTextNewLineSequencesWithRealNewLine)
     {
         var enumerator = _fieldValues.GetEnumerator();
         var formatString = $"{{0,-{_maxFieldWidth}}}";
@@ -83,7 +104,9 @@ public class ReceivedMessageFormatter
             sb.Append('\n');
         }
 
-        sb.Append($"{String.Format(formatString, "Body")} : '{msg.Body.ToString()}'\n");
+        var s = msg.Body.ToString();
+        s = ReplaceTextNewLineSquencesWithRealNewlineCharacter(s, replaceTextNewLineSequencesWithRealNewLine);
+        sb.Append($"{String.Format(formatString, "Body")} : '{s}'\n");
     }
 
     private void CalculateMaxFieldWidth(ServiceBusReceivedMessage msg)
@@ -97,9 +120,10 @@ public class ReceivedMessageFormatter
         {
             return;
         }
+
         foreach (var msgApplicationProperty in msg.ApplicationProperties)
         {
-            _maxFieldWidth = Math.Max(_maxFieldWidth , msgApplicationProperty.Key.Length + applicationPropertiesIndent.Length);
+            _maxFieldWidth = Math.Max(_maxFieldWidth, msgApplicationProperty.Key.Length + applicationPropertiesIndent.Length);
         }
     }
 

@@ -449,24 +449,36 @@
 
                         </Label>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Margin="2,0,0,0"
-                                  IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive}">
-                            Autoscroll
-                        </CheckBox>
-                        <CheckBox Margin="5,0,0,0"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent }">
-                            Word wrap
-                        </CheckBox>
-                        <CheckBox
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldShowOnlyBodyAsJson }">
-                            Show only body (as JSON)
-                        </CheckBox>
 
-                    </StackPanel>
+                    <Expander Header="Text options">
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox Margin="5,0,0,0"
+                                      IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldScrollTextBoxToEndOnNewMessageReceive}">
+                                Autoscroll
+                            </CheckBox>
+                            <CheckBox Margin="5,0,0,0"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldWordWrapLogContent }">
+                                Word wrap
+                            </CheckBox>
+                            <CheckBox
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldShowOnlyBodyAsJson }">
+                                Show only body (as JSON)
+                            </CheckBox>
+
+                            <CheckBox
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding CurrentSelectedConfigModelItem.Item.ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter }"
+                                >
+                                Replace '\n' and '\r' sequences with NewLine character in msg body
+                            </CheckBox>
+
+                        </StackPanel>
+                    </Expander>
+
 
                 </StackPanel>
 
