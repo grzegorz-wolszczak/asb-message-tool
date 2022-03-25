@@ -75,6 +75,7 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
                 DeadLetterMessageFields = Item.DeadLetterMessageFields,
                 DeadLetterMessageFieldsOverrideType = Item.DeadLetterMessageFieldsOverrideType,
                 ShouldShowOnlyMessageBodyAsJson = Item.ShouldShowOnlyBodyAsJson,
+                ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter = Item.ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter,
                 ReceiverQueueName = Item.ReceiverQueueName,
                 ReceiverDataSourceType = Item.ReceiverDataSourceType
             },
@@ -129,7 +130,10 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
 
     private void AppendReceivedMessageToOutput(ReceivedMessage msg)
     {
-        var msgBody = _receivedMessageFormatter.Format(msg.OriginalMessage, Item.ShouldShowOnlyBodyAsJson);
+        var msgBody = _receivedMessageFormatter.Format(
+            msg.OriginalMessage,
+            Item.ShouldShowOnlyBodyAsJson,
+            Item.ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter);
         ReceivedMessagesContent += $"{TimeUtils.GetShortTimestamp()} received message: \n" +
                                    $"{msgBody}" +
                                    "\n----------------------------------\n";

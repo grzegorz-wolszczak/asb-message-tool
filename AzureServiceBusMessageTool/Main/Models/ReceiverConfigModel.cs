@@ -20,6 +20,7 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private bool _shouldWordWrapLogContent;
     private bool _shouldShowOnlyMessageBodyAsJson;
     private int _msgBodyTextBoxFontSize = AppDefaults.DefaultTextBoxFontSize;
+    private bool _shouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter;
     private IList<SBMessageApplicationProperty> _abandonMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
     private IList<SBMessageApplicationProperty> _deadLetterMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
     private SbDeadLetterMessageFields _sbDeadLetterMessageFields = new();
@@ -203,6 +204,17 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
         {
             if (value == _shouldScrollTextBoxToEndOnNewMessageReceive) return;
             _shouldScrollTextBoxToEndOnNewMessageReceive = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter
+    {
+        get => _shouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter;
+        set
+        {
+            if (value == _shouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter) return;
+            _shouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter = value;
             OnPropertyChanged();
         }
     }
