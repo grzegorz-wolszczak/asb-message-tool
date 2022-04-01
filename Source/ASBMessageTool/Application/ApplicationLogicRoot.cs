@@ -21,7 +21,7 @@ public class ApplicationLogicRoot
     private PersistentConfiguration _persistentConfiguration;
     private IServiceBusHelperLogger _logger;
 
-    public ApplicationLogicRoot()
+    public ApplicationLogicRoot(ApplicationShutdowner applicationShutdowner)
     {
         var inGuiThreadActionCaller = new InGuiThreadActionCaller();
         _aboutWindow = new AboutWindow();
@@ -79,14 +79,16 @@ public class ApplicationLogicRoot
             sendersConfigViewModel, 
             receiversConfigViewModel,
             leftRightTabsSyncViewModel);
-        _persistentConfiguration = new PersistentConfiguration(configFilePath, persistentOptions, _logger);
+        
+        _persistentConfiguration = new PersistentConfiguration(configFilePath, persistentOptions, _logger, applicationShutdowner);
     }
 
     public void Start()
     {
         _mainWindow.InitializeComponent();
-        _mainWindow.Show();
+        
         _persistentConfiguration.Load(); // Load() should called be AFTER _mainWindowShow() to setup some main window settings
+        _mainWindow.Show();
 
         // owner must be set to object that was already shown
         _aboutWindow.Owner = _mainWindow;

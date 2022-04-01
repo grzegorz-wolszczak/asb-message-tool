@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using ASBMessageTool.Application;
 using Azure.Messaging.ServiceBus.Administration;
@@ -12,9 +13,20 @@ public class SenderSettingsValidator : ISenderSettingsValidator
         ServiceBusMessageSendData settings,
         CancellationToken token)
     {
-        var sbClient = new ServiceBusAdministrationClient(settings.ConnectionString);
-        var queueOrTopicName = settings.QueueOrTopicName;
-        return await ServiceBusValidations.ValidateQueueOrTopicName($"config name: {settings.ConfigName}", // context 
-            sbClient, queueOrTopicName, token);
+        var connectionString = settings.ConnectionString;
+        try
+        {
+            var sbClient = new ServiceBusAdministrationClient(connectionString);
+            var queueOrTopicName = settings.QueueOrTopicName;
+
+            return await ServiceBusValidations.ValidateQueueOrTopicName($"config name: '{settings.ConfigName}'",  
+                sbClient, queueOrTopicName, token);
+        }
+        catch (Exception e)
+        {
+            var errorMsg = $"While validating config name: '{settings.ConfigName}', exception happened:\n{e}";
+            return new ValidationErrorResult(errorMsg).ToMaybe();
+        }
+        
     }
 }

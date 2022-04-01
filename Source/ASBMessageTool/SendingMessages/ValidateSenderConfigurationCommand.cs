@@ -52,6 +52,13 @@ public class ValidateSenderConfigurationCommand : ICommand
                     });
                 }
             }
+            catch (Exception exception)
+            {
+                _inGuiThreadActionCaller.Call(() =>
+                {
+                    UserInteractions.ShowExceptionDialog("Exception during validation", exception);
+                });
+            }
             finally
             {
                 _canExecute = true;
@@ -68,31 +75,3 @@ public class ValidateSenderConfigurationCommand : ICommand
         remove { CommandManager.RequerySuggested -= value; }
     }
 }
-
-
-/*
-        // ValidateConfigurationCommand = new DelegateCommand(_ =>
-        // {
-        //     Task.Factory.StartNew(async () =>
-        //     {
-        //         // disable command
-        //         try
-        //         {
-        //             var sendData = GetServiceBusMessageSendData();
-        //             var validationResult = await _senderSettingsValidator.Validate(sendData, default);
-        //             if (validationResult.HasValue)
-        //             {
-        //                 _inGuiThreadActionCaller.Call(() =>
-        //                 {
-        //                     UserInteractions.ShowErrorDialog("Invalid configuration", validationResult.Value().ErrorMsg);
-        //                 });
-        //             }
-        //         }
-        //         finally
-        //         {
-        //             // enable command
-        //         }
-        //         
-        //     }, TaskCreationOptions.LongRunning);
-        // });
-        */
