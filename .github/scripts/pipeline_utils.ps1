@@ -21,8 +21,8 @@ Function GetPipelineCommonConfiguration
     $ErrorActionPreference = "Stop"
     $thisScriptPath = $PSScriptRoot
     $projectRootDir = "${thisScriptPath}/../../" | Resolve-Path
-    $projectSolutionDir = "${thisScriptPath}/../../AzureServiceBusMessageTool" |  Resolve-Path
-    $solutionFileName = "AzureServiceBusMessageTool.sln";
+    $projectSolutionDir = "${thisScriptPath}/../../Source" |  Resolve-Path
+    $solutionFileName = "ASBMessageTool.sln";
     $solutionFilePath = "${ProjectSolutionDir}/${solutionFileName}" ;
     
     If( ! (Test-path -PathType Container -Path $projectSolutionDir) )

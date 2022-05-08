@@ -1,0 +1,28 @@
+﻿<Application x:Class="ASBMessageTool.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Exit="App_OnExit"
+             Startup="App_OnStartup"
+             DispatcherUnhandledException="App_OnDispatcherUnhandledException">
+    <Application.Resources>
+
+
+        <!-- button style template from here -->
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+
+        <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#FF2E8DB3" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+
+        <Style x:Key="WinAll" TargetType="{x:Type Window}">
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+    </Application.Resources>
+</Application>

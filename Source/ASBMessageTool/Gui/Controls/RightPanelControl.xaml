@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="ASBMessageTool.Gui.Controls.RightPanelControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:rightPanel="clr-namespace:ASBMessageTool.Gui.Controls.RightPanel"
+
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+
+
+    <Grid>
+        <TabControl>
+
+            <!-- todo: make visibiluty collaped to hide tab headers"
+
+-->
+            <TabItem Header="Sender" IsSelected="{Binding IsLeftPanelSendersTabSelected}" Visibility="Collapsed">
+                <rightPanel:RightPanelSendersDynamicTabsUserControl x:Name="RightPanelSendersTabItem" />
+            </TabItem>
+
+            <TabItem Header="Receiver" IsSelected="{Binding IsLeftPanelReceiversTabSelected}" Visibility="Collapsed">
+                <rightPanel:RightPanelReceiversDynamicTabsUserControl x:Name="RightPanelReceiversTabItem" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="ASBMessageTool.Gui.Controls.RightPanel.RightPanelReceiversDynamicTabsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:wrappers="clr-namespace:ASBMessageTool.ReceivingMessages.Gui.Wrappers"
+             xmlns:converters="clr-namespace:ASBMessageTool.Application.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:BooleanToReversedVisibilityConverter x:Key="BooleanToReversedVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <TabControl IsSynchronizedWithCurrentItem="True"
+                    ItemsSource="{Binding ReceiverConfigViewModels}">
+
+            <!-- each item is bound to ReceiverConfigViewModel -->
+
+
+            <!-- hide tab header -->
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+            </TabControl.ItemContainerStyle>
+
+
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid> <!-- data template can have only one child root element -->
+                        <!-- V -->
+                        <wrappers:ReceiverConfigAttachedUserControl
+                            Visibility="{Binding IsContentDetached, Converter={StaticResource BooleanToReversedVisibilityConverter} }"
+                            />
+
+
+                        <wrappers:ReceiverConfigDetachedUserControl Margin="30"
+                                                                    Visibility="{Binding IsContentDetached, Converter={StaticResource BoolToVisibilityConverter} }" />
+                    </Grid>
+
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
+</UserControl>
