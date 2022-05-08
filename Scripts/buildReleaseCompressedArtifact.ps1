@@ -1,6 +1,6 @@
 
 $thisDir = $PSScriptRoot;
-$solutionFilePath = "$thisDir/../AzureServiceBusMessageTool/AzureServiceBusMessageTool.sln" | Resolve-Path
+$solutionFilePath = "$thisDir/../Source/ASBMessageTool.sln" | Resolve-Path
 
 
 $global:ErrorActionPreference = "stop"
@@ -38,7 +38,7 @@ dotnet publish `
 Write-Host "Finished publishing code to directory '$publishedDir'";
 # find Main.exe file and get file vesion
 
-$mainExeFile = @(Get-ChildItem $publishedDir | Where-Object {$_.Name -eq "Main.exe"})
+$mainExeFile = @(Get-ChildItem $publishedDir | Where-Object {$_.Name -eq "ASBMessageTool.exe"})
 if($mainExeFile.Length -ne 1)
 {
     throw "Should find one 'Main.exe' file but found $($mainExeFile.Length)"
