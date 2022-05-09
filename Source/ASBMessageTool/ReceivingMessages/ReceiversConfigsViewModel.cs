@@ -96,4 +96,30 @@ public class ReceiversConfigsViewModel : INotifyPropertyChanged
         _receiverConfigViewModels.Remove(item);
         _windowsForItems.Remove(item);
     }
+
+    public void MoveConfigUp(ReceiverConfigViewModel item)
+    {
+        if (!CanMoveUp(item)) return;
+        var oldIndex = _receiverConfigViewModels.IndexOf(item);
+        _receiverConfigViewModels.Move(oldIndex, oldIndex-1);
+    }
+
+    public void MoveConfigDown(ReceiverConfigViewModel item)
+    {
+        if (!CanMoveDown(item)) return;
+        var oldIndex = _receiverConfigViewModels.IndexOf(item);
+        _receiverConfigViewModels.Move(oldIndex, oldIndex+1);
+    }
+
+    public bool CanMoveDown(ReceiverConfigViewModel item)
+    {
+        if (item is null) return false;
+        return _receiverConfigViewModels.IndexOf(item) < _receiverConfigViewModels.Count-1;
+    }
+
+    public bool CanMoveUp(ReceiverConfigViewModel item)
+    {
+        if (item is null) return false;
+        return _receiverConfigViewModels.IndexOf(item) > 0;
+    }
 }

@@ -10,13 +10,13 @@ public class SenderConfigViewModelFactory
     private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
     private readonly MessageSenderFactory _messageSenderFactory;
     private readonly SenderMessagePropertiesWindowProxyFactory _senderMessagePropertiesWindowProxyFactory;
-    private readonly SenderSettingsValidator _senderSettingsValidator;
+    private readonly ISenderSettingsValidator _senderSettingsValidator;
 
     public SenderConfigViewModelFactory(IServiceBusHelperLogger logger,
         IInGuiThreadActionCaller inGuiThreadActionCaller,
         MessageSenderFactory messageSenderFactory,
         SenderMessagePropertiesWindowProxyFactory senderMessagePropertiesWindowProxyFactory,
-        SenderSettingsValidator senderSettingsValidator)
+        ISenderSettingsValidator senderSettingsValidator)
     {
         _logger = logger;
         _inGuiThreadActionCaller = inGuiThreadActionCaller;

@@ -30,7 +30,7 @@ public class ApplicationLogicRoot
 
         var mainWindowViewModel = new MainViewModel(aboutWindowProxy);
         _logger = mainWindowViewModel.GetLogger();
-        var messageSenderFactory = new MessageSenderFactory(_logger);
+        var messageSenderFactory = new MessageSenderFactory(_logger, new SenderSettingsValidator());
 
         var appDirectory = Directory.GetParent(Process.GetCurrentProcess().MainModule!.FileName!)!.ToString();
         var configFilePath = Path.Join(appDirectory, StaticConfig.ConfigFileName);
@@ -61,7 +61,7 @@ public class ApplicationLogicRoot
             new ReceiverConfigWindowFactory(),
             _logger,
             new ReceivedMessageFormatter(_logger),
-            new ServiceBusMessageReceiverFactory(_logger),
+            new ServiceBusMessageReceiverFactory(_logger, new ReceiverSettingsValidator(_logger)),
             new MessagePropertiesWindowProxyFactory(),
             new DeadLetterMessagePropertiesWindowProxyFactory(), receiversConfigsViewModelFactory);
 

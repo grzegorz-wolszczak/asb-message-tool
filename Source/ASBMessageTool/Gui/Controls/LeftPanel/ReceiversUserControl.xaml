@@ -14,8 +14,25 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            
+        </Grid.ColumnDefinitions>
 
-        <ListView
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center"
+                    Margin="5,5,5,5">
+            <Button Content="Up" Margin="5,5,5,5"
+                    Command="{Binding MoveReceiverConfigUpCommand}"
+                    />
+            <Button Content="Down" Margin="5,5,5,5"
+                    Command="{Binding MoveReceiverConfigDownCommand}"
+                    />
+            
+        </StackPanel>
+        
+        <ListView Grid.Row="0" Grid.Column="0"
             IsSynchronizedWithCurrentItem="True"
             ItemsSource="{Binding ReceiversConfigsVMs}"
             SelectedItem="{Binding Path=CurrentSelectedConfigModelItem,Mode=TwoWay}" SelectionMode="Single">
@@ -26,7 +43,9 @@
             </ListView.ItemTemplate>
 
         </ListView>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" 
+                    Orientation="Horizontal" HorizontalAlignment="Center">
 
             <Button Margin="5"
                     MinWidth="75"

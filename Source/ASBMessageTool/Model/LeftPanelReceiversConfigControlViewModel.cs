@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.ReceivingMessages;
+using JetBrains.Annotations;
 
 namespace ASBMessageTool.Model;
 
@@ -24,12 +25,28 @@ public class LeftPanelReceiversConfigControlViewModel : INotifyPropertyChanged
                 configsViewModel.Remove(CurrentSelectedConfigModelItem);
             },
             _ => CurrentSelectedConfigModelItem != null);
+        
+        MoveReceiverConfigUpCommand = new DelegateCommand(_ =>
+            {
+                configsViewModel.MoveConfigUp(CurrentSelectedConfigModelItem);
+            },
+            _ => configsViewModel.CanMoveUp(CurrentSelectedConfigModelItem));
+        
+        MoveReceiverConfigDownCommand = new DelegateCommand(_ =>
+            {
+                configsViewModel.MoveConfigDown(CurrentSelectedConfigModelItem);
+            },
+            _ => configsViewModel.CanMoveDown(CurrentSelectedConfigModelItem));
     }
 
     public ICommand AddReceiverConfigCommand { get; }
     public ICommand DeleteReceiverConfigCommand { get; }
+    
+    public ICommand MoveReceiverConfigUpCommand { get; }
+    public ICommand MoveReceiverConfigDownCommand { get; }
 
 
+    [UsedImplicitly]
     public IList<ReceiverConfigViewModel> ReceiversConfigsVMs => _configsViewModel.ReceiversConfigsVMs;
 
     public ReceiverConfigViewModel CurrentSelectedConfigModelItem

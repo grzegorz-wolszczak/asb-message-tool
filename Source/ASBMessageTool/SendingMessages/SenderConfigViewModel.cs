@@ -27,15 +27,13 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private class SenderConfigEditingEnabler
     {
         private readonly Action<bool> _setConfigEditingState;
-        private readonly Func<bool> _getConfigEditingState;
 
         private bool _sendingInProgress = false;
         private bool _validationInProgress = false;
 
-        public SenderConfigEditingEnabler(Action<bool> setConfigEditingState, Func<bool> getConfigEditingState)
+        public SenderConfigEditingEnabler(Action<bool> setConfigEditingState)
         {
             _setConfigEditingState = setConfigEditingState;
-            _getConfigEditingState = getConfigEditingState;
         }
 
         public void SetValidationFinished()
@@ -115,7 +113,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         _logger = logger;
         _senderSettingsValidator = senderSettingsValidator;
 
-        _configEditorEnabler = new SenderConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; }, () => IsEditingConfigurationEnabled);
+        _configEditorEnabler = new SenderConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; });
 
         AttachToPanelCommand = new DelegateCommand((_) =>
         {
