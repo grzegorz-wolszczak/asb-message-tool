@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -32,7 +31,8 @@ public sealed class SendersConfigs : INotifyPropertyChanged
     {
         var windowForSenderConfig = _senderConfigWindowFactory.CreateWindowForConfig();
 
-        var viewModel = _senderConfigViewModelFactory.Create(senderConfigModel, windowForSenderConfig);
+        var viewModel = _senderConfigViewModelFactory.Create(senderConfigModel, 
+            windowForSenderConfig);
 
         windowForSenderConfig.SetDataContext(viewModel);
 
@@ -62,8 +62,7 @@ public sealed class SendersConfigs : INotifyPropertyChanged
 
     public void AddNew()
     {
-        var senderConfigModel = _senderConfigModelFactory.Create();
-        AddNewForModelItem(senderConfigModel);
+        AddNewForModelItem(_senderConfigModelFactory.Create());
     }
 
     public void Remove(SenderConfigViewModel item)

@@ -29,7 +29,7 @@ public class SenderConfigViewModelFactory
         SenderConfigModel senderConfigModel,
         SenderConfigStandaloneWindowViewer windowForSenderConfig)
     {
-        var callbacks = new SenderSeparateWindowManagementCallbacks()
+        var callbacks = new SeparateWindowManagementCallbacks()
         {
             OnAttachAction = windowForSenderConfig.HideWindow,
             OnDetachAction = windowForSenderConfig.ShowAsDetachedWindow

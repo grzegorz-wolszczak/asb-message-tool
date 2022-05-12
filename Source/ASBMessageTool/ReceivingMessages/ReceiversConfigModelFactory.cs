@@ -1,6 +1,6 @@
 ﻿namespace ASBMessageTool.ReceivingMessages;
 
-public class ReceiversConfigsViewModelFactory
+public class ReceiversConfigModelFactory
 {
     private static int _staticCounter = 0;
 

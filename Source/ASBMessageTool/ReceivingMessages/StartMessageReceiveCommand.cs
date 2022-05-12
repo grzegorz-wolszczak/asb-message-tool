@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Windows.Input;
+using ASBMessageTool.Application;
 
 namespace ASBMessageTool.ReceivingMessages;
 
 public class StartMessageReceiveCommand : ICommand
 {
     private readonly IServiceBusMessageReceiver _msgReceiver;
+    private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
     private readonly Func<ServiceBusReceiverSettings> _serviceBusReceiverProviderFunc;
     private readonly Action<ReceivedMessage> _onMessageReceived;
     private readonly Action _onReceiverStarted;
@@ -15,8 +17,8 @@ public class StartMessageReceiveCommand : ICommand
 
     private bool _canExecute = true;
 
-    public StartMessageReceiveCommand(
-        IServiceBusMessageReceiver msgReceiver,
+    public StartMessageReceiveCommand(IServiceBusMessageReceiver msgReceiver,
+        IInGuiThreadActionCaller inGuiThreadActionCaller,
         Func<ServiceBusReceiverSettings> serviceBusReceiverProviderFunc,
         Action<ReceivedMessage> onMessageReceived,
         Action onReceiverStarted,
@@ -25,6 +27,7 @@ public class StartMessageReceiveCommand : ICommand
         Action onReceiverInitializing)
     {
         _msgReceiver = msgReceiver;
+        _inGuiThreadActionCaller = inGuiThreadActionCaller;
         _serviceBusReceiverProviderFunc = serviceBusReceiverProviderFunc;
         _onMessageReceived = onMessageReceived;
         _onReceiverStarted = onReceiverStarted;
@@ -45,22 +48,21 @@ public class StartMessageReceiveCommand : ICommand
             OnReceiverFailure = exc=>
             {
                 _canExecute = true;
-                // todo: replace this call with inGuiThreadCaller or someting
-                System.Windows.Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+                _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
                 _onReceiverFailure.Invoke(exc);
             },
             OnMessageReceive = _onMessageReceived,
             OnReceiverStop = ()=>
             {
                 _canExecute = true;
-                System.Windows.Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+                _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
                 _onReceiverStopped.Invoke();
             },
             OnReceiverStarted = _onReceiverStarted,
             OnReceiverInitializing = _onReceiverInitializing,
         };
         _canExecute = false;
-        System.Windows.Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+        _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
         _msgReceiver.Start(
             _serviceBusReceiverProviderFunc.Invoke(),
             callbacks

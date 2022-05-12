@@ -7,14 +7,14 @@ namespace ASBMessageTool.Model;
 
 public class RightPanelReceiversConfigControlViewModel : INotifyPropertyChanged
 {
-    private readonly ReceiversConfigsViewModel _receiversConfigViewModel;
+    private readonly ReceiversConfigs _receiversConfig;
 
-    public RightPanelReceiversConfigControlViewModel(ReceiversConfigsViewModel receiversConfigViewModel)
+    public RightPanelReceiversConfigControlViewModel(ReceiversConfigs receiversConfig)
     {
-        _receiversConfigViewModel = receiversConfigViewModel;
+        _receiversConfig = receiversConfig;
     }
 
-    public IList<ReceiverConfigViewModel> ReceiverConfigViewModels => _receiversConfigViewModel.ReceiversConfigsVMs;
+    public IList<ReceiverConfigViewModel> ReceiverConfigViewModels => _receiversConfig.ReceiversConfigsVMs;
 
     public event PropertyChangedEventHandler PropertyChanged;
 

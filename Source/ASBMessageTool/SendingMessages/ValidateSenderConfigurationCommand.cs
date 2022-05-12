@@ -17,7 +17,7 @@ public class ValidateSenderConfigurationCommand : ICommand
     public ValidateSenderConfigurationCommand(
         Action onValidationStartedAction,
         Action onValidationFinishedAction,
-        IInGuiThreadActionCaller inGuiThreadActionCaller, 
+        IInGuiThreadActionCaller inGuiThreadActionCaller,
         Func<ServiceBusMessageSendData> getSendDataFunction,
         ISenderSettingsValidator senderSettingsValidator)
     {
@@ -51,13 +51,18 @@ public class ValidateSenderConfigurationCommand : ICommand
                         UserInteractions.ShowErrorDialog("Invalid configuration", validationResult.Value().ErrorMsg);
                     });
                 }
+                else
+                {
+                    _inGuiThreadActionCaller.Call(() =>
+                    {
+                        UserInteractions.ShowInformationDialog("Configuration validation",
+                            $"Configuration for sender config '{sendData.ConfigName}' is correct.");
+                    });
+                }
             }
             catch (Exception exception)
             {
-                _inGuiThreadActionCaller.Call(() =>
-                {
-                    UserInteractions.ShowExceptionDialog("Exception during validation", exception);
-                });
+                _inGuiThreadActionCaller.Call(() => { UserInteractions.ShowExceptionDialog("Exception during validation", exception); });
             }
             finally
             {
@@ -65,7 +70,6 @@ public class ValidateSenderConfigurationCommand : ICommand
                 _onValidationFinishedAction.Invoke();
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
             }
-            
         }, TaskCreationOptions.LongRunning);
     }
 

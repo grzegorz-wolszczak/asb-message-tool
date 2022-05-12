@@ -47,30 +47,12 @@ public partial class MainWindow
     // increase/decrease log textbox font size when on CTRL+<MouseWheel>
     private void LogContentTextBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        // todo: this code is duplicated, move this some utility class
-        if (Keyboard.Modifiers != ModifierKeys.Control)
-        {
-            return;
-        }
-
-        e.Handled = true;
-        var value = LogContentTextBox.FontSize;
-
-        if (e.Delta > 0)
-        {
-            ++value;
-        }
-        else
-        {
-            --value;
-        }
-
-        if (value < AppDefaults.MinimumTextBoxFontSize)
-        {
-            value = AppDefaults.MinimumTextBoxFontSize;
-        }
-
-        LogContentTextBox.FontSize = value;
+        GuiElementsHelperRoutines.ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
+            () => (int)LogContentTextBox.FontSize,
+            value => { LogContentTextBox.FontSize = value; },
+            sender, 
+            e);
+        
     }
 
     private void BottomExpander_OnCollapsed(object sender, RoutedEventArgs e)

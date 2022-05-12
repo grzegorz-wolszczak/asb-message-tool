@@ -10,17 +10,17 @@ public class ApplicationPersistentOptions
 {
     private readonly MainViewModel _mainViewModel;
     private readonly SendersConfigs _sendersConfigs;
-    private readonly ReceiversConfigsViewModel _receiversConfigsViewModel;
+    private readonly ReceiversConfigs _receiversConfigs;
     private readonly LeftRightTabsSyncViewModel _leftRightTabsSyncViewModel;
 
     public ApplicationPersistentOptions(MainViewModel mainViewModel,
         SendersConfigs sendersConfigs,
-        ReceiversConfigsViewModel receiversConfigsViewModel, 
+        ReceiversConfigs receiversConfigs, 
         LeftRightTabsSyncViewModel leftRightTabsSyncViewModel)
     {
         _mainViewModel = mainViewModel;
         _sendersConfigs = sendersConfigs;
-        _receiversConfigsViewModel = receiversConfigsViewModel;
+        _receiversConfigs = receiversConfigs;
         _leftRightTabsSyncViewModel = leftRightTabsSyncViewModel;
     }
 
@@ -46,7 +46,7 @@ public class ApplicationPersistentOptions
 
     public List<ReceiverConfigModel> GetReceiversConfigToStore()
     {
-        return _receiversConfigsViewModel.ReceiversConfigsVMs.Select(e => e.ModelItem).ToList();
+        return _receiversConfigs.ReceiversConfigsVMs.Select(e => e.ModelItem).ToList();
     }
 
     public List<SenderConfigModel> GetSendersConfigToStore()
@@ -68,7 +68,7 @@ public class ApplicationPersistentOptions
         if (configs is null) return;
         foreach (var item in configs)
         {
-            _receiversConfigsViewModel.AddNewForModelItem(item);
+            _receiversConfigs.AddNewForModelItem(item);
         }
     }
 }

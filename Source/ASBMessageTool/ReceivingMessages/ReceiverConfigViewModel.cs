@@ -15,9 +15,11 @@ public enum ReceiverEnumStatus
     Initializing
 }
 
-public class ReceiverConfigViewModel : INotifyPropertyChanged
+public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
 {
+    private bool _isEditingConfigurationEnabled = true;
     private readonly ReceivedMessageFormatter _receivedMessageFormatter;
+    private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
     private ReceiverConfigModel _modelItem;
     private bool _isDetached = false;
     private string _receivedMessagesContent;
@@ -26,43 +28,33 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
     private IServiceBusMessageReceiver _serviceBusMessageReceiver;
     private IMessageApplicationPropertiesWindowProxy _messageApplicationPropertiesWindowProxy;
     private readonly IDeadLetterMessagePropertiesWindowProxy _deadLetterMessagePropertiesWindowProxy;
-    private readonly ReceiverSeparateWindowManagementCallbacks _separateWindowManagementCallbacks;
+    private readonly SeparateWindowManagementCallbacks _separateWindowManagementCallbacks;
+    private ConfigEditingEnabler _configEditorEnabler;
+    private readonly IReceiverSettingsValidator _receiverSettingsValidator;
 
-    public ReceiverConfigViewModel(
-        ReceiverConfigModel item,
-        ReceivedMessageFormatter formatter,
+    public ReceiverConfigViewModel(ReceiverConfigModel item,
+        SeparateWindowManagementCallbacks separateWindowManagementCallbacks,
         IServiceBusMessageReceiver serviceBusMessageReceiver,
         IMessageApplicationPropertiesWindowProxy messageApplicationPropertiesWindowProxy,
         IDeadLetterMessagePropertiesWindowProxy deadLetterMessagePropertiesWindowProxy,
-        ReceiverSeparateWindowManagementCallbacks separateWindowManagementCallbacks)
+        ReceivedMessageFormatter formatter, 
+        IReceiverSettingsValidator receiverSettingsValidator, 
+        IInGuiThreadActionCaller inGuiThreadActionCaller)
     {
         _receivedMessageFormatter = formatter;
+        _receiverSettingsValidator = receiverSettingsValidator;
+        _inGuiThreadActionCaller = inGuiThreadActionCaller;
         _serviceBusMessageReceiver = serviceBusMessageReceiver;
         _messageApplicationPropertiesWindowProxy = messageApplicationPropertiesWindowProxy;
         _deadLetterMessagePropertiesWindowProxy = deadLetterMessagePropertiesWindowProxy;
         _separateWindowManagementCallbacks = separateWindowManagementCallbacks;
         ModelItem = item;
         
+        _configEditorEnabler = new ConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; });
         
         StartMessageReceiveCommand = new StartMessageReceiveCommand(_serviceBusMessageReceiver,
-            serviceBusReceiverProviderFunc: () => new ServiceBusReceiverSettings
-            {
-                ConfigName = ModelItem.ConfigName,
-                ConnectionString = ModelItem.ServiceBusConnectionString,
-                SubscriptionName = ModelItem.InputTopicSubscriptionName,
-                TopicName = ModelItem.InputTopicName,
-                IsDeadLetterQueue = ModelItem.IsAttachedToDeadLetterSubqueue,
-                MessageReceiveDelayPeriod = StaticConfig.NextMessageReceiveDelayTimeSpan, // todo: support this from gui,
-                OnMessageReceiveEnumAction = ModelItem.OnMessageReceiveAction,
-                AbandonMessageOverriddenApplicationProperties = ModelItem.AbandonMessageApplicationOverridenProperties,
-                DeadLetterMessageOverriddenApplicationProperties = ModelItem.DeadLetterMessageApplicationOverridenProperties,
-                DeadLetterMessageFields = ModelItem.DeadLetterMessageFields,
-                DeadLetterMessageFieldsOverrideType = ModelItem.DeadLetterMessageFieldsOverrideType,
-                ShouldShowOnlyMessageBodyAsJson = ModelItem.ShouldShowOnlyBodyAsJson,
-                ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter = ModelItem.ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter,
-                ReceiverQueueName = ModelItem.ReceiverQueueName,
-                ReceiverDataSourceType = ModelItem.ReceiverDataSourceType
-            },
+            _inGuiThreadActionCaller,
+            serviceBusReceiverProviderFunc: GetServiceBusReceiverSettings,
             onMessageReceived: AppendReceivedMessageToOutput,
             onReceiverStarted: SetReceiverListeningStatus,
             onReceiverFailure: SetReceiverStoppedOnErrorStatus,
@@ -70,6 +62,13 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
             onReceiverInitializing: SetReceiverInitializingStatus
         );
 
+        ValidateConfigurationCommand = new ValidateReceiverConfigurationCommand(
+            onValidationStartedAction: ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
+            onValidationFinishedAction:() => { _configEditorEnabler.SetConfigValidationFinished();},
+            _inGuiThreadActionCaller,
+            GetServiceBusReceiverSettings,
+            _receiverSettingsValidator);
+        
         StopMessageReceiveCommand = new DelegateCommand(_ => { _serviceBusMessageReceiver.Stop(); },
             _ => !StartMessageReceiveCommand.CanExecute(default));
 
@@ -100,6 +99,28 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
         ClearMessageContentCommand = new DelegateCommand(_ => { ReceivedMessagesContent = string.Empty; });
     }
 
+    private ServiceBusReceiverSettings GetServiceBusReceiverSettings()
+    {
+        return new ServiceBusReceiverSettings
+        {
+            ConfigName = ModelItem.ConfigName,
+            ConnectionString = ModelItem.ServiceBusConnectionString,
+            SubscriptionName = ModelItem.InputTopicSubscriptionName,
+            TopicName = ModelItem.InputTopicName,
+            IsDeadLetterQueue = ModelItem.IsAttachedToDeadLetterSubqueue,
+            MessageReceiveDelayPeriod = StaticConfig.NextMessageReceiveDelayTimeSpan, // todo: support this from gui,
+            OnMessageReceiveEnumAction = ModelItem.OnMessageReceiveAction,
+            AbandonMessageOverriddenApplicationProperties = ModelItem.AbandonMessageApplicationOverridenProperties,
+            DeadLetterMessageOverriddenApplicationProperties = ModelItem.DeadLetterMessageApplicationOverridenProperties,
+            DeadLetterMessageFields = ModelItem.DeadLetterMessageFields,
+            DeadLetterMessageFieldsOverrideType = ModelItem.DeadLetterMessageFieldsOverrideType,
+            ShouldShowOnlyMessageBodyAsJson = ModelItem.ShouldShowOnlyBodyAsJson,
+            ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter = ModelItem.ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter,
+            ReceiverQueueName = ModelItem.ReceiverQueueName,
+            ReceiverDataSourceType = ModelItem.ReceiverDataSourceType
+        };
+    }
+
     public ICommand StartMessageReceiveCommand { get; }
     public ICommand StopMessageReceiveCommand { get; }
 
@@ -110,6 +131,8 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
     public ICommand AttachToPanelCommand { get; }
 
     public ICommand ClearMessageContentCommand { get; }
+    
+    public ICommand ValidateConfigurationCommand { get; }
 
 
     public bool IsContentDetached
@@ -136,18 +159,21 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
 
     private void SetSetReceiverIdleStatus()
     {
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
         ReceiverStatusText = "Idle";
         ReceiverEnumStatus = ReceiverEnumStatus.Idle;
     }
 
     private void SetReceiverStoppedOnErrorStatus(Exception exception)
     {
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
         ReceiverStatusText = "Stopped because of error";
         ReceiverEnumStatus = ReceiverEnumStatus.StoppedOnError;
     }
 
     private void SetReceiverListeningStatus()
     {
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingStarted();
         ReceiverStatusText = "Listening...";
         ReceiverEnumStatus = ReceiverEnumStatus.Listening;
     }
@@ -203,10 +229,20 @@ public class ReceiverConfigViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool IsEditingConfigurationEnabled
+    {
+        get => _isEditingConfigurationEnabled;
+        set
+        {
+            if (value == _isEditingConfigurationEnabled) return;
+            _isEditingConfigurationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
