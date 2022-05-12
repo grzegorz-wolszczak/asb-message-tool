@@ -1,44 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ASBMessageTool.Application.Logging;
+using ASBMessageTool.Application;
 
 namespace ASBMessageTool.ReceivingMessages;
 
-public class ReceiversConfigsViewModel : INotifyPropertyChanged
+public class ReceiversConfigs : INotifyPropertyChanged
 {
     private readonly ObservableCollection<ReceiverConfigViewModel> _receiverConfigViewModels;
     private readonly ReceiverConfigWindowFactory _receiverConfigWindowFactory;
-    private readonly IServiceBusHelperLogger _logger;
     private ReceiverConfigViewModel _currentSelectedItem;
-    private ReceivedMessageFormatter _receivedMessageFormatter;
-    private ServiceBusMessageReceiverFactory _serviceBusMessageReceiverFactory;
-    private readonly MessagePropertiesWindowProxyFactory _messagePropertiesWindowProxyFactory;
-    private DeadLetterMessagePropertiesWindowProxyFactory _deadLetterMessagePropertiesWindowProxyFactory;
     private readonly Dictionary<ReceiverConfigViewModel, ReceiverConfigStandaloneWindowViewer> _windowsForItems = new();
-    private readonly ReceiversConfigsViewModelFactory _receiversConfigsViewModelFactory;
+    private readonly ReceiversConfigModelFactory _receiversConfigModelFactory;
+    private readonly ReceiverConfigViewModelFactory _receiverConfigViewModelFactory;
 
 
-    public ReceiversConfigsViewModel(
+    public ReceiversConfigs(
         ObservableCollection<ReceiverConfigViewModel> receiverConfigViewModels,
-        ReceiverConfigWindowFactory receiverConfigWindowFactory,
-        IServiceBusHelperLogger logger,
-        ReceivedMessageFormatter receivedMessageReceivedMessageFormatter,
-        ServiceBusMessageReceiverFactory serviceBusMessageReceiverFactory,
-        MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
-        DeadLetterMessagePropertiesWindowProxyFactory deadLetterMessagePropertiesWindowProxyFactory, 
-        ReceiversConfigsViewModelFactory receiversConfigsViewModelFactory)
+        ReceiverConfigWindowFactory receiverConfigWindowFactory, 
+        ReceiversConfigModelFactory receiversConfigModelFactory, 
+        ReceiverConfigViewModelFactory receiverConfigViewModelFactory)
     {
         _receiverConfigViewModels = receiverConfigViewModels;
         _receiverConfigWindowFactory = receiverConfigWindowFactory;
-        _logger = logger;
-        _receivedMessageFormatter = receivedMessageReceivedMessageFormatter;
-        _serviceBusMessageReceiverFactory = serviceBusMessageReceiverFactory;
-        _messagePropertiesWindowProxyFactory = messagePropertiesWindowProxyFactory;
-        _deadLetterMessagePropertiesWindowProxyFactory = deadLetterMessagePropertiesWindowProxyFactory;
-        _receiversConfigsViewModelFactory = receiversConfigsViewModelFactory;
+        _receiversConfigModelFactory = receiversConfigModelFactory;
+        _receiverConfigViewModelFactory = receiverConfigViewModelFactory;
     }
 
     public IList<ReceiverConfigViewModel> ReceiversConfigsVMs => _receiverConfigViewModels;
@@ -64,19 +51,13 @@ public class ReceiversConfigsViewModel : INotifyPropertyChanged
     public void AddNewForModelItem(ReceiverConfigModel item)
     {
         var windowForReceiverConfig = _receiverConfigWindowFactory.CreateWindowForConfig();
-        var callbacks = new ReceiverSeparateWindowManagementCallbacks()
+        var callbacks = new SeparateWindowManagementCallbacks()
         {
             OnAttachAction = () => { windowForReceiverConfig.HideWindow(); },
             OnDetachAction = () => { windowForReceiverConfig.ShowAsDetachedWindow(); }
         };
 
-        var viewModel = new ReceiverConfigViewModel(
-            item,
-            _receivedMessageFormatter,
-            _serviceBusMessageReceiverFactory.Create(),
-            _messagePropertiesWindowProxyFactory.Create(),
-            _deadLetterMessagePropertiesWindowProxyFactory.Create(),
-            callbacks);
+        var viewModel = _receiverConfigViewModelFactory.Create(item, callbacks);
 
 
         windowForReceiverConfig.SetDataContext(viewModel);
@@ -86,7 +67,7 @@ public class ReceiversConfigsViewModel : INotifyPropertyChanged
 
     public void AddNew()
     {
-        var item = _receiversConfigsViewModelFactory.Create();
+        var item = _receiversConfigModelFactory.Create();
         AddNewForModelItem(item);
     }
 
@@ -95,5 +76,31 @@ public class ReceiversConfigsViewModel : INotifyPropertyChanged
         _windowsForItems[item].DeleteWindow();
         _receiverConfigViewModels.Remove(item);
         _windowsForItems.Remove(item);
+    }
+
+    public void MoveConfigUp(ReceiverConfigViewModel item)
+    {
+        if (!CanMoveUp(item)) return;
+        var oldIndex = _receiverConfigViewModels.IndexOf(item);
+        _receiverConfigViewModels.Move(oldIndex, oldIndex-1);
+    }
+
+    public void MoveConfigDown(ReceiverConfigViewModel item)
+    {
+        if (!CanMoveDown(item)) return;
+        var oldIndex = _receiverConfigViewModels.IndexOf(item);
+        _receiverConfigViewModels.Move(oldIndex, oldIndex+1);
+    }
+
+    public bool CanMoveDown(ReceiverConfigViewModel item)
+    {
+        if (item is null) return false;
+        return _receiverConfigViewModels.IndexOf(item) < _receiverConfigViewModels.Count-1;
+    }
+
+    public bool CanMoveUp(ReceiverConfigViewModel item)
+    {
+        if (item is null) return false;
+        return _receiverConfigViewModels.IndexOf(item) > 0;
     }
 }

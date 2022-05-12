@@ -46,7 +46,8 @@
                   IsExpanded="True"
                   Header="Message receiver configuration"
                   Margin="5,0,5,2"
-                  IsEnabled="{Binding ElementName=ReceiveButton, Path=IsEnabled}">
+                  IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
+                  >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -56,11 +57,12 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" /> <!-- sender config name -->
-                    <RowDefinition Height="Auto" /> <!-- service bus config name --> <!-- combobox -->
-                    <RowDefinition Height="Auto" /> <!-- input topic name -->
+                    <RowDefinition Height="Auto" /> <!-- service bus config name --> 
+                    <RowDefinition Height="Auto" /> 
                     <RowDefinition Height="Auto" /> <!-- input topic subscription name -->
-                    <RowDefinition Height="Auto" /> <!-- is DeadLetter Sub Queue checkbox -->
-                    <RowDefinition Height="Auto" /> <!-- On receive action groupbox -->
+                    <RowDefinition Height="Auto" /> 
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
 
@@ -209,13 +211,20 @@
                           Grid.Row="4"
                           Margin="5,5,5,5"
                           VerticalAlignment="Center"
-                          Content="Deadletter queue"
+                          Content="Deadletter queue ?"
                           x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
                           IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
                           UpdateSourceTrigger=PropertyChanged}" />
+                
+                <Button Grid.Row="5" Grid.Column="0" 
+                        Margin="5,0,5,2" 
+                        Content="Validate configuration"
+                        Command="{Binding ValidateConfigurationCommand}"
+                />
+
 
                 <Expander Grid.Column="0"
-                          Grid.Row="5"
+                          Grid.Row="6"
                           Grid.ColumnSpan="3"
                           Header="On message receive action"
                           Visibility="{Binding                           ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox,

@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace ASBMessageTool.Application;
 
-internal class DelegateCommand : ICommand
+public class DelegateCommand : ICommand
 {
     private Action<object> _execute;
     private Predicate<object> _canExecute;

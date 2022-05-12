@@ -5,15 +5,16 @@ namespace ASBMessageTool.ReceivingMessages;
 public class ServiceBusMessageReceiverFactory
 {
     private readonly IServiceBusHelperLogger _logger;
+    private readonly IReceiverSettingsValidator _receiverSettingsValidator;
 
-    public ServiceBusMessageReceiverFactory(IServiceBusHelperLogger logger)
+    public ServiceBusMessageReceiverFactory(IServiceBusHelperLogger logger, IReceiverSettingsValidator receiverSettingsValidator)
     {
         _logger = logger;
+        _receiverSettingsValidator = receiverSettingsValidator;
     }
 
     public IServiceBusMessageReceiver Create()
     {
-        var receiverSettingsValidator = new ReceiverSettingsValidator(_logger);
-        return new ServiceBusMessageReceiver(_logger, receiverSettingsValidator);
+        return new ServiceBusMessageReceiver(_logger, _receiverSettingsValidator);
     }
 }

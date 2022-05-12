@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.Application.Logging;
@@ -24,67 +23,10 @@ public enum MessageSendingStatus
 
 public sealed class SenderConfigViewModel : INotifyPropertyChanged
 {
-    private class SenderConfigEditingEnabler
-    {
-        private readonly Action<bool> _setConfigEditingState;
-        private readonly Func<bool> _getConfigEditingState;
-
-        private bool _sendingInProgress = false;
-        private bool _validationInProgress = false;
-
-        public SenderConfigEditingEnabler(Action<bool> setConfigEditingState, Func<bool> getConfigEditingState)
-        {
-            _setConfigEditingState = setConfigEditingState;
-            _getConfigEditingState = getConfigEditingState;
-        }
-
-        public void SetValidationFinished()
-        {
-            SetValidationInProgress(false);
-        }
-
-        public void SetValidationStarted()
-        {
-            SetValidationInProgress(true);
-        }
-
-        private void SetValidationInProgress(bool isInProgress)
-        {
-            _validationInProgress = isInProgress;
-            EvaluateConfigEnabledState();
-        }
-
-        private void SetSendingInProgress(bool isInProgress)
-        {
-            _sendingInProgress = isInProgress;
-            EvaluateConfigEnabledState();
-        }
-
-        public void SetSendingStarted()
-        {
-            SetSendingInProgress(true);
-        }
-
-        public void SetSendingFinished()
-        {
-            SetSendingInProgress(false);
-        }
-        
-        private void EvaluateConfigEnabledState()
-        {
-            if (_sendingInProgress == false && _validationInProgress == false)
-            {
-                _setConfigEditingState.Invoke(true);
-                return;
-            }
-            _setConfigEditingState.Invoke(false);
-        }
-    }
-    
     private record LastMessageSendingError(string Message);
     
     private SenderConfigModel _modelItem;
-    private readonly SenderSeparateWindowManagementCallbacks _separateWindowManagementCallbacks;
+    private readonly SeparateWindowManagementCallbacks _separateWindowManagementCallbacks;
     private readonly ISenderMessagePropertiesWindowProxy _senderMessagePropertiesWindowProxy;
     private readonly IMessageSender _messageSender;
     private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
@@ -96,11 +38,11 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private ISenderSettingsValidator _senderSettingsValidator;
     private bool _isEditingConfigurationEnabled = true;
     private Maybe<LastMessageSendingError> _lastMessageSendingError = Maybe<LastMessageSendingError>.Nothing;
-    private SenderConfigEditingEnabler _configEditorEnabler;
+    private ConfigEditingEnabler _configEditorEnabler;
 
 
     public SenderConfigViewModel(SenderConfigModel modelItem,
-        SenderSeparateWindowManagementCallbacks separateWindowManagementCallbacks,
+        SeparateWindowManagementCallbacks separateWindowManagementCallbacks,
         ISenderMessagePropertiesWindowProxy senderMessagePropertiesWindowProxy,
         IMessageSender messageSender,
         IInGuiThreadActionCaller inGuiThreadActionCaller, 
@@ -115,7 +57,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         _logger = logger;
         _senderSettingsValidator = senderSettingsValidator;
 
-        _configEditorEnabler = new SenderConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; }, () => IsEditingConfigurationEnabled);
+        _configEditorEnabler = new ConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; });
 
         AttachToPanelCommand = new DelegateCommand((_) =>
         {
@@ -136,8 +78,8 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         });
 
         ValidateConfigurationCommand = new ValidateSenderConfigurationCommand(
-            onValidationStartedAction: ()=>{ _configEditorEnabler.SetValidationStarted();},
-            onValidationFinishedAction:() => { _configEditorEnabler.SetValidationFinished();},
+            onValidationStartedAction: ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
+            onValidationFinishedAction:() => { _configEditorEnabler.SetConfigValidationFinished();},
         inGuiThreadActionCaller,
             GetServiceBusMessageSendData,
             _senderSettingsValidator);
@@ -165,7 +107,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
 
     private void IndicateSendingFinished()
     {
-        _configEditorEnabler.SetSendingFinished();
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
         if (_lastMessageSendingError.IsSomething())
         {
             MessageSendingStatus = MessageSendingStatus.Error;
@@ -181,7 +123,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private void IndicateSendingInStarted()
     {
         _lastMessageSendingError = Maybe<LastMessageSendingError>.Nothing;
-        _configEditorEnabler.SetSendingStarted();
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingStarted();
         SetLastSendStatusMessage("Sending...");
         MessageSendingStatus = MessageSendingStatus.Sending;
     }

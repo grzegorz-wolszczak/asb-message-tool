@@ -6,8 +6,6 @@ using ASBMessageTool.SendingMessages.Gui;
 
 namespace ASBMessageTool.SendingMessages;
 
-
-
 public sealed class SendersConfigs : INotifyPropertyChanged
 {
     private SenderConfigViewModel _currentSelectedItem;
@@ -20,7 +18,8 @@ public sealed class SendersConfigs : INotifyPropertyChanged
     public SendersConfigs(
         ObservableCollection<SenderConfigViewModel> senderConfigViewModels,
         ISenderConfigWindowFactory senderConfigWindowFactory,
-        SenderConfigViewModelFactory senderConfigViewModelFactory, SenderConfigModelFactory senderConfigModelFactory)
+        SenderConfigViewModelFactory senderConfigViewModelFactory,
+        SenderConfigModelFactory senderConfigModelFactory)
     {
         _senderConfigViewModels = senderConfigViewModels;
         _senderConfigWindowFactory = senderConfigWindowFactory;
@@ -32,7 +31,8 @@ public sealed class SendersConfigs : INotifyPropertyChanged
     {
         var windowForSenderConfig = _senderConfigWindowFactory.CreateWindowForConfig();
 
-        var viewModel = _senderConfigViewModelFactory.Create(senderConfigModel, windowForSenderConfig);
+        var viewModel = _senderConfigViewModelFactory.Create(senderConfigModel, 
+            windowForSenderConfig);
 
         windowForSenderConfig.SetDataContext(viewModel);
 
@@ -62,9 +62,7 @@ public sealed class SendersConfigs : INotifyPropertyChanged
 
     public void AddNew()
     {
-        var senderConfigModel = _senderConfigModelFactory.Create();
-
-        AddNewForModelItem(senderConfigModel);
+        AddNewForModelItem(_senderConfigModelFactory.Create());
     }
 
     public void Remove(SenderConfigViewModel item)
@@ -72,5 +70,31 @@ public sealed class SendersConfigs : INotifyPropertyChanged
         _windowsForItems[item].DeleteWindow();
         _senderConfigViewModels.Remove(item);
         _windowsForItems.Remove(item);
+    }
+
+    public bool CanMoveUp(SenderConfigViewModel item)
+    {
+        if (item is null) return false;
+        return _senderConfigViewModels.IndexOf(item) > 0;
+    }
+
+    public void MoveConfigUp(SenderConfigViewModel item)
+    {
+        if (!CanMoveUp(item)) return;
+        var oldIndex = _senderConfigViewModels.IndexOf(item);
+        _senderConfigViewModels.Move(oldIndex, oldIndex - 1);
+    }
+
+    public bool CanMoveDown(SenderConfigViewModel item)
+    {
+        if (item is null) return false;
+        return _senderConfigViewModels.IndexOf(item) < _senderConfigViewModels.Count - 1;
+    }
+
+    public void MoveConfigDown(SenderConfigViewModel item)
+    {
+        if (!CanMoveDown(item)) return;
+        var oldIndex = _senderConfigViewModels.IndexOf(item);
+        _senderConfigViewModels.Move(oldIndex, oldIndex + 1);
     }
 }

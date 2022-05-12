@@ -14,10 +14,7 @@
 
     <Grid>
         <TabControl>
-
-            <!-- todo: make visibiluty collaped to hide tab headers"
-
--->
+            
             <TabItem Header="Sender" IsSelected="{Binding IsLeftPanelSendersTabSelected}" Visibility="Collapsed">
                 <rightPanel:RightPanelSendersDynamicTabsUserControl x:Name="RightPanelSendersTabItem" />
             </TabItem>

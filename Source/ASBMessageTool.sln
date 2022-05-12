@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASBMessageTool", "ASBMessag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{384A95CB-2C49-47C0-AE61-459B76CD2325}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDialog", "TaskDialog\TaskDialog.csproj", "{ED43F3AC-823F-4E95-B140-69427C34444E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{384A95CB-2C49-47C0-AE61-459B76CD2325}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{384A95CB-2C49-47C0-AE61-459B76CD2325}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{384A95CB-2C49-47C0-AE61-459B76CD2325}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED43F3AC-823F-4E95-B140-69427C34444E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED43F3AC-823F-4E95-B140-69427C34444E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED43F3AC-823F-4E95-B140-69427C34444E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED43F3AC-823F-4E95-B140-69427C34444E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

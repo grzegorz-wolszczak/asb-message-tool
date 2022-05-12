@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ASBMessageTool.SendingMessages;
+namespace ASBMessageTool.Application;
 
-public class SenderSeparateWindowManagementCallbacks
+public class SeparateWindowManagementCallbacks
 {
     public Action OnAttachAction { get; init; }
     public Action OnDetachAction { get; init; }

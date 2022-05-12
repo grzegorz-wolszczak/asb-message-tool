@@ -5,15 +5,16 @@ namespace ASBMessageTool.SendingMessages;
 public class MessageSenderFactory
 {
     private readonly IServiceBusHelperLogger _logger;
+    private readonly ISenderSettingsValidator _validator;
 
-    public MessageSenderFactory(IServiceBusHelperLogger logger)
+    public MessageSenderFactory(IServiceBusHelperLogger logger, ISenderSettingsValidator senderSettingsValidator)
     {
         _logger = logger;
+        _validator = senderSettingsValidator;
     }
 
     public IMessageSender Create()
     {
-        var validator = new SenderSettingsValidator();
-        return new MessageSender(validator,_logger);
+        return new MessageSender(_validator,_logger);
     }
 }

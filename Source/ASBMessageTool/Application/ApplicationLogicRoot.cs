@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using ASBMessageTool.Application.Config;
@@ -27,23 +26,21 @@ public class ApplicationLogicRoot
         _aboutWindow = new AboutWindow();
         var aboutWindowProxy = new AboutWindowProxy(_aboutWindow);
 
-
         var mainWindowViewModel = new MainViewModel(aboutWindowProxy);
         _logger = mainWindowViewModel.GetLogger();
-        var messageSenderFactory = new MessageSenderFactory(_logger);
 
         var appDirectory = Directory.GetParent(Process.GetCurrentProcess().MainModule!.FileName!)!.ToString();
         var configFilePath = Path.Join(appDirectory, StaticConfig.ConfigFileName);
 
         var senderConfigViewModels = new ObservableCollection<SenderConfigViewModel>();
 
-        SenderMessagePropertiesWindowProxyFactory senderMessagePropertiesWindowProxyFactory = new SenderMessagePropertiesWindowProxyFactory();
         var senderConfigModelFactory = new SenderConfigModelFactory();
         
-        var senderConfigViewModelFactory = new SenderConfigViewModelFactory(_logger,
+        var senderConfigViewModelFactory = new SenderConfigViewModelFactory(
+            _logger,
             inGuiThreadActionCaller,
-            messageSenderFactory,
-            senderMessagePropertiesWindowProxyFactory,
+            new MessageSenderFactory(_logger, new SenderSettingsValidator()),
+            new SenderMessagePropertiesWindowProxyFactory(),
             new SenderSettingsValidator());
         var senderConfigWindowFactory = new SenderConfigWindowFactory();
 
@@ -53,17 +50,21 @@ public class ApplicationLogicRoot
             senderConfigViewModelFactory,
             senderConfigModelFactory);
 
-        var receiverConfigViewModels = new ObservableCollection<ReceiverConfigViewModel>();
+        var receiverSettingsValidator = new ReceiverSettingsValidator(_logger);
 
-        var receiversConfigsViewModelFactory = new ReceiversConfigsViewModelFactory();
-        var receiversConfigViewModel = new ReceiversConfigsViewModel(
-            receiverConfigViewModels,
-            new ReceiverConfigWindowFactory(),
-            _logger,
-            new ReceivedMessageFormatter(_logger),
-            new ServiceBusMessageReceiverFactory(_logger),
-            new MessagePropertiesWindowProxyFactory(),
-            new DeadLetterMessagePropertiesWindowProxyFactory(), receiversConfigsViewModelFactory);
+        var receiverConfigViewModelFactory = new ReceiverConfigViewModelFactory(
+            new ReceivedMessageFormatter(_logger), 
+            new DeadLetterMessagePropertiesWindowProxyFactory(),
+            new MessagePropertiesWindowProxyFactory(), 
+            new ServiceBusMessageReceiverFactory(_logger, receiverSettingsValidator),
+            receiverSettingsValidator,
+            inGuiThreadActionCaller);
+        
+        var receiversConfigViewModel = new ReceiversConfigs(
+            new ObservableCollection<ReceiverConfigViewModel>(),
+            new ReceiverConfigWindowFactory(), 
+            new ReceiversConfigModelFactory(), 
+            receiverConfigViewModelFactory);
 
         var leftRightTabsSyncViewModel = new LeftRightTabsSyncViewModel();
 
@@ -86,9 +87,10 @@ public class ApplicationLogicRoot
     public void Start()
     {
         _mainWindow.InitializeComponent();
-        
-        _persistentConfiguration.Load(); // Load() should called be AFTER _mainWindowShow() to setup some main window settings
+        System.Windows.Application.Current.MainWindow = _mainWindow;
+
         _mainWindow.Show();
+        _persistentConfiguration.Load(); // Load() should called be AFTER _mainWindowShow() to setup some main window settings
 
         // owner must be set to object that was already shown
         _aboutWindow.Owner = _mainWindow;

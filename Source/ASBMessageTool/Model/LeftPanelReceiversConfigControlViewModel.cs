@@ -4,40 +4,57 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.ReceivingMessages;
+using JetBrains.Annotations;
 
 namespace ASBMessageTool.Model;
 
 public class LeftPanelReceiversConfigControlViewModel : INotifyPropertyChanged
 {
-    private readonly ReceiversConfigsViewModel _configsViewModel;
+    private readonly ReceiversConfigs _configs;
 
-    public LeftPanelReceiversConfigControlViewModel(ReceiversConfigsViewModel configsViewModel)
+    public LeftPanelReceiversConfigControlViewModel(ReceiversConfigs configs)
     {
-        _configsViewModel = configsViewModel;
+        _configs = configs;
         AddReceiverConfigCommand = new DelegateCommand((_) =>
         {
-            configsViewModel.AddNew();
+            configs.AddNew();
         });
 
         DeleteReceiverConfigCommand = new DelegateCommand(_ =>
             {
-                configsViewModel.Remove(CurrentSelectedConfigModelItem);
+                configs.Remove(CurrentSelectedConfigModelItem);
             },
             _ => CurrentSelectedConfigModelItem != null);
+        
+        MoveReceiverConfigUpCommand = new DelegateCommand(_ =>
+            {
+                configs.MoveConfigUp(CurrentSelectedConfigModelItem);
+            },
+            _ => configs.CanMoveUp(CurrentSelectedConfigModelItem));
+        
+        MoveReceiverConfigDownCommand = new DelegateCommand(_ =>
+            {
+                configs.MoveConfigDown(CurrentSelectedConfigModelItem);
+            },
+            _ => configs.CanMoveDown(CurrentSelectedConfigModelItem));
     }
 
     public ICommand AddReceiverConfigCommand { get; }
     public ICommand DeleteReceiverConfigCommand { get; }
+    
+    public ICommand MoveReceiverConfigUpCommand { get; }
+    public ICommand MoveReceiverConfigDownCommand { get; }
 
 
-    public IList<ReceiverConfigViewModel> ReceiversConfigsVMs => _configsViewModel.ReceiversConfigsVMs;
+    [UsedImplicitly]
+    public IList<ReceiverConfigViewModel> ReceiversConfigsVMs => _configs.ReceiversConfigsVMs;
 
     public ReceiverConfigViewModel CurrentSelectedConfigModelItem
     {
-        get => _configsViewModel.CurrentSelectedConfigModelItem;
+        get => _configs.CurrentSelectedConfigModelItem;
         set
         {
-            _configsViewModel.CurrentSelectedConfigModelItem = value;
+            _configs.CurrentSelectedConfigModelItem = value;
             OnPropertyChanged();
         }
     }

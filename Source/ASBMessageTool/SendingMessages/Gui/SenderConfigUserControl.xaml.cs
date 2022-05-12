@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using ASBMessageTool.Application.Config;
+using ASBMessageTool.Gui;
 
 namespace ASBMessageTool.SendingMessages.Gui;
 
@@ -33,37 +33,13 @@ public partial class SenderConfigUserControl : UserControl
 
     private void SenderMsgBodyTextBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        if (Keyboard.Modifiers != ModifierKeys.Control)
-        {
-            return;
-        }
+        SenderConfigViewModel item = (SenderConfigViewModel)DataContext;
+        var targetItem = item.ModelItem;
 
-        e.Handled = true;
-
-        if (DataContext is null)
-        {
-            return;
-        }
-
-        if (DataContext is SenderConfigViewModel item)
-        {
-            var targetItem = item.ModelItem;
-            var value = targetItem.MsgBodyTextBoxFontSize;
-            if (e.Delta > 0)
-            {
-                value++;
-            }
-            else
-            {
-                value--;
-            }
-
-            if (value < AppDefaults.MinimumTextBoxFontSize)
-            {
-                value = AppDefaults.MinimumTextBoxFontSize;
-            }
-
-            targetItem.MsgBodyTextBoxFontSize = value;
-        }
+        GuiElementsHelperRoutines.ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
+            () => targetItem.MsgBodyTextBoxFontSize,
+            value => { targetItem.MsgBodyTextBoxFontSize = value; },
+            sender,
+            e);
     }
 }
