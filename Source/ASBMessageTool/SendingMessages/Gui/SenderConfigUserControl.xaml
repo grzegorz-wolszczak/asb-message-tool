@@ -9,7 +9,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" />
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}" />
     </UserControl.Resources>
 
     <Grid>
@@ -27,26 +27,25 @@
 
         </Grid.RowDefinitions>
 
-      
+
         <Expander Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                   IsExpanded="True"
                   Margin="5,2,5,0"
-                  Header="Service Bus Sender configuration"
-                  IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
-        >
-            <Grid>
+                  Header="Service Bus Sender configuration">
+            <Grid
+                IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition />
-                    
+
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" /> <!-- detach button -->
                     <RowDefinition Height="*" /> <!-- text box -->
                     <RowDefinition Height="Auto" /> <!-- send button-->
-                    <RowDefinition/>
+                    <RowDefinition />
 
                 </Grid.RowDefinitions>
 
@@ -55,7 +54,7 @@
                         <Setter Property="Padding" Value="5,5,5,5" />
                     </Style>
                 </Grid.Resources>
-                
+
                 <Label Grid.Column="0"
                        Grid.Row="0"
                        Margin="5,0,5,2"
@@ -80,7 +79,15 @@
                              application:PasswordBoxAssistant.BoundPassword="{Binding
                          Path=ModelItem.ServiceBusConnectionString,
                          Mode=TwoWay,
-                         UpdateSourceTrigger=PropertyChanged}" />
+                         UpdateSourceTrigger=PropertyChanged}">
+                    <PasswordBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy connection string"
+                                Command="{Binding CopySenderConnectionStringToClipboard}">
+                            </MenuItem>
+                        </ContextMenu>
+                    </PasswordBox.ContextMenu>
+                </PasswordBox>
 
 
                 <Label Grid.Column="0"
@@ -93,13 +100,12 @@
                          Margin="5,0,5,2"
                          Grid.ColumnSpan="2"
                          Text="{Binding Path=ModelItem.OutputTopicName, UpdateSourceTrigger=PropertyChanged}" />
-                
-                
-                <Button Grid.Row="3" Grid.Column="0" 
-                        Margin="5,0,5,2" 
+
+
+                <Button Grid.Row="3" Grid.Column="0"
+                        Margin="5,0,5,2"
                         Content="Validate configuration"
-                        Command="{Binding ValidateConfigurationCommand}"
-                />
+                        Command="{Binding ValidateConfigurationCommand}" />
             </Grid>
         </Expander>
 
@@ -120,7 +126,7 @@
                 <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Label Margin="0,0,5,0" Content="Properties " />
                     <Button Margin="0,0,0,0" MinWidth="45" Content="..." Height="22"
-                            Command="{Binding ShowPropertiesWindowCommand}" /> 
+                            Command="{Binding ShowPropertiesWindowCommand}" />
                 </StackPanel>
 
                 <Label Grid.Column="0" Grid.Row="1">Body :</Label>
@@ -170,7 +176,7 @@
                     x:Name="SendButton"
                     MinWidth="75"
                     Margin="5,2,5,2"
-                    Command="{Binding SendMessageCommand}"> 
+                    Command="{Binding SendMessageCommand}">
                 Send
             </Button>
             <Label
@@ -194,7 +200,7 @@
                                 <Setter Property="Control.Foreground" Value="Blue" />
                                 <Setter Property="Control.FontWeight" Value="Bold" />
                             </DataTrigger>
-                            
+
                             <DataTrigger Binding="{Binding MessageSendingStatus}" Value="Sending">
                                 <Setter Property="Control.Foreground" Value="Orange" />
                                 <Setter Property="Control.FontWeight" Value="Bold" />

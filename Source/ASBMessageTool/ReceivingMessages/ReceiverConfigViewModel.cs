@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.Application.Config;
@@ -31,6 +32,7 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
     private readonly SeparateWindowManagementCallbacks _separateWindowManagementCallbacks;
     private ConfigEditingEnabler _configEditorEnabler;
     private readonly IReceiverSettingsValidator _receiverSettingsValidator;
+    private readonly IOperationSystemServices _operationSystemServices;
 
     public ReceiverConfigViewModel(ReceiverConfigModel item,
         SeparateWindowManagementCallbacks separateWindowManagementCallbacks,
@@ -39,7 +41,8 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         IDeadLetterMessagePropertiesWindowProxy deadLetterMessagePropertiesWindowProxy,
         ReceivedMessageFormatter formatter, 
         IReceiverSettingsValidator receiverSettingsValidator, 
-        IInGuiThreadActionCaller inGuiThreadActionCaller)
+        IInGuiThreadActionCaller inGuiThreadActionCaller, 
+        IOperationSystemServices operationSystemServices)
     {
         _receivedMessageFormatter = formatter;
         _receiverSettingsValidator = receiverSettingsValidator;
@@ -50,6 +53,7 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         _separateWindowManagementCallbacks = separateWindowManagementCallbacks;
         ModelItem = item;
         
+        _operationSystemServices = operationSystemServices;
         _configEditorEnabler = new ConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; });
         
         StartMessageReceiveCommand = new StartMessageReceiveCommand(_serviceBusMessageReceiver,
@@ -97,6 +101,12 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         });
 
         ClearMessageContentCommand = new DelegateCommand(_ => { ReceivedMessagesContent = string.Empty; });
+
+        CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
+        {
+            
+            _operationSystemServices.SetClipboardText(_modelItem.ServiceBusConnectionString);
+        });
     }
 
     private ServiceBusReceiverSettings GetServiceBusReceiverSettings()
@@ -126,6 +136,8 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
 
     public ICommand ShowAbandonMessageOverriddenPropertiesWindowCommand { get; }
     public ICommand ShowDeadLetterMessageOverriddenPropertiesWindowCommand { get; }
+    
+    public ICommand CopySenderConnectionStringToClipboard { get; }
 
     public ICommand DetachFromPanelCommand { get; }
     public ICommand AttachToPanelCommand { get; }

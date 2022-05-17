@@ -1,4 +1,5 @@
-﻿using ASBMessageTool.ReceivingMessages.Gui;
+﻿using System.Windows;
+using ASBMessageTool.ReceivingMessages.Gui;
 
 namespace ASBMessageTool.ReceivingMessages;
 
@@ -6,7 +7,7 @@ public class ReceiverConfigStandaloneWindowViewer
 {
     private StandaloneWindowForConfig<ReceiverConfigWindow> _windowForConfig;
 
-
+    
     public void ShowAsDetachedWindow()
     {
         _windowForConfig?.ShowConfig();
@@ -27,10 +28,19 @@ public class ReceiverConfigStandaloneWindowViewer
         var receiverConfigWindow =
             new ReceiverConfigWindow(onCloseAction: () => { viewModel.IsContentDetached = false; });
 
+        // make sure that when config name changes, window title also changes
+        receiverConfigWindow.SetBinding(Window.TitleProperty, new System.Windows.Data.Binding()
+        {
+            Path = new PropertyPath(nameof(viewModel.ModelItem.ConfigName)),
+            Source = viewModel.ModelItem,
+        });
+
+
         _windowForConfig = new StandaloneWindowForConfig<ReceiverConfigWindow>(
             viewModel,
             receiverConfigWindow,
             beforeHideAction: () => { receiverConfigWindow.ShouldHideOnClose = true; },
-            beforeCloseAction: () => { receiverConfigWindow.ShouldHideOnClose = false; });
+            beforeCloseAction: () => { receiverConfigWindow.ShouldHideOnClose = false; }
+        );
     }
 }

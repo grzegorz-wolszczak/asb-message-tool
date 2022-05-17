@@ -35,13 +35,14 @@ public class ApplicationLogicRoot
         var senderConfigViewModels = new ObservableCollection<SenderConfigViewModel>();
 
         var senderConfigModelFactory = new SenderConfigModelFactory();
-        
+        var operationSystemServices = new OperationSystemServices();
         var senderConfigViewModelFactory = new SenderConfigViewModelFactory(
             _logger,
             inGuiThreadActionCaller,
             new MessageSenderFactory(_logger, new SenderSettingsValidator()),
             new SenderMessagePropertiesWindowProxyFactory(),
-            new SenderSettingsValidator());
+            new SenderSettingsValidator(),
+            operationSystemServices);
         var senderConfigWindowFactory = new SenderConfigWindowFactory();
 
         var sendersConfigViewModel = new SendersConfigs(
@@ -52,13 +53,15 @@ public class ApplicationLogicRoot
 
         var receiverSettingsValidator = new ReceiverSettingsValidator(_logger);
 
+        
         var receiverConfigViewModelFactory = new ReceiverConfigViewModelFactory(
             new ReceivedMessageFormatter(_logger), 
             new DeadLetterMessagePropertiesWindowProxyFactory(),
             new MessagePropertiesWindowProxyFactory(), 
             new ServiceBusMessageReceiverFactory(_logger, receiverSettingsValidator),
             receiverSettingsValidator,
-            inGuiThreadActionCaller);
+            inGuiThreadActionCaller, 
+            operationSystemServices);
         
         var receiversConfigViewModel = new ReceiversConfigs(
             new ObservableCollection<ReceiverConfigViewModel>(),

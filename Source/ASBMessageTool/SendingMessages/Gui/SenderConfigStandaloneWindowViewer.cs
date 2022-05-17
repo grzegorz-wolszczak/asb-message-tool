@@ -1,4 +1,6 @@
-﻿namespace ASBMessageTool.SendingMessages.Gui;
+﻿using System.Windows;
+
+namespace ASBMessageTool.SendingMessages.Gui;
 
 public class SenderConfigStandaloneWindowViewer
 {
@@ -23,6 +25,14 @@ public class SenderConfigStandaloneWindowViewer
     {
         var senderConfigWindow = new SenderConfigWindow(onCloseAction: () => { viewModel.IsContentDetached = false; });
 
+        // make sure that when config name changes, window title also changes
+        senderConfigWindow.SetBinding(Window.TitleProperty, new System.Windows.Data.Binding()
+        {
+            Path = new PropertyPath(nameof(viewModel.ModelItem.ConfigName)),
+            Source = viewModel.ModelItem,
+        });
+
+        
         _windowForConfig = new StandaloneWindowForConfig<SenderConfigWindow>(
             viewModel,
             senderConfigWindow,
