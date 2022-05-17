@@ -16,7 +16,7 @@ public class PersistentConfiguration
 
     public PersistentConfiguration(string configFilePath,
         ApplicationPersistentOptions options,
-        IServiceBusHelperLogger logger, 
+        IServiceBusHelperLogger logger,
         ApplicationShutdowner applicationShutdowner)
     {
         _options = options;
@@ -25,44 +25,39 @@ public class PersistentConfiguration
         _configFilePath = configFilePath;
         _settings = JsonSettings.Configure<AsbToolPersistentSettings>(_configFilePath);
     }
-    
+
     public void Load()
     {
+        _logger.LogInfo($"Reading config from file '{_configFilePath}'");
         try
         {
-            TryLoad();
+            _settings.Load();
         }
         catch (Exception e)
         {
             HandleException(e);
         }
+
+        _options.ReadMainWindowSettings(_settings.MainWindowSettings);
+        _options.ReadSendersConfigSettings(_settings.SendersConfig);
+        _options.ReadReceiversConfigSettings(_settings.ReceiversConfig);
     }
 
     private void HandleException(Exception exception)
     {
-        var message = $"During reading configuration file '{_configFilePath}'\n\nexception happened:\n\n{exception.Message}\n\n" +
-                      $"Do you want to open the application ?\n\n" +
-                      $"If you choose YES application will ERASE ALL DATA in config file\n" +
-                      $"If you choose NO application will shutdown and you will have the chance to fix the config file manually";
+        var message = $"During application configuration file '{_configFilePath}'\n\nexception happened:\n\n{exception.Message}\n\n" +
+                      "Do you want to open the application ?\n\n" +
+                      "If you choose YES application will ERASE ALL DATA in config file\n" +
+                      "If you choose NO application will shutdown and you will have the chance to fix the config file manually";
         var answer = UserInteractions.ShowYesNoQueryDialog(
-            "Configuration file is invalid.", 
-            message, 
+            "Configuration file is invalid.",
+            message,
             $"{StaticConfig.ApplicationName} opening error",
             exception);
         if (answer == UserInteractions.YesNoDialogResult.No)
         {
             _applicationShutdowner.Shutdown();
         }
-        
-    }
-
-    private void TryLoad()
-    {
-        _logger.LogInfo($"Reading config from file '{_configFilePath}'");
-        _settings.Load();
-        _options.ReadMainWindowSettings(_settings.MainWindowSettings);
-        _options.ReadSendersConfigSettings(_settings.SendersConfig);
-        _options.ReadReceiversConfigSettings(_settings.ReceiversConfig);
     }
 
     public void Save()

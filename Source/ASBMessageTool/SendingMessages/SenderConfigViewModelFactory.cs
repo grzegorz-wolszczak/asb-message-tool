@@ -11,18 +11,20 @@ public class SenderConfigViewModelFactory
     private readonly MessageSenderFactory _messageSenderFactory;
     private readonly SenderMessagePropertiesWindowProxyFactory _senderMessagePropertiesWindowProxyFactory;
     private readonly ISenderSettingsValidator _senderSettingsValidator;
+    private readonly IOperationSystemServices _operationSystemServices;
 
     public SenderConfigViewModelFactory(IServiceBusHelperLogger logger,
         IInGuiThreadActionCaller inGuiThreadActionCaller,
         MessageSenderFactory messageSenderFactory,
         SenderMessagePropertiesWindowProxyFactory senderMessagePropertiesWindowProxyFactory,
-        ISenderSettingsValidator senderSettingsValidator)
+        ISenderSettingsValidator senderSettingsValidator, IOperationSystemServices operationSystemServices)
     {
         _logger = logger;
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
         _messageSenderFactory = messageSenderFactory;
         _senderMessagePropertiesWindowProxyFactory = senderMessagePropertiesWindowProxyFactory;
         _senderSettingsValidator = senderSettingsValidator;
+        _operationSystemServices = operationSystemServices;
     }
 
     public SenderConfigViewModel Create(
@@ -42,7 +44,8 @@ public class SenderConfigViewModelFactory
             _messageSenderFactory.Create(),
             _inGuiThreadActionCaller,
             _logger,
-            _senderSettingsValidator);
+            _senderSettingsValidator,
+            _operationSystemServices);
         return viewModel;
     }
 }

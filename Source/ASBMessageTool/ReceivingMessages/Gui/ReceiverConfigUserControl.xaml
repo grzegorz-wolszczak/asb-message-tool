@@ -46,9 +46,10 @@
                   IsExpanded="True"
                   Header="Message receiver configuration"
                   Margin="5,0,5,2"
-                  IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
+                  
                   >
-            <Grid>
+            <Grid IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
+            >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -91,7 +92,15 @@
                              application:PasswordBoxAssistant.BoundPassword="{Binding
                          Path=ModelItem.ServiceBusConnectionString,
                          Mode=TwoWay,
-                         UpdateSourceTrigger=PropertyChanged}" />
+                         UpdateSourceTrigger=PropertyChanged}" >
+                    <PasswordBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy connection string"
+                                      Command="{Binding CopySenderConnectionStringToClipboard}">
+                            </MenuItem>
+                        </ContextMenu>
+                    </PasswordBox.ContextMenu>
+                </PasswordBox>
 
                 <GroupBox Margin="5,2,5,2"
                           Grid.Column="0"
@@ -227,7 +236,7 @@
                           Grid.Row="6"
                           Grid.ColumnSpan="3"
                           Header="On message receive action"
-                          Visibility="{Binding                           ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox,
+                          Visibility="{Binding ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox,
                           Path=IsChecked,
                           Converter={StaticResource BooleanToReversedVisibilityConverter} }">
                     <GroupBox>

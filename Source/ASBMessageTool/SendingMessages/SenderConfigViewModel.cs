@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.Application.Logging;
@@ -36,6 +37,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private MessageSendingStatus _lastSendStatus = MessageSendingStatus.Idle;
     private TextDocument _msgToSendDocument = new("");
     private ISenderSettingsValidator _senderSettingsValidator;
+    private readonly IOperationSystemServices _operationSystemServices;
     private bool _isEditingConfigurationEnabled = true;
     private Maybe<LastMessageSendingError> _lastMessageSendingError = Maybe<LastMessageSendingError>.Nothing;
     private ConfigEditingEnabler _configEditorEnabler;
@@ -45,9 +47,10 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         SeparateWindowManagementCallbacks separateWindowManagementCallbacks,
         ISenderMessagePropertiesWindowProxy senderMessagePropertiesWindowProxy,
         IMessageSender messageSender,
-        IInGuiThreadActionCaller inGuiThreadActionCaller, 
-        IServiceBusHelperLogger logger, 
-        ISenderSettingsValidator senderSettingsValidator )
+        IInGuiThreadActionCaller inGuiThreadActionCaller,
+        IServiceBusHelperLogger logger,
+        ISenderSettingsValidator senderSettingsValidator, 
+        IOperationSystemServices operationSystemServices)
     {
         ModelItem = modelItem; // must use Property instead of backing field because Document.Text must be set
         _separateWindowManagementCallbacks = separateWindowManagementCallbacks;
@@ -56,6 +59,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
         _logger = logger;
         _senderSettingsValidator = senderSettingsValidator;
+        _operationSystemServices = operationSystemServices;
 
         _configEditorEnabler = new ConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; });
 
@@ -92,6 +96,11 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
             onErrorWhileSendingHappenedAction: IndicateErrorHappenedWhenSending,
             onSendingErrorHappened: IndicateUnexpectedExceptionFinished,
             _inGuiThreadActionCaller);
+
+        CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
+        {
+            _operationSystemServices.SetClipboardText(_modelItem.ServiceBusConnectionString);
+        });
     }
 
     private void IndicateErrorHappenedWhenSending(MessageSendErrorInfo messageSendErrorInfo)
@@ -168,6 +177,8 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     public ICommand SendMessageCommand { get; }
     public ICommand ShowPropertiesWindowCommand { get; }
     public ICommand ValidateConfigurationCommand { get; }
+    
+    public ICommand CopySenderConnectionStringToClipboard { get; }
     
     public event PropertyChangedEventHandler PropertyChanged;
     

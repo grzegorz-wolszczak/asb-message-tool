@@ -10,6 +10,7 @@ public class ReceiverConfigViewModelFactory
     private readonly ServiceBusMessageReceiverFactory _serviceBusMessageReceiverFactory;
     private readonly IReceiverSettingsValidator _receiverSettingsValidator;
     private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
+    private readonly IOperationSystemServices _operationSystemServices;
 
     public ReceiverConfigViewModelFactory(
         ReceivedMessageFormatter receivedMessageFormatter,
@@ -17,7 +18,8 @@ public class ReceiverConfigViewModelFactory
         MessagePropertiesWindowProxyFactory messagePropertiesWindowProxyFactory,
         ServiceBusMessageReceiverFactory serviceBusMessageReceiverFactory,
         IReceiverSettingsValidator receiverSettingsValidator,
-        IInGuiThreadActionCaller inGuiThreadActionCaller)
+        IInGuiThreadActionCaller inGuiThreadActionCaller, 
+        IOperationSystemServices operationSystemServices)
     {
         _receivedMessageFormatter = receivedMessageFormatter;
         _deadLetterMessagePropertiesWindowProxyFactory = deadLetterMessagePropertiesWindowProxyFactory;
@@ -25,6 +27,7 @@ public class ReceiverConfigViewModelFactory
         _serviceBusMessageReceiverFactory = serviceBusMessageReceiverFactory;
         _receiverSettingsValidator = receiverSettingsValidator;
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
+        _operationSystemServices = operationSystemServices;
     }
 
     public ReceiverConfigViewModel Create(ReceiverConfigModel item,
@@ -38,6 +41,6 @@ public class ReceiverConfigViewModelFactory
             _deadLetterMessagePropertiesWindowProxyFactory.Create(), 
             _receivedMessageFormatter,
             _receiverSettingsValidator,
-            _inGuiThreadActionCaller);
+            _inGuiThreadActionCaller, _operationSystemServices);
     }
 }
