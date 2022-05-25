@@ -6,12 +6,14 @@
              xmlns:converters="clr-namespace:ASBMessageTool.Application.Converters"
              xmlns:application="clr-namespace:ASBMessageTool.Application"
              xmlns:models="clr-namespace:ASBMessageTool.ReceivingMessages"
+             xmlns:code="clr-namespace:ASBMessageTool.ReceivingMessages.Code"
+             xmlns:model="clr-namespace:ASBMessageTool.Model"
              mc:Ignorable="d"
              d:DesignHeight="350" d:DesignWidth="400">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}" />
+        <!-- <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}" /> -->
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}" />
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
@@ -125,7 +127,7 @@
                                              IsChecked="{Binding
                                 Path=ModelItem.ReceiverDataSourceType,
                                 Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:ReceiverDataSourceType.Topic} }" />
+                                ConverterParameter={x:Static model:ReceiverDataSourceType.Topic} }" />
 
                                 <RadioButton Margin="5,2,5,2"
                                              Content="Queue"
@@ -133,7 +135,7 @@
                                              IsChecked="{Binding
                                 Path=ModelItem.ReceiverDataSourceType,
                                 Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:ReceiverDataSourceType.Queue} }" />
+                                ConverterParameter={x:Static model:ReceiverDataSourceType.Queue} }" />
                             </StackPanel>
 
                         </GroupBox>
@@ -220,7 +222,7 @@
                           Grid.Row="4"
                           Margin="5,5,5,5"
                           VerticalAlignment="Center"
-                          Content="Deadletter queue ?"
+                          Content="Receive from deadletter subqueue"
                           x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
                           IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
                           UpdateSourceTrigger=PropertyChanged}" />
@@ -263,7 +265,7 @@
                                              IsChecked="{Binding
                                             Path=ModelItem.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
-                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Complete} }" />
+                                            ConverterParameter={x:Static code:OnMessageReceiveEnumAction.Complete} }" />
                             </Grid>
 
                             <Grid Grid.Column="0" Grid.Row="1">
@@ -281,7 +283,7 @@
                                     x:Name="AbandonMessageCheckbox"
                                     IsChecked="{Binding ModelItem.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
-                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.Abandon}
+                                            ConverterParameter={x:Static code:OnMessageReceiveEnumAction.Abandon}
                                 }" />
 
 
@@ -314,7 +316,7 @@
                                     x:Name="DeadLetterMessageCheckbox"
                                     IsChecked="{Binding ModelItem.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
-                                            ConverterParameter={x:Static models:OnMessageReceiveEnumAction.MoveToDeadLetter}
+                                            ConverterParameter={x:Static code:OnMessageReceiveEnumAction.MoveToDeadLetter}
                                 }" />
 
 

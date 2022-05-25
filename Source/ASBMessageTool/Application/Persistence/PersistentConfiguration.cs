@@ -41,6 +41,7 @@ public class PersistentConfiguration
         _options.ReadMainWindowSettings(_settings.MainWindowSettings);
         _options.ReadSendersConfigSettings(_settings.SendersConfig);
         _options.ReadReceiversConfigSettings(_settings.ReceiversConfig);
+        _options.ReadPeekersConfigSettings(_settings.PeekersConfig);
     }
 
     private void HandleException(Exception exception)
@@ -65,6 +66,7 @@ public class PersistentConfiguration
         _settings.MainWindowSettings = _options.GetMainWindowSettings();
         _settings.SendersConfig = _options.GetSendersConfigToStore();
         _settings.ReceiversConfig = _options.GetReceiversConfigToStore();
+        _settings.PeekersConfig = _options.GetPeekersConfigsToStore();
         _settings.Save();
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ASBMessageTool.Model;
-using ASBMessageTool.ReceivingMessages;
-using ASBMessageTool.SendingMessages;
+using ASBMessageTool.PeekingMessages.Code;
+using ASBMessageTool.ReceivingMessages.Code;
+using ASBMessageTool.SendingMessages.Code;
 
 namespace ASBMessageTool.Application.Persistence;
 
@@ -11,16 +12,20 @@ public class ApplicationPersistentOptions
     private readonly MainViewModel _mainViewModel;
     private readonly SendersConfigs _sendersConfigs;
     private readonly ReceiversConfigs _receiversConfigs;
+    private readonly PeekerConfigs _peekersConfigs;
     private readonly LeftRightTabsSyncViewModel _leftRightTabsSyncViewModel;
 
-    public ApplicationPersistentOptions(MainViewModel mainViewModel,
+    public ApplicationPersistentOptions(
+        MainViewModel mainViewModel,
         SendersConfigs sendersConfigs,
-        ReceiversConfigs receiversConfigs, 
+        ReceiversConfigs receiversConfigs,
+        PeekerConfigs peekersConfigs,
         LeftRightTabsSyncViewModel leftRightTabsSyncViewModel)
     {
         _mainViewModel = mainViewModel;
         _sendersConfigs = sendersConfigs;
         _receiversConfigs = receiversConfigs;
+        _peekersConfigs = peekersConfigs;
         _leftRightTabsSyncViewModel = leftRightTabsSyncViewModel;
     }
 
@@ -54,6 +59,11 @@ public class ApplicationPersistentOptions
         return _sendersConfigs.SendersConfigsVMs.Select(e => e.ModelItem).ToList();
     }
 
+    public List<PeekerConfigModel> GetPeekersConfigsToStore()
+    {
+        return _peekersConfigs.PeekersConfigsVMs.Select(e => e.ModelItem).ToList();
+    }
+
     public void ReadSendersConfigSettings(List<SenderConfigModel> configs)
     {
         if (configs is null) return;
@@ -69,6 +79,15 @@ public class ApplicationPersistentOptions
         foreach (var item in configs)
         {
             _receiversConfigs.AddNewForModelItem(item);
+        }
+    }
+
+    public void ReadPeekersConfigSettings(List<PeekerConfigModel> configs)
+    {
+        if (configs is null) return;
+        foreach (var item in configs)
+        {
+            _peekersConfigs.AddNewForModelItem(item);
         }
     }
 }

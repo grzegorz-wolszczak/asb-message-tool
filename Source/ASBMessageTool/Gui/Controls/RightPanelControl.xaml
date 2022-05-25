@@ -22,6 +22,13 @@
             <TabItem Header="Receiver" IsSelected="{Binding IsLeftPanelReceiversTabSelected}" Visibility="Collapsed">
                 <rightPanel:RightPanelReceiversDynamicTabsUserControl x:Name="RightPanelReceiversTabItem" />
             </TabItem>
+            
+            <TabItem Header="Receiver" IsSelected="{Binding IsLeftPanelPeekersTabSelected}" Visibility="Collapsed">
+                <rightPanel:RightPanelPeekersDynamicTabsUserControl x:Name="RightPanelPeekersTabItem" />
+            </TabItem>
+            
+            
+            
         </TabControl>
     </Grid>
 </UserControl>

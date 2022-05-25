@@ -20,18 +20,23 @@ public partial class MainWindow
         LeftPanelSendersConfigControlViewModel leftPanelSendersConfigControlViewModel,
         RightPanelSendersConfigControlViewModel rightPanelSendersConfigControlViewModel,
         LeftPanelReceiversConfigControlViewModel leftPanelReceiversConfigControlViewModel,
-        RightPanelReceiversConfigControlViewModel rightPanelReceiversConfigControlViewModel)
+        RightPanelReceiversConfigControlViewModel rightPanelReceiversConfigControlViewModel,
+        LeftPanelPeekerConfigControlViewModel leftPanelPeekerConfigControlViewModel,
+        RightPanelPeekerConfigControlViewModel rightPanelPeekerConfigControlViewModel)
     {
         InitializeComponent();
         _mainViewModel = mainWindowViewModel;
         DataContext = mainWindowViewModel;
         LeftPanelControl.DataContext = leftRightTabsSyncViewModel;
+        
         LeftPanelControl.LeftPanelSendersConfigTab.DataContext = leftPanelSendersConfigControlViewModel;
         LeftPanelControl.LeftPanelReceiversConfigTab.DataContext = leftPanelReceiversConfigControlViewModel;
+        LeftPanelControl.LeftPanelPeekersConfigTab.DataContext = leftPanelPeekerConfigControlViewModel;
 
         RightPanelControl.DataContext = leftRightTabsSyncViewModel;
         RightPanelControl.RightPanelSendersTabItem.DataContext = rightPanelSendersConfigControlViewModel;
         RightPanelControl.RightPanelReceiversTabItem.DataContext = rightPanelReceiversConfigControlViewModel;
+        RightPanelControl.RightPanelPeekersTabItem.DataContext = rightPanelPeekerConfigControlViewModel;
         
         Title = $"{StaticConfig.ApplicationName} ({VersionConfig.Version})";
     }

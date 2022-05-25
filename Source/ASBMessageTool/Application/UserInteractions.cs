@@ -79,7 +79,7 @@ public static class UserInteractions
         return _taskDialogHandle;
     }
 
-    public static void ShowExceptionDialog(string reason, Exception exception)
+    public static void ShowExceptionDialog(string windowTitle, Exception exception)
     {
         // var taskHandle = GetTaskHandle();
         // TaskDialog(taskHandle,
@@ -93,7 +93,7 @@ public static class UserInteractions
         TaskDialogOptions options = new TaskDialogOptions();
         options.Content = exception.Message;
         options.ExpandedInfo = exception.ToString();
-        options.Title = reason;
+        options.Title = windowTitle;
         options.MainIcon = VistaTaskDialogIcon.Error;
         options.Owner = GetWindow();
 

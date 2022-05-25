@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ASBMessageTool.Application;
-using ASBMessageTool.ReceivingMessages;
+using ASBMessageTool.ReceivingMessages.Code;
 using JetBrains.Annotations;
 
 namespace ASBMessageTool.Model;
@@ -26,13 +26,13 @@ public class LeftPanelReceiversConfigControlViewModel : INotifyPropertyChanged
             },
             _ => CurrentSelectedConfigModelItem != null);
         
-        MoveReceiverConfigUpCommand = new DelegateCommand(_ =>
+        MoveConfigUpCommand = new DelegateCommand(_ =>
             {
                 configs.MoveConfigUp(CurrentSelectedConfigModelItem);
             },
             _ => configs.CanMoveUp(CurrentSelectedConfigModelItem));
         
-        MoveReceiverConfigDownCommand = new DelegateCommand(_ =>
+        MoveConfigDownCommand = new DelegateCommand(_ =>
             {
                 configs.MoveConfigDown(CurrentSelectedConfigModelItem);
             },
@@ -42,8 +42,8 @@ public class LeftPanelReceiversConfigControlViewModel : INotifyPropertyChanged
     public ICommand AddReceiverConfigCommand { get; }
     public ICommand DeleteReceiverConfigCommand { get; }
     
-    public ICommand MoveReceiverConfigUpCommand { get; }
-    public ICommand MoveReceiverConfigDownCommand { get; }
+    public ICommand MoveConfigUpCommand { get; }
+    public ICommand MoveConfigDownCommand { get; }
 
 
     [UsedImplicitly]
