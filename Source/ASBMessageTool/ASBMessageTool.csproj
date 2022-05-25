@@ -25,5 +25,21 @@
     <ItemGroup>
       <ProjectReference Include="..\TaskDialog\TaskDialog.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Resources\resources.resx" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Resources\resources.Designer.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      
+      <Resource Include="Resources\Images\down_arrow.png" />
+      
+      <Resource Include="Resources\Images\up_arrow.png" />
+    </ItemGroup>
+    
     
 </Project>

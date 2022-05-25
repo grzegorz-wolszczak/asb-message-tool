@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ASBMessageTool.SendingMessages;
+using ASBMessageTool.SendingMessages.Code;
 
 namespace ASBMessageTool.Model;
 

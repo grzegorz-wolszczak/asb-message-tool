@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="ASBMessageTool.Gui.Controls.LeftPanel.PeekersUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ASBMessageTool.Gui.Controls.LeftPanel"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+    <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+    <Style x:Key="ImageEnabled" TargetType="Image">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.25"></Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center"
+                    Margin="2,2,2,2">
+            
+            <Button Margin="2,2,2,2"
+                    Command="{Binding MoveConfigUpCommand}">
+                <Image Height="21" Source="pack://application:,,,/Resources/Images/up_arrow.png" Style="{StaticResource ImageEnabled}"/>
+            </Button>
+            <Button Margin="2,2,2,2"
+                    Command="{Binding MoveConfigDownCommand}">
+                <Image Height="21" Source="pack://application:,,,/Resources/Images/down_arrow.png" Style="{StaticResource ImageEnabled}"/>
+            </Button>
+            
+        </StackPanel>
+        
+        <ListView Grid.Row="0" Grid.Column="0"
+                  IsSynchronizedWithCurrentItem="True"
+                  ItemsSource="{Binding PeekersConfigsVMs}"
+                  SelectedItem="{Binding Path=CurrentSelectedConfigModelItem,Mode=TwoWay}" SelectionMode="Single">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Margin="5" Text="{Binding ModelItem.ConfigName}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" 
+                    Orientation="Horizontal" HorizontalAlignment="Center">
+
+            <Button Margin="5"
+                    MinWidth="75"
+                    Command="{Binding AddPeekerConfigCommand}"> Add
+            </Button>
+
+            <Button Margin="5"
+                    MinWidth="75"
+                    Command="{Binding DeletePeekerConfigCommand}"> Delete
+            </Button>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

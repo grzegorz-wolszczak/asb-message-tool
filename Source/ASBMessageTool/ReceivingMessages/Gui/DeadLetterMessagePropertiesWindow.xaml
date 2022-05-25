@@ -7,6 +7,7 @@
         xmlns:models="clr-namespace:ASBMessageTool.ReceivingMessages"
         xmlns:gui="clr-namespace:ASBMessageTool.SendingMessages.Gui"
         xmlns:gui1="clr-namespace:ASBMessageTool.ReceivingMessages.Gui"
+        xmlns:code="clr-namespace:ASBMessageTool.ReceivingMessages.Code"
 
         mc:Ignorable="d"
         Title="DeadLetterMesssagePropertiesWindow" Height="450" Width="800">
@@ -32,7 +33,7 @@
                     IsChecked="{Binding
                                 Path=DeadLetterMessageFieldsOverrideType,
                                 Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:DeadLetterMessageFieldsOverrideEnumType.OverrideApplicationPropertiesFields} }"
+                                ConverterParameter={x:Static code:DeadLetterMessageFieldsOverrideEnumType.OverrideApplicationPropertiesFields} }"
 
                     Grid.Row="0"
                     Margin="5"
@@ -42,7 +43,7 @@
                     IsChecked="{Binding
                                 Path=DeadLetterMessageFieldsOverrideType,
                                 Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:DeadLetterMessageFieldsOverrideEnumType.OverrideDeadLetterErrorRelatedFields} }"
+                                ConverterParameter={x:Static code:DeadLetterMessageFieldsOverrideEnumType.OverrideDeadLetterErrorRelatedFields} }"
                     x:Name="DeadLetterDescriptionChoiceCheckBox"
                     Grid.Row="1"
                     Margin="5"

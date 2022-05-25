@@ -7,8 +7,9 @@ using ASBMessageTool.Application.Persistence;
 using ASBMessageTool.Gui;
 using ASBMessageTool.Gui.Views;
 using ASBMessageTool.Model;
-using ASBMessageTool.ReceivingMessages;
-using ASBMessageTool.SendingMessages;
+using ASBMessageTool.PeekingMessages.Code;
+using ASBMessageTool.ReceivingMessages.Code;
+using ASBMessageTool.SendingMessages.Code;
 
 
 namespace ASBMessageTool.Application;
@@ -32,10 +33,13 @@ public class ApplicationLogicRoot
         var appDirectory = Directory.GetParent(Process.GetCurrentProcess().MainModule!.FileName!)!.ToString();
         var configFilePath = Path.Join(appDirectory, StaticConfig.ConfigFileName);
 
-        var senderConfigViewModels = new ObservableCollection<SenderConfigViewModel>();
 
-        var senderConfigModelFactory = new SenderConfigModelFactory();
         var operationSystemServices = new OperationSystemServices();
+
+
+        // senders
+        var senderConfigViewModels = new ObservableCollection<SenderConfigViewModel>();
+        var senderConfigModelFactory = new SenderConfigModelFactory();
         var senderConfigViewModelFactory = new SenderConfigViewModelFactory(
             _logger,
             inGuiThreadActionCaller,
@@ -51,8 +55,9 @@ public class ApplicationLogicRoot
             senderConfigViewModelFactory,
             senderConfigModelFactory);
 
+        
+        // receivers
         var receiverSettingsValidator = new ReceiverSettingsValidator(_logger);
-
         
         var receiverConfigViewModelFactory = new ReceiverConfigViewModelFactory(
             new ReceivedMessageFormatter(_logger), 
@@ -69,6 +74,23 @@ public class ApplicationLogicRoot
             new ReceiversConfigModelFactory(), 
             receiverConfigViewModelFactory);
 
+        // peekers
+        var peekerSettingsValidator = new PeekerSettingsValidator(_logger);
+
+        var peekerConfigViewModelFactory = new PeekerConfigViewModelFactory(
+            new ReceivedMessageFormatter(_logger),
+            new ServiceBusMessagePeekerFactory(_logger, peekerSettingsValidator),
+            peekerSettingsValidator,
+            inGuiThreadActionCaller,
+            operationSystemServices);
+
+        var peekersConfigViewModel = new PeekerConfigs(
+            new ObservableCollection<PeekerConfigViewModel>(),
+            new PeekerConfigWindowFactory(),
+            new PeekerConfigModelFactory(),
+            peekerConfigViewModelFactory);
+        
+        
         var leftRightTabsSyncViewModel = new LeftRightTabsSyncViewModel();
 
         _mainWindow = new MainWindow(
@@ -77,11 +99,15 @@ public class ApplicationLogicRoot
             new LeftPanelSendersConfigControlViewModel(sendersConfigViewModel),
             new RightPanelSendersConfigControlViewModel(sendersConfigViewModel),
             new LeftPanelReceiversConfigControlViewModel(receiversConfigViewModel),
-            new RightPanelReceiversConfigControlViewModel(receiversConfigViewModel));
+            new RightPanelReceiversConfigControlViewModel(receiversConfigViewModel),
+            new LeftPanelPeekerConfigControlViewModel(peekersConfigViewModel),
+            new RightPanelPeekerConfigControlViewModel(peekersConfigViewModel));
 
-        var persistentOptions = new ApplicationPersistentOptions(mainWindowViewModel, 
+        var persistentOptions = new ApplicationPersistentOptions(
+            mainWindowViewModel, 
             sendersConfigViewModel, 
             receiversConfigViewModel,
+            peekersConfigViewModel,
             leftRightTabsSyncViewModel);
         
         _persistentConfiguration = new PersistentConfiguration(configFilePath, persistentOptions, _logger, applicationShutdowner);

@@ -8,7 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" />
+        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
     </UserControl.Resources>
     <Grid>
 

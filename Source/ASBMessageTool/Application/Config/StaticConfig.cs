@@ -9,7 +9,6 @@ public static class StaticConfig
     public static readonly string LicenseName = "BSD 3-Clause License";
     public static readonly string ApplicationName = "AzureServiceBusMessageTool";
     public static readonly string ConfigFileName = $"{ApplicationName}.settings.json";
-    // todo: below link is invalid, update it when repository is not private anymore
     public static readonly string ThisRepositoryUrl = "https://github.com/grzegorz-wolszczak/asb-message-tool";
 
     public static readonly TimeSpan NextMessageReceiveDelayTimeSpan = TimeSpan.FromMilliseconds(500);

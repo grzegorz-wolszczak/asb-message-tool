@@ -11,7 +11,7 @@
         Visibility="{Binding IsContentDetached}">
 
     <Window.Resources>
-        <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" />
+        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
     </Window.Resources>
 
 

@@ -20,6 +20,11 @@
                      IsSelected="{Binding IsLeftPanelReceiversTabSelected, Mode=OneWayToSource}">
                 <leftPanel:ReceiversUserControl x:Name="LeftPanelReceiversConfigTab" />
             </TabItem>
+            
+            <TabItem Header="Peekers"
+                     IsSelected="{Binding IsLeftPanelPeekersTabSelected, Mode=OneWayToSource}">
+                <leftPanel:PeekersUserControl x:Name="LeftPanelPeekersConfigTab" />
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>

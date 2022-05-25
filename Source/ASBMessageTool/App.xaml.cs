@@ -36,7 +36,7 @@ public partial class App
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         e.Handled = true;
-        UserInteractions.ShowExceptionDialog($"Unhandled exception\n\nApplication will close", e.Exception);
+        UserInteractions.ShowExceptionDialog($"Unhandled exception during application startup", e.Exception);
         Current?.Shutdown();
     }
 

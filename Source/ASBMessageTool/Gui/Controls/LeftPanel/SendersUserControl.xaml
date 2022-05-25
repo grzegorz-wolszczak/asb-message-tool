@@ -6,7 +6,14 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" />
+        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+        <Style x:Key="ImageEnabled" TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.25"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
 
@@ -23,14 +30,16 @@
             </Grid.ColumnDefinitions>
 
 
-            <StackPanel Grid.Row="0" Grid.Column="1" Margin="5,5,5,5"
+            <StackPanel Grid.Row="0" Grid.Column="1" Margin="2,2,2,2"
                         VerticalAlignment="Center">
-                <Button Content="Up" Margin="5,5,5,5"
-                        Command="{Binding MoveSenderConfigUpCommand}"
-                        />
-                <Button Content="Down" Margin="5,5,5,5"
-                        Command="{Binding MoveSenderConfigDownCommand}"
-                        />
+                <Button Margin="2,2,2,2"
+                        Command="{Binding MoveConfigUpCommand}">
+                    <Image Height="21" Source="pack://application:,,,/Resources/Images/up_arrow.png" Style="{StaticResource ImageEnabled}"/>
+                </Button>
+                <Button Margin="2,2,2,2"
+                        Command="{Binding MoveConfigDownCommand}">
+                    <Image Height="21" Source="pack://application:,,,/Resources/Images/down_arrow.png" Style="{StaticResource ImageEnabled}"/>
+                </Button>
             </StackPanel>
             
             <ListView

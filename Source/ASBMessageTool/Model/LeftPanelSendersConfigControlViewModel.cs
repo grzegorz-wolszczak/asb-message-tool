@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ASBMessageTool.Application;
-using ASBMessageTool.SendingMessages;
+using ASBMessageTool.SendingMessages.Code;
 using JetBrains.Annotations;
 
 namespace ASBMessageTool.Model;
@@ -20,17 +20,17 @@ public sealed class LeftPanelSendersConfigControlViewModel : INotifyPropertyChan
         DeleteSenderConfigCommand = new DelegateCommand(_ => { sendersConfigs.Remove(CurrentSelectedConfigModelItem); },
             _ => CurrentSelectedConfigModelItem != null);
 
-        MoveSenderConfigUpCommand = new DelegateCommand(_ => { sendersConfigs.MoveConfigUp(CurrentSelectedConfigModelItem);},
+        MoveConfigUpCommand = new DelegateCommand(_ => { sendersConfigs.MoveConfigUp(CurrentSelectedConfigModelItem);},
             _ => sendersConfigs.CanMoveUp(CurrentSelectedConfigModelItem));
         
-        MoveSenderConfigDownCommand = new DelegateCommand(_ => { sendersConfigs.MoveConfigDown(CurrentSelectedConfigModelItem);},
+        MoveConfigDownCommand = new DelegateCommand(_ => { sendersConfigs.MoveConfigDown(CurrentSelectedConfigModelItem);},
             _ => sendersConfigs.CanMoveDown(CurrentSelectedConfigModelItem));
     }
 
     public ICommand AddSenderConfigCommand { get; }
     public ICommand DeleteSenderConfigCommand { get; }
-    public ICommand MoveSenderConfigUpCommand { get; }
-    public ICommand MoveSenderConfigDownCommand { get; }
+    public ICommand MoveConfigUpCommand { get; }
+    public ICommand MoveConfigDownCommand { get; }
 
     [UsedImplicitly]
     public IList<SenderConfigViewModel> SendersConfigsVMs => _sendersConfigs.SendersConfigsVMs;

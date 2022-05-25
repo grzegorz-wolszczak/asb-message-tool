@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ASBMessageTool.Application;
 using ASBMessageTool.Model;
-using ASBMessageTool.SendingMessages;
+using ASBMessageTool.SendingMessages.Code;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;

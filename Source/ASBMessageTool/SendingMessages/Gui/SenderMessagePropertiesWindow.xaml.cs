@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using ASBMessageTool.Model;
-using ASBMessageTool.ReceivingMessages.Gui;
+using ASBMessageTool.ReceivingMessages.Code;
 
 namespace ASBMessageTool.SendingMessages.Gui;
 
