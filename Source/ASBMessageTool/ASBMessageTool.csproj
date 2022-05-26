@@ -16,6 +16,7 @@
         </PackageReference>
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.6.0" />
         <PackageReference Include="Core.Maybe" Version="2.4.1" />
+        <PackageReference Include="Extended.Wpf.Toolkit" Version="4.3.0" />
         <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="nucs.JsonSettings" Version="1.0.7" />

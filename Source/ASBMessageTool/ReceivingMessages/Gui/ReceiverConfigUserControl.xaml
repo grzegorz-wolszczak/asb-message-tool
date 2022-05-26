@@ -8,6 +8,7 @@
              xmlns:models="clr-namespace:ASBMessageTool.ReceivingMessages"
              xmlns:code="clr-namespace:ASBMessageTool.ReceivingMessages.Code"
              xmlns:model="clr-namespace:ASBMessageTool.Model"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
              d:DesignHeight="350" d:DesignWidth="400">
 
@@ -19,6 +20,8 @@
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         <converters:NegatedBooleanConverter x:Key="NegatedBooleanConverter" />
         <converters:BooleanToReversedVisibilityConverter x:Key="BooleanToReversedVisibilityConverter" />
+        <converters:BooleanToHiddenVisibilityConverter x:Key="BooleanToHiddenVisibilityConverter" />
+        
 
 
         <!-- works with datacontext of ReceiverConfigViewModel -->
@@ -218,14 +221,54 @@
                 </GroupBox>
 
 
-                <CheckBox Grid.Column="0"
-                          Grid.Row="4"
-                          Margin="5,5,5,5"
-                          VerticalAlignment="Center"
-                          Content="Receive from deadletter subqueue"
-                          x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
-                          IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
+             
+                <Grid Grid.Column="0"
+                      Grid.Row="4"
+                      Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0"
+                                Margin="5,5,5,5"> 
+                        <CheckBox 
+                            Margin = "2"
+                            VerticalAlignment="Center"
+                            Content="Receive from deadletter subqueue"
+                            x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
+                            IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
                           UpdateSourceTrigger=PropertyChanged}" />
+                    
+                        <CheckBox Margin="2" Name="ReceiveSpecificNumberOfMessagesCheckBox"
+                                  IsChecked="{Binding ModelItem.ShouldReceiveSpecificNumberOfMessages}">
+                            <StackPanel Orientation="Horizontal" >
+                                <Label Margin="0,0,10,0" Padding="0"
+                                > Receive specific number of messages</Label>
+                                
+                                <xctk:IntegerUpDown
+                                    IsEnabled="{Binding ElementName=ReceiveSpecificNumberOfMessagesCheckBox, Path=IsChecked}"
+                                    MinWidth="70"
+                                    Increment="1" 
+                                    AllowSpin="True"
+                                    Minimum="0"
+                                    DefaultValue="1"
+                                    FormatString="G"
+                                    Watermark="Enter number"
+                                    ClipValueToMinMax="True"
+                                    DisplayDefaultValueOnEmptyText="True"
+                                    Visibility="{Binding ElementName=ReceiveSpecificNumberOfMessagesCheckBox, Path=IsChecked,
+                                     Converter={StaticResource BooleanToHiddenVisibilityConverter} }"
+                                    Value = "{Binding ModelItem.NumberOfMessagesToReceive, UpdateSourceTrigger=PropertyChanged}"
+                                    ShowButtonSpinner="True"
+                                    InputValidationError="UpDownBase_OnInputValidationError"
+                                    
+                                />    
+                            </StackPanel>
+                        
+                        </CheckBox>
+                    </StackPanel>
+                </Grid>
+                    
                 
                 <Button Grid.Row="5" Grid.Column="0" 
                         Margin="5,0,5,2" 

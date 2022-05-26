@@ -27,6 +27,8 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
     private OnMessageReceiveEnumAction _onMessageReceiveAction;
     private DeadLetterMessageFieldsOverrideEnumType _deadLetterMessageFieldsOverrideType;
     private ReceiverDataSourceType _receiverDataSourceType;
+    private bool _shouldReceiveOnlySelectedNumberOfMessages;
+    private int _numberOfMessagesToReceive;
 
 
     public string ConfigName
@@ -50,6 +52,19 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+        
+    public int NumberOfMessagesToReceive
+    {
+        get => _numberOfMessagesToReceive;
+        set
+        {
+            if (value == _numberOfMessagesToReceive) return;
+            _numberOfMessagesToReceive = value;
+            OnPropertyChanged();
+        }
+    }
+
 
     public OnMessageReceiveEnumAction OnMessageReceiveAction
     {
@@ -129,7 +144,19 @@ public sealed class ReceiverConfigModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-
+    
+    
+    public bool ShouldReceiveSpecificNumberOfMessages
+    {
+        get => _shouldReceiveOnlySelectedNumberOfMessages;
+        set
+        {
+            if (value == _shouldReceiveOnlySelectedNumberOfMessages) return;
+            _shouldReceiveOnlySelectedNumberOfMessages = value;
+            OnPropertyChanged();
+        }
+    }
+    
 
     public int MsgBodyTextBoxFontSize
     {
