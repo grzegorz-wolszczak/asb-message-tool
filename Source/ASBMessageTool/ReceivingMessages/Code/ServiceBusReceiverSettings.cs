@@ -13,6 +13,10 @@ public record ServiceBusReceiverSettings
     public string SubscriptionName { get; init; }
     public bool IsDeadLetterQueue { get; init; }
     public TimeSpan MessageReceiveDelayPeriod { get; init; }
+    
+    public bool ShouldReceiveSpecificNumberOfMessages { get; init; }
+    
+    public int NumberOfMessgesToReceive { get; init; }
 
     public OnMessageReceiveEnumAction OnMessageReceiveEnumAction { get; init; }
     public IList<SBMessageApplicationProperty> AbandonMessageOverriddenApplicationProperties { get; init; }

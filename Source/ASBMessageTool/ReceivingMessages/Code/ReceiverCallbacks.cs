@@ -10,4 +10,6 @@ public class ReceiverCallbacks
     public Action OnReceiverStarted { get; init; }
 
     public Action OnReceiverInitializing { get; init; }
+    
+    public Action<string> OnOutputFromReceiverReceived { get; init; }
 }

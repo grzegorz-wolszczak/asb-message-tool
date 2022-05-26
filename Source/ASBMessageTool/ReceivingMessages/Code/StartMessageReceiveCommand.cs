@@ -14,6 +14,7 @@ public class StartMessageReceiveCommand : ICommand
     private readonly Action<Exception> _onReceiverFailure;
     private readonly Action _onReceiverStopped;
     private readonly Action _onReceiverInitializing;
+    private readonly Action<string> _onOutputFromReceiverReceived;
 
     private bool _canExecute = true;
 
@@ -24,7 +25,8 @@ public class StartMessageReceiveCommand : ICommand
         Action onReceiverStarted,
         Action<Exception> onReceiverFailure,
         Action onReceiverStopped,
-        Action onReceiverInitializing)
+        Action onReceiverInitializing,
+        Action<string> onOutputFromReceiverReceived)
     {
         _msgReceiver = msgReceiver;
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
@@ -34,6 +36,7 @@ public class StartMessageReceiveCommand : ICommand
         _onReceiverFailure = onReceiverFailure;
         _onReceiverStopped = onReceiverStopped;
         _onReceiverInitializing = onReceiverInitializing;
+        _onOutputFromReceiverReceived = onOutputFromReceiverReceived;
     }
 
     public bool CanExecute(object parameter)
@@ -51,6 +54,7 @@ public class StartMessageReceiveCommand : ICommand
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
                 _onReceiverFailure.Invoke(exc);
             },
+            OnOutputFromReceiverReceived = _onOutputFromReceiverReceived,
             OnMessageReceive = _onMessageReceived,
             OnReceiverStop = ()=>
             {

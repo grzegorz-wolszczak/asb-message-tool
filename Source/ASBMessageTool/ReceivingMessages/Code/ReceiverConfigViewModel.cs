@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.Application.Config;
+using JetBrains.Annotations;
 
 namespace ASBMessageTool.ReceivingMessages.Code;
 
@@ -32,6 +33,8 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
     private ConfigEditingEnabler _configEditorEnabler;
     private readonly IReceiverSettingsValidator _receiverSettingsValidator;
     private readonly IOperationSystemServices _operationSystemServices;
+    private bool _shouldReceiveOnlySelectedNumberOfMessages;
+    
 
     public ReceiverConfigViewModel(ReceiverConfigModel item,
         SeparateWindowManagementCallbacks separateWindowManagementCallbacks,
@@ -62,7 +65,8 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
             onReceiverStarted: SetReceiverListeningStatus,
             onReceiverFailure: SetReceiverStoppedOnErrorStatus,
             onReceiverStopped: SetReceiverIdleStatus,
-            onReceiverInitializing: SetReceiverInitializingStatus
+            onReceiverInitializing: SetReceiverInitializingStatus,
+            onOutputFromReceiverReceived:AppendOutputFromReceiver
         );
 
         ValidateConfigurationCommand = new ValidateReceiverConfigurationCommand(
@@ -78,14 +82,12 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         ShowAbandonMessageOverriddenPropertiesWindowCommand = new DelegateCommand(_ =>
         {
             _messageApplicationPropertiesWindowProxy.ShowDialog(new SbMessageApplicationPropertiesViewModel(
-                _modelItem.AbandonMessageApplicationOverridenProperties
-            ));
+                _modelItem.AbandonMessageApplicationOverridenProperties));
         });
 
         ShowDeadLetterMessageOverriddenPropertiesWindowCommand = new DelegateCommand(_ =>
         {
             _deadLetterMessagePropertiesWindowProxy.ShowDialog(new DeadLetterMessagePropertiesViewModel(_modelItem));
-
         });
 
         AttachToPanelCommand = new DelegateCommand((_) =>
@@ -103,7 +105,6 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
 
         CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
         {
-            
             _operationSystemServices.SetClipboardText(_modelItem.ServiceBusConnectionString);
         });
     }
@@ -126,7 +127,9 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
             ShouldShowOnlyMessageBodyAsJson = ModelItem.ShouldShowOnlyBodyAsJson,
             ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter = ModelItem.ShouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter,
             ReceiverQueueName = ModelItem.ReceiverQueueName,
-            ReceiverDataSourceType = ModelItem.ReceiverDataSourceType
+            ReceiverDataSourceType = ModelItem.ReceiverDataSourceType,
+            ShouldReceiveSpecificNumberOfMessages = ModelItem.ShouldReceiveSpecificNumberOfMessages,
+            NumberOfMessgesToReceive = ModelItem.NumberOfMessagesToReceive
         };
     }
 
@@ -153,6 +156,18 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         {
             if (value == _isDetached) return;
             _isDetached = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [UsedImplicitly]
+    public bool ShouldReceiveSpecificNumberOfMessages
+    {
+        get => _shouldReceiveOnlySelectedNumberOfMessages;
+        set
+        {
+            if (value == _shouldReceiveOnlySelectedNumberOfMessages) return;
+            _shouldReceiveOnlySelectedNumberOfMessages = value;
             OnPropertyChanged();
         }
     }
@@ -217,7 +232,11 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
                                    "\n----------------------------------\n";
     }
 
-
+    private void AppendOutputFromReceiver(string text)
+    {
+        ReceivedMessagesContent += text + "\n";
+    }
+    
     public ReceiverEnumStatus ReceiverEnumStatus
     {
         get => _receiverEnumStatus;

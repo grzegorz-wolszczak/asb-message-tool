@@ -58,6 +58,7 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
                     _client = new ServiceBusClient(_config.ConnectionString);
                     var serviceBusReceiverOptions = GetServiceBusReceiverOptionsBasedOnConfig();
                     await ReceiveUntilCancelledOrStopped(serviceBusReceiverOptions, token);
+                    Stop();
                 }
                 catch (TaskCanceledException)
                 {
@@ -69,14 +70,11 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
                     {
                         _logger.LogError($"Receiver '{_config.ConfigName}' was stopped unexpectedly");
                     }
-
-                    StopReceiver();
                 }
                 catch (Exception e)
                 {
                     _callbacks.OnReceiverFailure.Invoke(e);
                     _logger.LogException(e);
-                    StopReceiver();
                 }
             }, TaskCreationOptions.LongRunning);
         }
@@ -93,25 +91,58 @@ public sealed class ServiceBusMessageReceiver : IServiceBusMessageReceiver, IDis
         CancellationToken token)
     {
         await using var receiver = CreateReceiverForReceiveServiceType(serviceBusReceiverOptions);
-        
+
         _logger.LogInfo($"Receiver '{_config.ConfigName}' started.");
         _callbacks.OnReceiverStarted.Invoke();
-        while (!token.IsCancellationRequested)
+        int messagesReceviedCount = 0;
+
+        ShowIfMessageReceiverShouldReceiveSpecificNumberOfMessages();
+
+        while (ShouldContinueReceivingMessages(token, messagesReceviedCount))
         {
             ServiceBusReceivedMessage message = await receiver.ReceiveMessageAsync(StaticConfig.MessageReceiverReceiveTimeout, token);
 
-            if (message != null)
+            if (message == null)
+                continue;
+
+            var receivedMessage = new ReceivedMessage
             {
-                var receivedMessage = new ReceivedMessage
-                {
-                    OriginalMessage = message
-                };
-                _callbacks.OnMessageReceive(receivedMessage);
-                await FinalizeMessageReceiveForPickLockMode(message, receiver, token);
-            }
+                OriginalMessage = message
+            };
+            _callbacks.OnMessageReceive(receivedMessage);
+            await FinalizeMessageReceiveForPickLockMode(message, receiver, token);
+            messagesReceviedCount++;
+
+            ReportReceivedMessageCount(messagesReceviedCount);
+
 
             await Task.Delay(_config.MessageReceiveDelayPeriod, token);
         }
+    }
+
+    private void ReportReceivedMessageCount(int messageReceivedCount)
+    {
+        if (_config.ShouldReceiveSpecificNumberOfMessages)
+        {
+            var msg = $"Received message {messageReceivedCount} of {_config.NumberOfMessgesToReceive}";
+            _callbacks.OnOutputFromReceiverReceived.Invoke(msg);
+        }
+    }
+
+    private void ShowIfMessageReceiverShouldReceiveSpecificNumberOfMessages()
+    {
+        if (_config.ShouldReceiveSpecificNumberOfMessages)
+        {
+            _logger.LogInfo($"Receiver '{_config.ConfigName}' will is expected to receive {_config.NumberOfMessgesToReceive} messages...");
+        }
+    }
+
+    private bool ShouldContinueReceivingMessages(CancellationToken token, int messagesReceivedCount)
+    {
+        var shouldContinueReceivingBasedOnNumberOfAlreadyReceivedMessages = _config.ShouldReceiveSpecificNumberOfMessages
+            ? messagesReceivedCount < _config.NumberOfMessgesToReceive
+            : true;
+        return !token.IsCancellationRequested && shouldContinueReceivingBasedOnNumberOfAlreadyReceivedMessages;
     }
 
     private ServiceBusReceiver CreateReceiverForReceiveServiceType(ServiceBusReceiverOptions serviceBusReceiverOptions)
