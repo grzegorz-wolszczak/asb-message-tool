@@ -9,7 +9,7 @@
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="500">
     <UserControl.Resources>
-        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+        
     </UserControl.Resources>
 
     <Grid>
@@ -35,6 +35,7 @@
             Margin="5,2,5,0">
             <Button Margin="5,2,5,0"
                     MinWidth="75"
+                    Style="{StaticResource ButtonStyle}"
                     Command="{Binding DetachFromPanelCommand}"> Detach pane
             </Button>
 

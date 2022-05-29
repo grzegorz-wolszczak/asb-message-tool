@@ -117,7 +117,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
     {
         get
         {
-            return String.IsNullOrEmpty(options.Title) ? System.AppDomain.CurrentDomain.FriendlyName : options.Title;
+            return String.IsNullOrEmpty(options.Title) ? AppDomain.CurrentDomain.FriendlyName : options.Title;
         } 
         set
         {
@@ -211,7 +211,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
 
             var args = new VistaTaskDialogNotificationArgs();
 
-            args.Config = this.options;
+            args.Config = options;
             args.Notification = VistaTaskDialogNotification.ExpandoButtonClicked;
             args.Expanded = _expandedInfoVisible;
 
@@ -274,7 +274,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
 
             var args = new VistaTaskDialogNotificationArgs();
 
-            args.Config = this.options;
+            args.Config = options;
             args.Notification = VistaTaskDialogNotification.VerificationClicked;
             args.VerificationFlagChecked = _verificationChecked;
 
@@ -609,7 +609,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
 
                     var args = new VistaTaskDialogNotificationArgs();
 
-                    args.Config = this.options;
+                    args.Config = options;
                     args.Notification = VistaTaskDialogNotification.ButtonClicked;
                     args.ButtonId = i;
 
@@ -657,7 +657,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
 
                     var args = new VistaTaskDialogNotificationArgs();
 
-                    args.Config = this.options;
+                    args.Config = options;
                     args.Notification = VistaTaskDialogNotification.RadioButtonClicked;
                     args.ButtonId = i;
 
@@ -681,7 +681,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
                 {
                     var args = new VistaTaskDialogNotificationArgs();
 
-                    args.Config = this.options;
+                    args.Config = options;
                     args.Notification = VistaTaskDialogNotification.HyperlinkClicked;
                     args.Hyperlink = uri;
 
@@ -717,7 +717,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
     {
         var args = new VistaTaskDialogNotificationArgs();
 
-        args.Config = this.options;
+        args.Config = options;
         args.Notification = VistaTaskDialogNotification.DialogConstructed;
 
         OnCallback(args);
@@ -729,7 +729,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
     {
         var args = new VistaTaskDialogNotificationArgs();
 
-        args.Config = this.options;
+        args.Config = options;
         args.Notification = VistaTaskDialogNotification.Created;
 
         OnCallback(args);
@@ -752,7 +752,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
     {
         var args = new VistaTaskDialogNotificationArgs();
 
-        args.Config = this.options;
+        args.Config = options;
         args.Notification = VistaTaskDialogNotification.Destroyed;
 
         OnCallback(args);
@@ -829,7 +829,7 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
     {
         var args = new VistaTaskDialogNotificationArgs();
 
-        args.Config = this.options;
+        args.Config = options;
         args.Notification = VistaTaskDialogNotification.Timer;
         args.TimerTickCount = Convert.ToUInt32(Math.Round(DateTime.Now.Subtract(_callbackTimerStart).TotalMilliseconds, 0));
 
@@ -839,8 +839,8 @@ public class TaskDialogViewModel : IActiveTaskDialog, INotifyPropertyChanged
     private System.Windows.Media.ImageSource ConvertIconToImageSource(VistaTaskDialogIcon icon, Icon customIcon, bool isLarge)
     {
         System.Windows.Media.ImageSource iconSource = null;
-        System.Drawing.Icon sysIcon = null;
-        System.Drawing.Bitmap altBmp = null;
+        Icon sysIcon = null;
+        Bitmap altBmp = null;
 
         try
         {

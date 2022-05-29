@@ -8,4 +8,5 @@ public interface IServiceBusHelperLogger
     void LogInfo(string msg);
     void LogException(Exception exception);
     void LogException(string msg, Exception exception);
+    void LogWarning(string s);
 }

@@ -47,12 +47,15 @@ public class SendMessageCommand : ICommand
                 _onStartSendingAction.Invoke();
                 _canExecute = false;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-                ServiceBusMessageSendData serviceBusMessageSendData = _msgProviderFunc.Invoke();
-                var maybeError = await _messageSender.Send(serviceBusMessageSendData);
-                if (maybeError.HasValue)
+
+                var senderCallbacks = new SenderCallbacks()
                 {
-                    _onErrorWhileSendingHappenedAction(maybeError.Value());
-                }
+                    OnSendingFinished = () =>{},
+                    OnSendingStopped = () => { },
+                    OnErrorWhileSendingHappened = _onErrorWhileSendingHappenedAction
+                };
+                
+                await _messageSender.Send(senderCallbacks, _msgProviderFunc.Invoke());
             }
             catch (Exception e)
             {
@@ -73,4 +76,11 @@ public class SendMessageCommand : ICommand
         add { CommandManager.RequerySuggested += value; }
         remove { CommandManager.RequerySuggested -= value; }
     }
+}
+
+public record SenderCallbacks
+{
+    public Action OnSendingFinished { get; init; }
+    public Action OnSendingStopped { get; init; }
+    public Action<MessageSendErrorInfo> OnErrorWhileSendingHappened { get; init; }
 }

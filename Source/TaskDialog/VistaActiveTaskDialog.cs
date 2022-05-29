@@ -35,7 +35,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     /// </summary>
     public IntPtr Handle
     {
-        get { return this.handle; }
+        get { return handle; }
     }
 
     //// Not supported. Task Dialog Spec does not indicate what this is for.
@@ -59,7 +59,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_CLICK_BUTTON                    = WM_USER+102, // wParam = Button ID
         return VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_CLICK_BUTTON,
             (IntPtr)buttonId,
             IntPtr.Zero) != IntPtr.Zero;
@@ -75,7 +75,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_SET_MARQUEE_PROGRESS_BAR        = WM_USER+103, // wParam = 0 (nonMarque) wParam != 0 (Marquee)
         return VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_MARQUEE_PROGRESS_BAR,
             (marquee ? (IntPtr)1 : IntPtr.Zero),
             IntPtr.Zero) != IntPtr.Zero;
@@ -92,7 +92,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_SET_PROGRESS_BAR_STATE          = WM_USER+104, // wParam = new progress state
         return VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_STATE,
             (IntPtr)newState,
             IntPtr.Zero) != IntPtr.Zero;
@@ -113,7 +113,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // #define MAKELONG(a, b)      ((LONG)(((WORD)(((DWORD_PTR)(a)) & 0xffff)) | ((DWORD)((WORD)(((DWORD_PTR)(b)) & 0xffff))) << 16))
         IntPtr lparam = (IntPtr)((((Int32)minRange) & 0xffff) | ((((Int32)maxRange) & 0xffff) << 16));
         return VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_RANGE,
             IntPtr.Zero,
             lparam) != IntPtr.Zero;
@@ -130,7 +130,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_SET_PROGRESS_BAR_POS            = WM_USER+106, // wParam = new position
         return (int)VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_POS,
             (IntPtr)newPosition,
             IntPtr.Zero);
@@ -145,7 +145,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_SET_PROGRESS_BAR_MARQUEE        = WM_USER+107, // wParam = 0 (stop marquee), wParam != 0 (start marquee), lparam = speed (milliseconds between repaints)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_MARQUEE,
             (startMarquee ? new IntPtr(1) : IntPtr.Zero),
             (IntPtr)speed);
@@ -159,7 +159,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     public bool SetWindowTitle(string title)
     {
         return VistaUnsafeNativeMethods.SetWindowText(
-            this.handle,
+            handle,
             title);
     }
 
@@ -173,7 +173,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_CONTENT,
         // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         return VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_CONTENT,
             content) != IntPtr.Zero;
@@ -189,7 +189,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_EXPANDED_INFORMATION,
         // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         return VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_EXPANDED_INFORMATION,
             expandedInformation) != IntPtr.Zero;
@@ -205,7 +205,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_FOOTER,
         // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         return VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_FOOTER,
             footer) != IntPtr.Zero;
@@ -221,7 +221,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_MAIN_INSTRUCTION
         // TDM_SET_ELEMENT_TEXT                = WM_USER+108  // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         return VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_MAIN_INSTRUCTION,
             mainInstruction) != IntPtr.Zero;
@@ -236,7 +236,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_CLICK_RADIO_BUTTON = WM_USER+110, // wParam = Radio Button ID
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_CLICK_RADIO_BUTTON,
             (IntPtr)buttonId,
             IntPtr.Zero);
@@ -253,7 +253,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_ENABLE_BUTTON = WM_USER+111, // lParam = 0 (disable), lParam != 0 (enable), wParam = Button ID
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_ENABLE_BUTTON,
             (IntPtr)buttonId,
             (IntPtr)(enable ? 0 : 1 ));
@@ -269,7 +269,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_ENABLE_RADIO_BUTTON = WM_USER+112, // lParam = 0 (disable), lParam != 0 (enable), wParam = Radio Button ID
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_ENABLE_RADIO_BUTTON,
             (IntPtr)buttonId,
             (IntPtr)(enable ? 0 : 1));
@@ -284,7 +284,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_CLICK_VERIFICATION = WM_USER+113, // wParam = 0 (unchecked), 1 (checked), lParam = 1 (set key focus)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_CLICK_VERIFICATION,
             (checkedState ? new IntPtr(1) : IntPtr.Zero),
             (setKeyboardFocusToCheckBox ? new IntPtr(1) : IntPtr.Zero));
@@ -299,7 +299,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_CONTENT,
         // TDM_UPDATE_ELEMENT_TEXT             = WM_USER+114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_CONTENT,
             content);
@@ -314,7 +314,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_EXPANDED_INFORMATION,
         // TDM_UPDATE_ELEMENT_TEXT             = WM_USER+114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_EXPANDED_INFORMATION,
             expandedInformation);
@@ -329,7 +329,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_FOOTER,
         // TDM_UPDATE_ELEMENT_TEXT             = WM_USER+114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_FOOTER,
             footer);
@@ -344,7 +344,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
         // TDE_MAIN_INSTRUCTION
         // TDM_UPDATE_ELEMENT_TEXT             = WM_USER+114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
         VistaUnsafeNativeMethods.SendMessageWithString(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ELEMENT_TEXT,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ELEMENTS.TDE_MAIN_INSTRUCTION,
             mainInstruction);
@@ -360,7 +360,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE = WM_USER+115, // wParam = Button ID, lParam = 0 (elevation not required), lParam != 0 (elevation required)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE,
             (IntPtr)buttonId,
             (IntPtr)(elevationRequired ? new IntPtr(1) : IntPtr.Zero));
@@ -375,7 +375,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_UPDATE_ICON = WM_USER+116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ICON,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ICON_ELEMENTS.TDIE_ICON_MAIN,
             (IntPtr)icon);
@@ -390,7 +390,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_UPDATE_ICON = WM_USER+116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ICON,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ICON_ELEMENTS.TDIE_ICON_MAIN,
             (icon == null ? IntPtr.Zero : icon.Handle));
@@ -405,7 +405,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_UPDATE_ICON = WM_USER+116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ICON,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ICON_ELEMENTS.TDIE_ICON_FOOTER,
             (IntPtr)icon);
@@ -420,7 +420,7 @@ public class VistaActiveTaskDialog : IActiveTaskDialog
     {
         // TDM_UPDATE_ICON = WM_USER+116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
         VistaUnsafeNativeMethods.SendMessage(
-            this.handle,
+            handle,
             (uint)VistaUnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_UPDATE_ICON,
             (IntPtr)VistaUnsafeNativeMethods.TASKDIALOG_ICON_ELEMENTS.TDIE_ICON_FOOTER,
             (icon == null ? IntPtr.Zero : icon.Handle));

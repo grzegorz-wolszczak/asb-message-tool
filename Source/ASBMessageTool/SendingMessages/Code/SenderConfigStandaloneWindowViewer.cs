@@ -25,7 +25,7 @@ public class SenderConfigStandaloneWindowViewer
 
     public void SetDataContext(SenderConfigViewModel viewModel)
     {
-        var senderConfigWindow = new SenderConfigWindow(onCloseAction: () => { viewModel.IsContentDetached = false; });
+        var senderConfigWindow = new SenderConfigWindow(() => { viewModel.IsContentDetached = false; });
 
         // make sure that when config name changes, window title also changes
         senderConfigWindow.SetBinding(Window.TitleProperty, new System.Windows.Data.Binding()
@@ -38,7 +38,7 @@ public class SenderConfigStandaloneWindowViewer
         _windowForConfig = new StandaloneWindowForConfig<SenderConfigWindow>(
             viewModel,
             senderConfigWindow,
-            beforeHideAction: () => { senderConfigWindow.ShouldHideOnClose = true; },
-            beforeCloseAction: () => { senderConfigWindow.ShouldHideOnClose = false; });
+            () => { senderConfigWindow.ShouldHideOnClose = true; },
+            () => { senderConfigWindow.ShouldHideOnClose = false; });
     }
 }

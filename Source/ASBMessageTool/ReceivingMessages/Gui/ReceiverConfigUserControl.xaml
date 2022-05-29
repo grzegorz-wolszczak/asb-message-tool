@@ -14,7 +14,7 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <!-- <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}" /> -->
+        
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}" />
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
@@ -48,7 +48,7 @@
         <Expander Grid.Row="0"
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
-                  IsExpanded="True"
+                  IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }"
                   Header="Message receiver configuration"
                   Margin="5,0,5,2"
                   
@@ -270,11 +270,21 @@
                 </Grid>
                     
                 
-                <Button Grid.Row="5" Grid.Column="0" 
-                        Margin="5,0,5,2" 
-                        Content="Validate configuration"
-                        Command="{Binding ValidateConfigurationCommand}"
-                />
+                <Grid Grid.Row="5" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button  Grid.Column="0" 
+                            Margin="5,0,5,2" 
+                            Content="Validate configuration"
+                            Style="{StaticResource ValidateConfigurationButtonStyle}"
+                            Command="{Binding ValidateConfigurationCommand}"
+                    />   
+                </Grid>
+                
+            
 
 
                 <Expander Grid.Column="0"
@@ -337,6 +347,7 @@
                                     Height="20"
                                     Width="75"
                                     Margin="5,0,0,0"
+                                    Style="{StaticResource ButtonStyle}"
                                     IsEnabled="{Binding ElementName=AbandonMessageCheckbox, Path=IsChecked}"
                                     Command="{Binding ShowAbandonMessageOverriddenPropertiesWindowCommand}" />
 
@@ -501,10 +512,12 @@
             <StackPanel Orientation="Horizontal">
                 <Button Margin="5" MinWidth="75"
                         Command="{Binding StartMessageReceiveCommand}"
+                        Style="{StaticResource ButtonStyle}"
                         x:Name="ReceiveButton">
                     Receive
                 </Button>
                 <Button Margin="5" MinWidth="75"
+                        Style="{StaticResource ButtonStyle}"
                         Command="{Binding StopMessageReceiveCommand}">
                     Stop
                 </Button>
@@ -512,6 +525,7 @@
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Margin="5" Width="75" MinWidth="75"
+                        Style="{StaticResource ButtonStyle}"
                         Command="{Binding ClearMessageContentCommand}">
                     Clear
                 </Button>

@@ -7,6 +7,7 @@
         <UseWPF>true</UseWPF>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Resources\asb-program.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,6 +42,7 @@
       
       <Resource Include="Resources\Images\up_arrow.png" />
     </ItemGroup>
+
     
     
 </Project>

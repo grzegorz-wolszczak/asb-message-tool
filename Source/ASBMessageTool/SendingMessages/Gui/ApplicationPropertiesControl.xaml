@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
  <UserControl.Resources>
-        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+        
  </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -59,8 +59,12 @@
         </DataGrid>
 
         <StackPanel VerticalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="5">
-            <Button Margin="5" MinWidth="75" Command="{Binding AddMessagePropertyCommand}">Add </Button>
-            <Button Margin="5" MinWidth="75" Command="{Binding DeleteMessagePropertyCommand}">Delete </Button>
+            <Button Margin="5" 
+                    Style="{StaticResource ButtonStyle}"
+                    MinWidth="75" Command="{Binding AddMessagePropertyCommand}">Add </Button>
+            <Button Margin="5"
+                    Style="{StaticResource ButtonStyle}"
+                    MinWidth="75" Command="{Binding DeleteMessagePropertyCommand}">Delete </Button>
 
         </StackPanel>
         <Label Grid.Column="1"

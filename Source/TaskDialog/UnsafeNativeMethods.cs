@@ -324,7 +324,7 @@ internal static partial class VistaUnsafeNativeMethods
     /// <param name="pnButton">The push button pressed.</param>
     /// <param name="pnRadioButton">The radio button that was selected.</param>
     /// <param name="pfVerificationFlagChecked">The state of the verification checkbox on dismiss of the Task Dialog.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Declaration is valid and works fine.")]
+    [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Declaration is valid and works fine.")]
     [DllImport("ComCtl32", CharSet = CharSet.Unicode, EntryPoint = "TaskDialogIndirect", ExactSpelling = true, PreserveSig = false)]
 
     internal static extern void TaskDialogIndirect(
@@ -372,7 +372,7 @@ internal static partial class VistaUnsafeNativeMethods
     /// <summary>
     /// TASKDIALOGCONFIG taken from commctl.h.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable", Justification = "Native resources are all owned by managed code and should not be disposed here.")]
+    [SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable", Justification = "Native resources are all owned by managed code and should not be disposed here.")]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     internal struct TASKDIALOGCONFIG
     {

@@ -6,6 +6,11 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Button Command="{Binding AttachToPanelCommand}"> Click to re-attach config pane</Button>
+        <Button 
+            Command="{Binding AttachToPanelCommand}"
+            
+            >
+             Click to re-attach config pane
+        </Button>
     </Grid>
 </UserControl>

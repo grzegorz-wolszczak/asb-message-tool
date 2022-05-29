@@ -52,22 +52,19 @@ public class PeekMessagesCommand : ICommand
                 _onPeekerFailure.Invoke(exc);
             },
             OnAllMessagesPeeked = _onAllMessagesPeeked,
-            OnPeekerFinished = () =>{
-            
+            OnPeekerFinished = () =>
+            {
                 _canExecute = true;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
                 _onPeekerStopped.Invoke();
             },
             OnPeekerStarted = _onPeekerStarted,
-            OnPeekerInitializing = _onPeekerInitializing 
-            
+            OnPeekerInitializing = _onPeekerInitializing
         };
- 
+
         _canExecute = false;
         _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-        _msgPeeker.Start(
-            _serviceBusPeekerSettingsProviderFunc.Invoke(),
-            callbacks
+        _msgPeeker.Start(_serviceBusPeekerSettingsProviderFunc.Invoke(), callbacks
         );
     }
 

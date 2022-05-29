@@ -30,9 +30,9 @@ public partial class CommandLink : UserControl
     /// </summary>
     public CommandLink()
     {
-        this.InitializeComponent();
+        InitializeComponent();
 
-        this.Loaded += new RoutedEventHandler(CommandLink_Loaded);
+        Loaded += new RoutedEventHandler(CommandLink_Loaded);
     }
 
     /// <summary>
@@ -42,9 +42,9 @@ public partial class CommandLink : UserControl
     /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
     private void CommandLink_Loaded(object sender, RoutedEventArgs e)
     {
-        if (this.DataContext != null && this.DataContext is TaskDialogButtonData)
+        if (DataContext != null && DataContext is TaskDialogButtonData)
         {
-            if ((this.DataContext as TaskDialogButtonData).IsDefault)
+            if ((DataContext as TaskDialogButtonData).IsDefault)
             {
                 CommandLinkButton.Focus();
             }

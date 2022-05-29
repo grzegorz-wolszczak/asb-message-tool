@@ -10,21 +10,28 @@ namespace ASBMessageTool.Model;
 
 public sealed class LeftPanelSendersConfigControlViewModel : INotifyPropertyChanged
 {
-    private readonly SendersConfigs _sendersConfigs;
+    private readonly SendersConfigs _configs;
 
-    public LeftPanelSendersConfigControlViewModel(SendersConfigs sendersConfigs)
+    public LeftPanelSendersConfigControlViewModel(SendersConfigs configs)
     {
-        _sendersConfigs = sendersConfigs;
-        AddSenderConfigCommand = new DelegateCommand((_) => { sendersConfigs.AddNew(); });
+        _configs = configs;
+        AddSenderConfigCommand = new DelegateCommand((_) => { configs.AddNew(); });
 
-        DeleteSenderConfigCommand = new DelegateCommand(_ => { sendersConfigs.Remove(CurrentSelectedConfigModelItem); },
+        DeleteSenderConfigCommand = new DelegateCommand(_ =>
+            {
+                var question = "Are you sure you want to delete this item ?";
+                if (UserInteractions.ShowYesNoQueryDialog(question, $"Config '{CurrentSelectedConfigModelItem.ModelItem.ConfigName}' deletion") == UserInteractions.YesNoDialogResult.Yes)
+                {
+                    configs.Remove(CurrentSelectedConfigModelItem);    
+                }
+            },
             _ => CurrentSelectedConfigModelItem != null);
 
-        MoveConfigUpCommand = new DelegateCommand(_ => { sendersConfigs.MoveConfigUp(CurrentSelectedConfigModelItem);},
-            _ => sendersConfigs.CanMoveUp(CurrentSelectedConfigModelItem));
+        MoveConfigUpCommand = new DelegateCommand(_ => { configs.MoveConfigUp(CurrentSelectedConfigModelItem);},
+            _ => configs.CanMoveUp(CurrentSelectedConfigModelItem));
         
-        MoveConfigDownCommand = new DelegateCommand(_ => { sendersConfigs.MoveConfigDown(CurrentSelectedConfigModelItem);},
-            _ => sendersConfigs.CanMoveDown(CurrentSelectedConfigModelItem));
+        MoveConfigDownCommand = new DelegateCommand(_ => { configs.MoveConfigDown(CurrentSelectedConfigModelItem);},
+            _ => configs.CanMoveDown(CurrentSelectedConfigModelItem));
     }
 
     public ICommand AddSenderConfigCommand { get; }
@@ -33,14 +40,14 @@ public sealed class LeftPanelSendersConfigControlViewModel : INotifyPropertyChan
     public ICommand MoveConfigDownCommand { get; }
 
     [UsedImplicitly]
-    public IList<SenderConfigViewModel> SendersConfigsVMs => _sendersConfigs.SendersConfigsVMs;
+    public IList<SenderConfigViewModel> SendersConfigsVMs => _configs.SendersConfigsVMs;
 
     public SenderConfigViewModel CurrentSelectedConfigModelItem
     {
-        get => _sendersConfigs.CurrentSelectedConfigModelItem;
+        get => _configs.CurrentSelectedConfigModelItem;
         set
         {
-            _sendersConfigs.CurrentSelectedConfigModelItem = value;
+            _configs.CurrentSelectedConfigModelItem = value;
             OnPropertyChanged();
         }
     }

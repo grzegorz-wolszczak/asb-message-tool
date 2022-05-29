@@ -7,11 +7,11 @@
 
         xmlns:gui="clr-namespace:ASBMessageTool.SendingMessages.Gui"
         mc:Ignorable="d"
-        Title="SenderConfigWindow" Height="450" Width="800"
+        Title="SenderConfigWindow" Height="650" Width="700"
         Visibility="{Binding IsContentDetached}">
 
     <Window.Resources>
-        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+        
     </Window.Resources>
 
 
@@ -38,6 +38,7 @@
             Margin="5,2,5,0">
             <Button Margin="5,2,5,0"
                     MinWidth="75"
+                    Style="{StaticResource ButtonStyle}"
                     Command="{Binding AttachToPanelCommand}"> Attach to pane
             </Button>
 

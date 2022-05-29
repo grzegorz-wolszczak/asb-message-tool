@@ -48,7 +48,7 @@ public class StartMessageReceiveCommand : ICommand
     {
         var callbacks = new ReceiverCallbacks
         {
-            OnReceiverFailure = exc=>
+            OnReceiverFailure = exc =>
             {
                 _canExecute = true;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
@@ -56,7 +56,7 @@ public class StartMessageReceiveCommand : ICommand
             },
             OnOutputFromReceiverReceived = _onOutputFromReceiverReceived,
             OnMessageReceive = _onMessageReceived,
-            OnReceiverStop = ()=>
+            OnReceiverStop = () =>
             {
                 _canExecute = true;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
@@ -67,10 +67,7 @@ public class StartMessageReceiveCommand : ICommand
         };
         _canExecute = false;
         _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-        _msgReceiver.Start(
-            _serviceBusReceiverProviderFunc.Invoke(),
-            callbacks
-        );
+        _msgReceiver.Start(_serviceBusReceiverProviderFunc.Invoke(), callbacks);
     }
 
     public event EventHandler CanExecuteChanged

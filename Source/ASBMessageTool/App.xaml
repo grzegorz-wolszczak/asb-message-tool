@@ -15,10 +15,14 @@
 
 
         <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="#FF2E8DB3" />
+            <Setter Property="Background" Value="#0C9DD5" />
             <Setter Property="Foreground" Value="White" />
         </Style>
 
+        
+        <Style x:Key="ValidateConfigurationButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Padding" Value="2" />
+        </Style>
 
         <Style x:Key="WinAll" TargetType="{x:Type Window}">
             <Setter Property="FontSize" Value="13" />

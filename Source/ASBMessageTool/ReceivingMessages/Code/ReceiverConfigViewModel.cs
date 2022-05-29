@@ -33,6 +33,7 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
     private ConfigEditingEnabler _configEditorEnabler;
     private readonly IReceiverSettingsValidator _receiverSettingsValidator;
     private readonly IOperationSystemServices _operationSystemServices;
+    private bool _isConfigurationViewExpanded = true;
     private bool _shouldReceiveOnlySelectedNumberOfMessages;
     
 
@@ -60,18 +61,18 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         
         StartMessageReceiveCommand = new StartMessageReceiveCommand(_serviceBusMessageReceiver,
             _inGuiThreadActionCaller,
-            serviceBusReceiverProviderFunc: GetServiceBusReceiverSettings,
-            onMessageReceived: AppendReceivedMessageToOutput,
-            onReceiverStarted: SetReceiverListeningStatus,
-            onReceiverFailure: SetReceiverStoppedOnErrorStatus,
-            onReceiverStopped: SetReceiverIdleStatus,
-            onReceiverInitializing: SetReceiverInitializingStatus,
-            onOutputFromReceiverReceived:AppendOutputFromReceiver
+            GetServiceBusReceiverSettings,
+            AppendReceivedMessageToOutput,
+            SetReceiverListeningStatus,
+            SetReceiverStoppedOnErrorStatus,
+            SetReceiverIdleStatus,
+            SetReceiverInitializingStatus,
+            AppendOutputFromReceiver
         );
 
         ValidateConfigurationCommand = new ValidateReceiverConfigurationCommand(
-            onValidationStartedAction: ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
-            onValidationFinishedAction:() => { _configEditorEnabler.SetConfigValidationFinished();},
+            ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
+            () => { _configEditorEnabler.SetConfigValidationFinished();},
             _inGuiThreadActionCaller,
             GetServiceBusReceiverSettings,
             _receiverSettingsValidator);
@@ -270,6 +271,20 @@ public sealed class ReceiverConfigViewModel : INotifyPropertyChanged
         }
     }
 
+        
+    [UsedImplicitly]
+    public bool IsConfigurationViewExpanded
+    {
+        get => _isConfigurationViewExpanded;
+        set
+        {
+            if (value == _isConfigurationViewExpanded) return;
+            _isConfigurationViewExpanded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    
     public event PropertyChangedEventHandler PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string propertyName = null)

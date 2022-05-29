@@ -26,7 +26,7 @@ public class PeekerConfigStandaloneWindowViewer
     public void SetDataContext(PeekerConfigViewModel viewModel)
     {
         var receiverConfigWindow =
-            new PeekerConfigWindow(onCloseAction: () => { viewModel.IsContentDetached = false; });
+            new PeekerConfigWindow(() => { viewModel.IsContentDetached = false; });
 
         // make sure that when config name changes, window title also changes
         receiverConfigWindow.SetBinding(Window.TitleProperty, new System.Windows.Data.Binding()
@@ -39,8 +39,8 @@ public class PeekerConfigStandaloneWindowViewer
         _windowForConfig = new StandaloneWindowForConfig<PeekerConfigWindow>(
             viewModel,
             receiverConfigWindow,
-            beforeHideAction: () => { receiverConfigWindow.ShouldHideOnClose = true; },
-            beforeCloseAction: () => { receiverConfigWindow.ShouldHideOnClose = false; }
+            () => { receiverConfigWindow.ShouldHideOnClose = true; },
+            () => { receiverConfigWindow.ShouldHideOnClose = false; }
         );
     }
 }

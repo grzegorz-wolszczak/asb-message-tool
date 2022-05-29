@@ -5,9 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:ASBMessageTool.PeekingMessages.Gui"
         mc:Ignorable="d"
-        Title="PeekerConfigWindow" Height="450" Width="800">
+        Title="PeekerConfigWindow" Height="650" Width="700">
     <Window.Resources>
-        <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+        
     </Window.Resources>
 
 
@@ -33,6 +33,8 @@
             HorizontalAlignment="Right"
             Margin="5,2,5,0">
             <Button Margin="5,2,5,0"
+                    Padding="5,2,5,2"
+                    Style="{StaticResource ButtonStyle}"
                     MinWidth="75"
                     Command="{Binding AttachToPanelCommand}"> Attach to pane
             </Button>

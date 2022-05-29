@@ -9,7 +9,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <!-- <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}" /> -->
+        
     </UserControl.Resources>
 
     <Grid>
@@ -29,7 +29,7 @@
 
 
         <Expander Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
-                  IsExpanded="True"
+                  IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }"
                   Margin="5,2,5,0"
                   Header="Service Bus Sender configuration">
             <Grid
@@ -102,10 +102,20 @@
                          Text="{Binding Path=ModelItem.OutputTopicName, UpdateSourceTrigger=PropertyChanged}" />
 
 
-                <Button Grid.Row="3" Grid.Column="0"
-                        Margin="5,0,5,2"
-                        Content="Validate configuration"
-                        Command="{Binding ValidateConfigurationCommand}" />
+                <Grid Grid.Row="3" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button  Grid.Column="0"
+                            Margin="5,0,5,2"
+                            Content="Validate configuration"
+                            Style="{StaticResource ValidateConfigurationButtonStyle}"
+                            Command="{Binding ValidateConfigurationCommand}" />   
+                </Grid>
+                
+                
             </Grid>
         </Expander>
 
@@ -125,7 +135,10 @@
 
                 <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Label Margin="0,0,5,0" Content="Properties " />
-                    <Button Margin="0,0,0,0" MinWidth="45" Content="..." Height="22"
+                    <Button Margin="0,0,0,0" 
+                            MinWidth="45" 
+                            Content="..." Height="22"
+                            Style="{StaticResource ButtonStyle}"
                             Command="{Binding ShowPropertiesWindowCommand}" />
                 </StackPanel>
 
@@ -172,13 +185,16 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            
             <Button Grid.Column="0"
                     x:Name="SendButton"
                     MinWidth="75"
                     Margin="5,2,5,2"
+                    Style="{StaticResource ButtonStyle}"
                     Command="{Binding SendMessageCommand}">
                 Send
             </Button>
+            
             <Label
                 Grid.Column="1"
                 Content="Last send status:"

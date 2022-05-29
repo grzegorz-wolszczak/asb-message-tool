@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-    <!-- <Style TargetType="{x:Type Button}"  BasedOn="{StaticResource ButtonStyle}" /> -->
+    
     <Style x:Key="ImageEnabled" TargetType="Image">
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
@@ -34,11 +34,15 @@
             
             <Button Margin="2,2,2,2"
                     Command="{Binding MoveConfigUpCommand}">
-                <Image Height="21" Source="pack://application:,,,/Resources/Images/up_arrow.png" Style="{StaticResource ImageEnabled}"/>
+                <Image Height="21" 
+                       Source="pack://application:,,,/Resources/Images/up_arrow.png" 
+                       Style="{StaticResource ImageEnabled}"/>
             </Button>
             <Button Margin="2,2,2,2"
                     Command="{Binding MoveConfigDownCommand}">
-                <Image Height="21" Source="pack://application:,,,/Resources/Images/down_arrow.png" Style="{StaticResource ImageEnabled}"/>
+                <Image Height="21" 
+                       Source="pack://application:,,,/Resources/Images/down_arrow.png" 
+                       Style="{StaticResource ImageEnabled}"/>
             </Button>
             
         </StackPanel>
@@ -60,11 +64,13 @@
 
             <Button Margin="5"
                     MinWidth="75"
+                    Style="{StaticResource ButtonStyle}"
                     Command="{Binding AddPeekerConfigCommand}"> Add
             </Button>
 
             <Button Margin="5"
                     MinWidth="75"
+                    Style="{StaticResource ButtonStyle}"
                     Command="{Binding DeletePeekerConfigCommand}"> Delete
             </Button>
 

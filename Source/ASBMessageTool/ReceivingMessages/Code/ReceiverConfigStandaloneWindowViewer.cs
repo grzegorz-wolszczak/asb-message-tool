@@ -27,7 +27,7 @@ public class ReceiverConfigStandaloneWindowViewer
     public void SetDataContext(ReceiverConfigViewModel viewModel)
     {
         var receiverConfigWindow =
-            new ReceiverConfigWindow(onCloseAction: () => { viewModel.IsContentDetached = false; });
+            new ReceiverConfigWindow(() => { viewModel.IsContentDetached = false; });
 
         // make sure that when config name changes, window title also changes
         receiverConfigWindow.SetBinding(Window.TitleProperty, new System.Windows.Data.Binding()
@@ -40,8 +40,8 @@ public class ReceiverConfigStandaloneWindowViewer
         _windowForConfig = new StandaloneWindowForConfig<ReceiverConfigWindow>(
             viewModel,
             receiverConfigWindow,
-            beforeHideAction: () => { receiverConfigWindow.ShouldHideOnClose = true; },
-            beforeCloseAction: () => { receiverConfigWindow.ShouldHideOnClose = false; }
+            () => { receiverConfigWindow.ShouldHideOnClose = true; },
+            () => { receiverConfigWindow.ShouldHideOnClose = false; }
         );
     }
 }

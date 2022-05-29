@@ -41,6 +41,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private bool _isEditingConfigurationEnabled = true;
     private Maybe<LastMessageSendingError> _lastMessageSendingError = Maybe<LastMessageSendingError>.Nothing;
     private ConfigEditingEnabler _configEditorEnabler;
+    private bool _isConfigurationViewExpanded = true;
 
 
     public SenderConfigViewModel(SenderConfigModel modelItem,
@@ -82,19 +83,19 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         });
 
         ValidateConfigurationCommand = new ValidateSenderConfigurationCommand(
-            onValidationStartedAction: ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
-            onValidationFinishedAction:() => { _configEditorEnabler.SetConfigValidationFinished();},
+            ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
+            () => { _configEditorEnabler.SetConfigValidationFinished();},
         inGuiThreadActionCaller,
             GetServiceBusMessageSendData,
             _senderSettingsValidator);
 
         
         SendMessageCommand = new SendMessageCommand(_messageSender,
-            onStartSendingAction: IndicateSendingInStarted,
-            onFinishedSendingAction: IndicateSendingFinished,
-            msgProviderFunc: GetServiceBusMessageSendData,
-            onErrorWhileSendingHappenedAction: IndicateErrorHappenedWhenSending,
-            onSendingErrorHappened: IndicateUnexpectedExceptionFinished,
+            IndicateSendingInStarted,
+            IndicateSendingFinished,
+            GetServiceBusMessageSendData,
+            IndicateErrorHappenedWhenSending,
+            IndicateUnexpectedExceptionFinished,
             _inGuiThreadActionCaller);
 
         CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
@@ -240,6 +241,19 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         {
             if (value == _lastSendStatus) return;
             _lastSendStatus = value;
+            OnPropertyChanged();
+        }
+    }
+
+        
+    [UsedImplicitly]
+    public bool IsConfigurationViewExpanded
+    {
+        get => _isConfigurationViewExpanded;
+        set
+        {
+            if (value == _isConfigurationViewExpanded) return;
+            _isConfigurationViewExpanded = value;
             OnPropertyChanged();
         }
     }

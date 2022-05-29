@@ -50,9 +50,7 @@ public class PersistentConfiguration
                       "Do you want to open the application ?\n\n" +
                       "If you choose YES application will ERASE ALL DATA in config file\n" +
                       "If you choose NO application will shutdown and you will have the chance to fix the config file manually";
-        var answer = UserInteractions.ShowYesNoQueryDialog(
-            "Configuration file is invalid.",
-            message,
+        var answer = UserInteractions.ShowYesNoQueryDialogForError(message,
             $"{StaticConfig.ApplicationName} opening error",
             exception);
         if (answer == UserInteractions.YesNoDialogResult.No)

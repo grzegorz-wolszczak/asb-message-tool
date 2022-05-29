@@ -11,7 +11,7 @@
              d:DesignHeight="600" d:DesignWidth="400">
    <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <!-- <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}" /> -->
+       
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}" />
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
@@ -43,7 +43,7 @@
         <Expander Grid.Row="0"
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
-                  IsExpanded="True"
+                  IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }"
                   Header="Message peeker configuration"
                   Margin="5,0,5,2"
                   
@@ -220,16 +220,26 @@
                           Grid.Row="4"
                           Margin="5,5,5,5"
                           VerticalAlignment="Center"
-                          Content="Receive from deadletter subqueue ?"
+                          Content="Receive from deadletter subqueue"
                           x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
                           IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
                           UpdateSourceTrigger=PropertyChanged}" />
                 
-                <Button Grid.Row="5" Grid.Column="0" 
+                <Grid Grid.Row="5" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button
+                        Grid.Column="0"
+                        Style="{StaticResource ValidateConfigurationButtonStyle}"
                         Margin="5,0,5,2" 
                         Content="Validate configuration"
                         Command="{Binding ValidateConfigurationCommand}"
-                />
+                    />    
+                </Grid>
+                
                 
             </Grid>
 
@@ -356,14 +366,27 @@
 
             <StackPanel Orientation="Horizontal">
                 <Button Margin="5" MinWidth="75"
-                        Command="{Binding PeekMessagesCommand}"
-                        x:Name="ReceiveButton">
+                        Padding="5,2,5,2"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding PeekMessagesCommand}">
                     Peek messages
                 </Button>
+                
+                <Button Margin="5" MinWidth="75"
+                        Padding="5,2,5,2"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding StopPeekingCommand}">
+                    Stop
+                </Button>
+                
+                <!-- StopPeekingCommand -->
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Margin="5" Width="75" MinWidth="75"
+                <Button Margin="5"
+                        Style="{StaticResource ButtonStyle}"
+                        Width="75" 
+                        MinWidth="75"
                         Command="{Binding ClearMessageContentCommand}">
                     Clear
                 </Button>

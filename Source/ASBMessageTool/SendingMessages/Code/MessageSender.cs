@@ -25,6 +25,8 @@ public class MessageSender : IMessageSender
     private Dictionary<(string /* connection string */, string /*topicName*/), ServiceBusSender> _serviceBusSendersCache = new();
     private readonly ISenderSettingsValidator _senderSettingsValidator;
     private readonly IServiceBusHelperLogger _logger;
+    private SenderCallbacks _callbacks;
+    private ServiceBusMessageSendData _messageToSend;
 
     public MessageSender(ISenderSettingsValidator senderSettingsValidator, IServiceBusHelperLogger logger)
     {
@@ -32,45 +34,41 @@ public class MessageSender : IMessageSender
         _logger = logger;
     }
 
-    public async Task<Maybe<MessageSendErrorInfo>> Send(ServiceBusMessageSendData senderConfig)
+    public async Task Send(SenderCallbacks callbacks, ServiceBusMessageSendData messageToSend)
     {
+        _callbacks = callbacks;
+        _messageToSend = messageToSend;
         try
         {
-            var validationResult = await _senderSettingsValidator.Validate(senderConfig, CancellationToken.None);
+            var validationResult = await _senderSettingsValidator.Validate(_messageToSend, CancellationToken.None);
             if (validationResult.IsSomething())
             {
-                _logger.LogError($"Sender '{senderConfig.ConfigName}' config validation failed: '{validationResult.Value().ErrorMsg}'");
-                return new MessageSendErrorInfo
-                {
-                    Message = "Send data validation failed. See log for details"
-                }.ToMaybe();
+                _logger.LogError($"Sender '{messageToSend.ConfigName}' config validation failed: '{validationResult.Value().ErrorMsg}'");
+                _callbacks.OnErrorWhileSendingHappened.Invoke(new MessageSendErrorInfo { Message = "Send data validation failed. See log for details" });
+                return;
             }
 
-            return await SendInternal(senderConfig);
+            await SendInternal();
         }
         catch (Exception e)
         {
             _logger.LogException(e);
-            var maybe = new MessageSendErrorInfo
-            {
-                Message = "Sending failed. See log for details"
-            }.ToMaybe();
-            return maybe;
+            _callbacks.OnErrorWhileSendingHappened.Invoke(new MessageSendErrorInfo { Message = "Sending failed. See log for details" });
         }
     }
 
-    private async Task<Maybe<MessageSendErrorInfo>> SendInternal(ServiceBusMessageSendData msgSend)
+    private async Task SendInternal()
     {
-        var msgBody = msgSend.MsgBody;
+        var msgBody = _messageToSend.MsgBody;
 
-        var client = GetClientForConnectionString(msgSend.ConnectionString);
-        var sender = GetSenderForClient(client, msgSend.QueueOrTopicName, msgSend.ConnectionString);
-        _logger.LogInfo($"Sending message to queue/topic '{msgSend.QueueOrTopicName}' with content\n: '{msgBody}'");
+        var client = GetClientForConnectionString(_messageToSend.ConnectionString);
+        var sender = GetSenderForClient(client, _messageToSend.QueueOrTopicName, _messageToSend.ConnectionString);
+        _logger.LogInfo($"Sending message to queue/topic '{_messageToSend.QueueOrTopicName}' with content\n: '{msgBody}'");
 
-        var message = FillAllMessageFields(msgBody, msgSend.Fields, msgSend.ApplicationProperties);
+        var message = FillAllMessageFields(msgBody, _messageToSend.Fields, _messageToSend.ApplicationProperties);
 
         await sender.SendMessageAsync(message);
-        return Maybe<MessageSendErrorInfo>.Nothing;
+        _callbacks.OnSendingFinished.Invoke();
     }
 
     private static ServiceBusMessage FillAllMessageFields(string msgBody,

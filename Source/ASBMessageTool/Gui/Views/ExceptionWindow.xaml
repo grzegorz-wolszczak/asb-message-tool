@@ -79,6 +79,7 @@
                 Margin="16"
                 Padding="8"
                 HorizontalAlignment="Right"
+                Style="{StaticResource ButtonStyle}"
                 Click="OnExitAppClick"
                 Content="Exit Application" />
     </Grid>

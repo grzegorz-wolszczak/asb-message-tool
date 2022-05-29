@@ -18,17 +18,17 @@ public partial class TaskDialog : Window
     {
         InitializeComponent();
 
-        this.Loaded += new RoutedEventHandler(TaskDialog_Loaded);
-        this.SourceInitialized += new EventHandler(TaskDialog_SourceInitialized);
-        this.KeyDown += new KeyEventHandler(TaskDialog_KeyDown);
-        base.ContentRendered += new EventHandler(TaskDialog_ContentRendered);
-        this.Closing += new System.ComponentModel.CancelEventHandler(TaskDialog_Closing);
+        Loaded += new RoutedEventHandler(TaskDialog_Loaded);
+        SourceInitialized += new EventHandler(TaskDialog_SourceInitialized);
+        KeyDown += new KeyEventHandler(TaskDialog_KeyDown);
+        ContentRendered += new EventHandler(TaskDialog_ContentRendered);
+        Closing += new System.ComponentModel.CancelEventHandler(TaskDialog_Closing);
         base.Closed += new EventHandler(TaskDialog_Closed);
     }
 
     private TaskDialogViewModel ViewModel
     {
-        get { return this.DataContext as TaskDialogViewModel; }
+        get { return DataContext as TaskDialogViewModel; }
     }
 
     private void TaskDialog_Loaded(object sender, RoutedEventArgs e)
@@ -43,25 +43,25 @@ public partial class TaskDialog : Window
             ConvertToHyperlinkedText(FooterExpandedInfo, ViewModel.FooterExpandedInfo);
             ConvertToHyperlinkedText(FooterText, ViewModel.FooterText);
 
-            this.WindowStartupLocation = ViewModel.StartPosition;
+            WindowStartupLocation = ViewModel.StartPosition;
 
             if (ViewModel.NormalButtons.Count == 0)
             {
-                this.MaxWidth = 462;
+                MaxWidth = 462;
             }
 				
             // Footer only shows the secondary white top border when the buttons section is visible
             FooterInner.BorderThickness = new Thickness(
                 FooterInner.BorderThickness.Left,
-                ((ButtonsArea.Visibility == System.Windows.Visibility.Visible) ? 1 : 0),
+                ((ButtonsArea.Visibility == Visibility.Visible) ? 1 : 0),
                 FooterInner.BorderThickness.Right,
                 FooterInner.BorderThickness.Bottom);
 
             // Hide the special button areas if they are empty
             if (ViewModel.CommandLinks.Count == 0)
-                CommandLinks.Visibility = System.Windows.Visibility.Collapsed;
+                CommandLinks.Visibility = Visibility.Collapsed;
             if (ViewModel.RadioButtons.Count == 0)
-                RadioButtons.Visibility = System.Windows.Visibility.Collapsed;
+                RadioButtons.Visibility = Visibility.Collapsed;
 
             // Play the appropriate sound
             switch (ViewModel.MainIconType)
@@ -115,7 +115,7 @@ public partial class TaskDialog : Window
                 && e.Key == Key.Escape)
             {
                 e.Handled = true;
-                this.DialogResult = false;
+                DialogResult = false;
                 Close();
             }
         }
@@ -145,7 +145,7 @@ public partial class TaskDialog : Window
     }
     private void ViewModel_RequestClose(object sender, EventArgs e)
     {
-        this.Close();
+        Close();
     }
     private void NormalButton_Click(object sender, RoutedEventArgs e)
     {

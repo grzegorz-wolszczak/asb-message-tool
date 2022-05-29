@@ -57,6 +57,12 @@ public class ServiceBusHelperLogger : IServiceBusHelperLogger
         LogError($"{msg} {flattenedException}");
     }
 
+    public void LogWarning(string msg)
+    {
+        var message = WrapWithTimestamp($"Warn : {msg}\n");
+        _contentAppender.AddContent(message);
+    }
+
     private string WrapWithTimestamp(string msg)
     {
         return $"{TimeUtils.GetShortTimestamp()} {msg}";

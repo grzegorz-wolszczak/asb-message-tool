@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.ReceivingMessages.Code;
+using JetBrains.Annotations;
 
 namespace ASBMessageTool.PeekingMessages.Code;
 
@@ -29,6 +30,7 @@ public sealed class PeekerConfigViewModel : INotifyPropertyChanged
     private string _peekerStatusText = PeekerEnumStatus.Idle.ToString();
     private PeekerEnumStatus _peekerEnumStatus = PeekerEnumStatus.Idle;
     private bool _isEditingConfigurationEnabled = true;
+    private bool _isConfigurationViewExpanded = true;
     private ConfigEditingEnabler _configEditorEnabler;
 
     private bool _isDetached = false;
@@ -67,8 +69,8 @@ public sealed class PeekerConfigViewModel : INotifyPropertyChanged
         });
 
         ValidateConfigurationCommand = new ValidatePeekerConfigurationCommand(
-            onValidationStartedAction: () => { _configEditorEnabler.SetConfigValidationStarted(); },
-            onValidationFinishedAction: () => { _configEditorEnabler.SetConfigValidationFinished(); },
+            () => { _configEditorEnabler.SetConfigValidationStarted(); },
+            () => { _configEditorEnabler.SetConfigValidationFinished(); },
             _inGuiThreadActionCaller,
             GetServiceBusPeekerSettings,
             _peekerSettingsValidator);
@@ -87,9 +89,10 @@ public sealed class PeekerConfigViewModel : INotifyPropertyChanged
         
         CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
         {
-            
             _operationSystemServices.SetClipboardText(_modelItem.ServiceBusConnectionString);
         });
+
+        StopPeekingCommand = new DelegateCommand(_ => _messagePeeker.Stop(), _ =>  !PeekMessagesCommand.CanExecute(default));
     }
 
     private void SetPeekerInitializingStatus()
@@ -165,6 +168,19 @@ public sealed class PeekerConfigViewModel : INotifyPropertyChanged
         }
     }
 
+    
+    [UsedImplicitly]
+    public bool IsConfigurationViewExpanded
+    {
+        get => _isConfigurationViewExpanded;
+        set
+        {
+            if (value == _isConfigurationViewExpanded) return;
+            _isConfigurationViewExpanded = value;
+            OnPropertyChanged();
+        }
+    }
+    
     public bool IsContentDetached
     {
         get => _isDetached;
@@ -229,6 +245,7 @@ public sealed class PeekerConfigViewModel : INotifyPropertyChanged
 
     public ICommand ClearMessageContentCommand { get; }
     public ICommand CopySenderConnectionStringToClipboard { get; }
+    public ICommand StopPeekingCommand { get; }
     
 
     public event PropertyChangedEventHandler PropertyChanged;

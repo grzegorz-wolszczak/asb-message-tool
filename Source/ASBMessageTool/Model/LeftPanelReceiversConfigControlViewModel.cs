@@ -22,7 +22,11 @@ public class LeftPanelReceiversConfigControlViewModel : INotifyPropertyChanged
 
         DeleteReceiverConfigCommand = new DelegateCommand(_ =>
             {
-                configs.Remove(CurrentSelectedConfigModelItem);
+                var question = "Are you sure you want to delete this item ?";
+                if (UserInteractions.ShowYesNoQueryDialog(question, $"Config '{CurrentSelectedConfigModelItem.ModelItem.ConfigName}' deletion") == UserInteractions.YesNoDialogResult.Yes)
+                {
+                    configs.Remove(CurrentSelectedConfigModelItem);    
+                }
             },
             _ => CurrentSelectedConfigModelItem != null);
         
