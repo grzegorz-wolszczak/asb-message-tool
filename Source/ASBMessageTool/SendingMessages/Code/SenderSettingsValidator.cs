@@ -22,6 +22,10 @@ public class SenderSettingsValidator : ISenderSettingsValidator
             return await ServiceBusValidations.ValidateQueueOrTopicName($"config name: '{settings.ConfigName}'",  
                 sbClient, queueOrTopicName, token);
         }
+        catch (Exception e) when (e is TaskCanceledException or OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception e)
         {
             var errorMsg = $"While validating config name: '{settings.ConfigName}', exception happened:\n{e}";

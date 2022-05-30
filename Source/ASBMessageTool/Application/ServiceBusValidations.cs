@@ -36,6 +36,10 @@ public static class ServiceBusValidations
                 return new ValidationErrorResult($"{errorMessagePrefix}: topic does not exist{optionalInfo}.").ToMaybe();
             }
         }
+        catch (Exception e) when (e is TaskCanceledException or OperationCanceledException)
+        {
+            throw;
+        }
         catch (ServiceBusException e)
         {
             return new ValidationErrorResult($"{errorMessagePrefix}: exception happened (invalid connection string?): {e}").ToMaybe();
@@ -94,6 +98,10 @@ public static class ServiceBusValidations
 
             return new ValidationErrorResult($"{errorMessagePrefix}: queue does not exist{optionalTopicInfo}.").ToMaybe();
         }
+        catch (Exception e) when (e is TaskCanceledException or OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception e)
         {
             return new ValidationErrorResult($"{errorMessagePrefix}: exception happened (invalid connection string?): {e}").ToMaybe();
@@ -122,6 +130,10 @@ public static class ServiceBusValidations
             }
 
             return new ValidationErrorResult($"{errorMessagePrefix}: neither queue nor topic that name exist").ToMaybe();
+        }
+        catch (Exception e) when (e is TaskCanceledException or OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception e)
         {

@@ -7,6 +7,7 @@ namespace ASBMessageTool.SendingMessages.Code;
 public interface IMessageSender
 {
     Task Send(SenderCallbacks callbacks, ServiceBusMessageSendData messageToSend);
+    void Stop();
 }
 
 public class MessageSendErrorInfo

@@ -8,29 +8,22 @@ namespace ASBMessageTool.SendingMessages.Code;
 public class SendMessageCommand : ICommand
 {
     private readonly IMessageSender _messageSender;
-    private readonly Action _onStartSendingAction;
-    private readonly Action _onFinishedSendingAction;
     private readonly Func<ServiceBusMessageSendData> _msgProviderFunc;
-    private readonly Action<MessageSendErrorInfo> _onErrorWhileSendingHappenedAction;
-    private readonly Action<Exception> _onSendingErrorHappened;
+    private readonly Action<Exception> _onUnexpectedErrorHappened;
     private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
     private bool _canExecute = true;
+    private readonly SenderCallbacks _senderCallbacks;
 
     public SendMessageCommand(IMessageSender messageSender,
-        Action onStartSendingAction,
-        Action onFinishedSendingAction,
         Func<ServiceBusMessageSendData> msgProviderFunc,
-        Action<MessageSendErrorInfo> onErrorWhileSendingHappenedAction,
-        Action<Exception> onSendingErrorHappened,
-        IInGuiThreadActionCaller inGuiThreadActionCaller)
+        Action<Exception> onUnexpectedErrorHappened,
+        IInGuiThreadActionCaller inGuiThreadActionCaller, SenderCallbacks senderCallbacks)
     {
         _messageSender = messageSender;
-        _onStartSendingAction = onStartSendingAction;
-        _onFinishedSendingAction = onFinishedSendingAction;
         _msgProviderFunc = msgProviderFunc;
-        _onErrorWhileSendingHappenedAction = onErrorWhileSendingHappenedAction;
-        _onSendingErrorHappened = onSendingErrorHappened;
+        _onUnexpectedErrorHappened = onUnexpectedErrorHappened;
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
+        _senderCallbacks = senderCallbacks;
     }
 
     public bool CanExecute(object parameter)
@@ -40,34 +33,27 @@ public class SendMessageCommand : ICommand
 
     public void Execute(object parameter)
     {
-        Task.Factory.StartNew(async () =>
+        var task = Task.Factory.StartNew(async () =>
         {
             try
             {
-                _onStartSendingAction.Invoke();
                 _canExecute = false;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-
-                var senderCallbacks = new SenderCallbacks()
-                {
-                    OnSendingFinished = () =>{},
-                    OnSendingStopped = () => { },
-                    OnErrorWhileSendingHappened = _onErrorWhileSendingHappenedAction
-                };
-                
-                await _messageSender.Send(senderCallbacks, _msgProviderFunc.Invoke());
+                await _messageSender.Send(_senderCallbacks, _msgProviderFunc.Invoke());
             }
             catch (Exception e)
             {
-                _onSendingErrorHappened(e);
+                _onUnexpectedErrorHappened(e);
             }
             finally
             {
-                _onFinishedSendingAction.Invoke();
                 _canExecute = true;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
             }
-        },TaskCreationOptions.LongRunning);
+        }, TaskCreationOptions.LongRunning);
+
+        task.ContinueWith((t) => { _onUnexpectedErrorHappened(t.Exception); },
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
     }
 
 
@@ -76,11 +62,4 @@ public class SendMessageCommand : ICommand
         add { CommandManager.RequerySuggested += value; }
         remove { CommandManager.RequerySuggested -= value; }
     }
-}
-
-public record SenderCallbacks
-{
-    public Action OnSendingFinished { get; init; }
-    public Action OnSendingStopped { get; init; }
-    public Action<MessageSendErrorInfo> OnErrorWhileSendingHappened { get; init; }
 }

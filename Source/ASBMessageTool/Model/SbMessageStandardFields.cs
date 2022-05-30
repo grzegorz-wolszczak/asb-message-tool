@@ -1,4 +1,6 @@
-﻿namespace ASBMessageTool.Model;
+﻿using System;
+
+namespace ASBMessageTool.Model;
 
 public class SbMessageField<T>
 {
@@ -16,6 +18,12 @@ public class SbMessageField<T>
 
 public class SbMessageStandardFields
 {
+    public static readonly TimeSpan DefaultTimeToLive = TimeSpan.FromDays(14);
+    public static readonly TimeSpan MaxTimeToLive = TimeSpan.FromDays(14);
+    
+    public static readonly DateTime MinScheduleEnqueueTime = DateTime.MinValue;
+    public static readonly DateTime DefaultScheduleEnqueueTime = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
+    
     public SbMessageField<string> ContentType { get; } = new("ContentType");
     public SbMessageField<string> CorrelationId { get; } = new("CorrelationId");
     public SbMessageField<string> MessageId { get; } = new("MessageId");
@@ -26,7 +34,15 @@ public class SbMessageStandardFields
     public SbMessageField<string> Subject { get; } = new("Subject");
     public SbMessageField<string> To { get; } = new("To");
     public SbMessageField<string> TransactionPartitionKey { get; } = new("TransactionPartitionKey");
-
-    //public TimeSpan? TimeToLive { get; set; } // todo: no dedicated WPF control to store TimeSpan, must find something
-    //public DateTimeOffset? ScheduledEnqueueTimeUtc { get; set; } // todo: no dedicated WPF control to store DateTimeOffset, must find something
+    
+    public SbMessageField<TimeSpan> TimeToLive { get; } = new("TimeToLive")
+    {
+        Value = DefaultTimeToLive
+    };
+    
+    public SbMessageField<DateTime> ScheduledEnqueueTime { get; } = new("ScheduledEnqueueTime")
+    {
+        Value = DateTime.SpecifyKind(DateTime.Now,DateTimeKind.Utc)
+    };
+    
 }

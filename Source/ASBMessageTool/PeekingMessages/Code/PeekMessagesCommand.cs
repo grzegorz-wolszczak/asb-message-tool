@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 
@@ -43,29 +44,44 @@ public class PeekMessagesCommand : ICommand
 
     public void Execute(object parameter)
     {
-        var callbacks = new PeekerCallbacks
+        
+        Task.Factory.StartNew(async () =>
         {
-            OnPeekerFailure = exc =>
+            try
             {
-                _canExecute = true;
+                _canExecute = false;
                 _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-                _onPeekerFailure.Invoke(exc);
-            },
-            OnAllMessagesPeeked = _onAllMessagesPeeked,
-            OnPeekerFinished = () =>
-            {
-                _canExecute = true;
-                _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-                _onPeekerStopped.Invoke();
-            },
-            OnPeekerStarted = _onPeekerStarted,
-            OnPeekerInitializing = _onPeekerInitializing
-        };
+                
+                var callbacks = new PeekerCallbacks
+                {
+                    OnPeekerFailure = exc =>
+                    {
+                        _canExecute = true;
+                        _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
+                        _onPeekerFailure.Invoke(exc);
+                    },
+                    OnAllMessagesPeeked = _onAllMessagesPeeked,
+                    OnPeekerFinished = () =>
+                    {
+                        _canExecute = true;
+                        _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
+                        _onPeekerStopped.Invoke();
+                    },
+                    OnPeekerStarted = _onPeekerStarted,
+                    OnPeekerInitializing = _onPeekerInitializing
+                };
 
-        _canExecute = false;
-        _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
-        _msgPeeker.Start(_serviceBusPeekerSettingsProviderFunc.Invoke(), callbacks
-        );
+                await _msgPeeker.Start(_serviceBusPeekerSettingsProviderFunc.Invoke(), callbacks);
+            }
+            finally
+            {
+                _canExecute = true;
+                _inGuiThreadActionCaller.Call(CommandManager.InvalidateRequerySuggested);
+            }
+            
+        }, TaskCreationOptions.LongRunning);
+
+        
     }
 
     public event EventHandler CanExecuteChanged
