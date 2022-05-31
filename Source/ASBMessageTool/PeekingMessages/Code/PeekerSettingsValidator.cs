@@ -15,18 +15,16 @@ public class PeekerSettingsValidator : IPeekerSettingsValidator
     public PeekerSettingsValidator(IServiceBusHelperLogger logger)
     {
         _logger = logger;
-        
     }
 
 
-    
     public async Task<Maybe<ValidationErrorResult>> Validate(ServiceBusPeekerSettings settings, CancellationToken token)
     {
         var sbClient = new ServiceBusAdministrationClient(settings.ConnectionString);
         if (settings.ReceiverDataSourceType == ReceiverDataSourceType.Topic)
         {
             return await ValidateTopicWithSubscriptionConfiguration(
-                $"config name: {settings.ConfigName}" , // context
+                $"config name: {settings.ConfigName}", // context
                 sbClient, settings.TopicName, settings.SubscriptionName, token);
         }
 

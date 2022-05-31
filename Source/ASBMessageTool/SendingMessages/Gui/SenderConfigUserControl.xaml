@@ -179,6 +179,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
@@ -195,34 +196,47 @@
                 Send
             </Button>
             
+            <Button Grid.Column="1"
+                    MinWidth="75"
+                    Margin="5,2,5,2"
+                    Style="{StaticResource ButtonStyle}"
+                    Command="{Binding StopSendingMessageCommand}">
+                Stop
+            </Button>
+            
             <Label
-                Grid.Column="1"
+                Grid.Column="2"
                 Content="Last send status:"
                 Margin="5,0,5,0" />
 
             <Label
                 Margin="5,0,5,0"
-                Grid.Column="2"
+                Grid.Column="3"
                 Content="{Binding MessageSendingStatusText}">
                 <Label.Style>
                     <Style>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding MessageSendingStatus}" Value="Error">
+                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Error">
                                 <Setter Property="Control.Foreground" Value="Red" />
                                 <Setter Property="Control.FontWeight" Value="Bold" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding MessageSendingStatus}" Value="Idle">
+                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Idle">
                                 <Setter Property="Control.Foreground" Value="Blue" />
                                 <Setter Property="Control.FontWeight" Value="Bold" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding MessageSendingStatus}" Value="Sending">
+                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Sending">
+                                <Setter Property="Control.Foreground" Value="Orange" />
+                                <Setter Property="Control.FontWeight" Value="Bold" />
+                            </DataTrigger>
+                            
+                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Stopping">
                                 <Setter Property="Control.Foreground" Value="Orange" />
                                 <Setter Property="Control.FontWeight" Value="Bold" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding MessageSendingStatus}" Value="Success">
+                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Success">
                                 <Setter Property="Control.Foreground" Value="Green" />
                                 <Setter Property="Control.FontWeight" Value="Bold" />
                             </DataTrigger>

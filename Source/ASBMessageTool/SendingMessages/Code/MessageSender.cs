@@ -9,24 +9,15 @@ using Core.Maybe;
 
 namespace ASBMessageTool.SendingMessages.Code;
 
-public record ServiceBusMessageSendData
-{
-    public string ConnectionString { get; init; }
-    public string QueueOrTopicName { get; init; }
-    public string MsgBody { get; init; }
-    public SbMessageStandardFields Fields { get; init; }
-    public IList<SBMessageApplicationProperty> ApplicationProperties { get; init; }
-    public string ConfigName { get; init; }
-}
-
 public class MessageSender : IMessageSender
 {
-    private Dictionary<string /* connection string */, ServiceBusClient> _serviceBusClientsCache = new();
-    private Dictionary<(string /* connection string */, string /*topicName*/), ServiceBusSender> _serviceBusSendersCache = new();
+    private readonly Dictionary<string /* connection string */, ServiceBusClient> _serviceBusClientsCache = new();
+    private readonly Dictionary<(string /* connection string */, string /*topicName*/), ServiceBusSender> _serviceBusSendersCache = new();
     private readonly ISenderSettingsValidator _senderSettingsValidator;
     private readonly IServiceBusHelperLogger _logger;
     private SenderCallbacks _callbacks;
     private ServiceBusMessageSendData _messageToSend;
+    private CancellationTokenSource _cancellationTokenSource;
 
     public MessageSender(ISenderSettingsValidator senderSettingsValidator, IServiceBusHelperLogger logger)
     {
@@ -38,26 +29,42 @@ public class MessageSender : IMessageSender
     {
         _callbacks = callbacks;
         _messageToSend = messageToSend;
+        _cancellationTokenSource = new CancellationTokenSource();
+        var token = _cancellationTokenSource.Token;
         try
         {
-            var validationResult = await _senderSettingsValidator.Validate(_messageToSend, CancellationToken.None);
+            _callbacks.OnStartSendingAction.Invoke();
+            var validationResult = await _senderSettingsValidator.Validate(_messageToSend, token);
             if (validationResult.IsSomething())
             {
                 _logger.LogError($"Sender '{messageToSend.ConfigName}' config validation failed: '{validationResult.Value().ErrorMsg}'");
-                _callbacks.OnErrorWhileSendingHappened.Invoke(new MessageSendErrorInfo { Message = "Send data validation failed. See log for details" });
+                _callbacks.OnErrorHappenedWhileSending.Invoke(new MessageSendErrorInfo
+                    { Message = "Send data validation failed. See log for details" });
                 return;
             }
-
-            await SendInternal();
+            
+            await SendInternal(token);
+            _callbacks.OnSendingFinishedSuccessfully.Invoke();
+        }
+        catch (Exception e) when (e is TaskCanceledException or OperationCanceledException)
+        {
+            _callbacks.OnSendingStopped.Invoke();
+            _logger.LogWarning($"Sending message for configuration '{_messageToSend.ConfigName}' was stopped (operation/task was cancelled)");
         }
         catch (Exception e)
         {
             _logger.LogException(e);
-            _callbacks.OnErrorWhileSendingHappened.Invoke(new MessageSendErrorInfo { Message = "Sending failed. See log for details" });
+            _callbacks.OnErrorHappenedWhileSending.Invoke(new MessageSendErrorInfo { Message = "Sending failed. See log for details" });
         }
     }
 
-    private async Task SendInternal()
+    public void Stop()
+    {
+        _callbacks.OnSendingStopping.Invoke();
+        _cancellationTokenSource.Cancel();
+    }
+
+    private async Task SendInternal(CancellationToken cancellationToken)
     {
         var msgBody = _messageToSend.MsgBody;
 
@@ -67,8 +74,8 @@ public class MessageSender : IMessageSender
 
         var message = FillAllMessageFields(msgBody, _messageToSend.Fields, _messageToSend.ApplicationProperties);
 
-        await sender.SendMessageAsync(message);
-        _callbacks.OnSendingFinished.Invoke();
+        await sender.SendMessageAsync(message, cancellationToken);
+        _callbacks.OnSendingFinishedSuccessfully.Invoke();
     }
 
     private static ServiceBusMessage FillAllMessageFields(string msgBody,
@@ -100,6 +107,12 @@ public class MessageSender : IMessageSender
         SetMessageFieldIfEnabled(messageFieldsToSend.Subject, ob => { message.Subject = ob; });
         SetMessageFieldIfEnabled(messageFieldsToSend.To, ob => { message.To = ob; });
         SetMessageFieldIfEnabled(messageFieldsToSend.TransactionPartitionKey, ob => { message.TransactionPartitionKey = ob; });
+        
+        SetMessageFieldIfEnabled(messageFieldsToSend.TimeToLive, ob => { message.TimeToLive = ob; });
+        SetMessageFieldIfEnabled(messageFieldsToSend.ScheduledEnqueueTime, ob =>
+        {
+            message.ScheduledEnqueueTime = ob;
+        });
 
         return message;
     }

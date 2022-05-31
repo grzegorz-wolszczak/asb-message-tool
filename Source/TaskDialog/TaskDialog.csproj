@@ -8,6 +8,7 @@
         <UseWPF>true</UseWPF>
         <RootNamespace>TaskDialogInterop</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <NoWarn>CA1003,CA2211,CA1815,CA1060,CA2101,CA1806,CA1021,CA1030,CA1033,CA1507,CA1307,CA1502,CA1310,CA1812,CA1825</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

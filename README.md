@@ -15,3 +15,4 @@ Application to send and receive messages from Azure service bus.
 - [AvalonEdit](https://github.com/icsharpcode/AvalonEdit)
 - [TaskDialog](https://www.codeproject.com/Articles/137552/WPF-TaskDialog-Wrapper-and-Emulator)
 - [Wpftoolkit](https://github.com/xceedsoftware/wpftoolkit)
+- [Oxygen icons png](https://github.com/pasnox/oxygen-icons-png)

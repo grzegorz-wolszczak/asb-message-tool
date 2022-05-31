@@ -11,7 +11,7 @@ using Core.Maybe;
 
 namespace ASBMessageTool.PeekingMessages.Code;
 
-public sealed class ServiceBusMessageMessagePeeker : IServiceBusMessagePeeker, IDisposable, IAsyncDisposable
+public sealed class ServiceBusMessagePeeker : IServiceBusMessagePeeker, IDisposable, IAsyncDisposable
 {
     private ServiceBusClient _client;
 
@@ -21,7 +21,7 @@ public sealed class ServiceBusMessageMessagePeeker : IServiceBusMessagePeeker, I
     private ServiceBusPeekerSettings _config;
     private PeekerCallbacks _callbacks;
 
-    public ServiceBusMessageMessagePeeker(
+    public ServiceBusMessagePeeker(
         IPeekerSettingsValidator peekerSettingsValidator,
         IServiceBusHelperLogger logger)
     {
@@ -29,51 +29,36 @@ public sealed class ServiceBusMessageMessagePeeker : IServiceBusMessagePeeker, I
         _logger = logger;
     }
 
-    public void Start(ServiceBusPeekerSettings config, PeekerCallbacks callbacks)
+    public async Task Start(ServiceBusPeekerSettings config, PeekerCallbacks callbacks)
     {
         _config = config;
         _callbacks = callbacks;
-
+        
+        _cancellationTokenSource = new CancellationTokenSource();
+        var token = _cancellationTokenSource.Token;
+        
         try
         {
-            _cancellationTokenSource = new CancellationTokenSource();
-            var token = _cancellationTokenSource.Token;
-
-            Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    await ValidateConfigOrThrow(_config, token);
-                    _client = new ServiceBusClient(_config.ConnectionString);
-                    var serviceBusReceiverOptions = GetServiceBusPeekerOptionsBasedOnConfig();
-                    await ReceiveUntilFinishedPeekingOrError(serviceBusReceiverOptions, token);
-                    _callbacks.OnPeekerFinished.Invoke();
-                }
-                catch (TaskCanceledException e)
-                {
-                    _logger.LogWarning($"Peeker '{_config.ConfigName}' was stopped");
-                    _callbacks.OnPeekerFinished.Invoke();
-                }
-                catch (Exception e)
-                {
-                    _callbacks.OnPeekerFailure.Invoke(e);
-                    _logger.LogException($"Error happened while peeking messages for peeker '{_config.ConfigName}'", e);
-                }
-            }, TaskCreationOptions.LongRunning);
+            await ValidateConfigOrThrow(_config, token);
+            _client = new ServiceBusClient(_config.ConnectionString);
+            var serviceBusReceiverOptions = GetServiceBusPeekerOptionsBasedOnConfig();
+            await ReceiveUntilFinishedPeekingOrError(serviceBusReceiverOptions, token);
+            _callbacks.OnPeekerFinished.Invoke();
+        }
+        catch (TaskCanceledException e)
+        {
+            _logger.LogWarning($"Peeker '{_config.ConfigName}' was stopped");
+            _callbacks.OnPeekerFinished.Invoke();
         }
         catch (Exception e)
         {
-            callbacks.OnPeekerFailure.Invoke(e);
-            _logger.LogException($"Could not start peeking messages for peeker '{_config.ConfigName}' because of error.", e);
+            _callbacks.OnPeekerFailure.Invoke(e);
+            _logger.LogException($"Error happened while peeking messages for peeker '{_config.ConfigName}'", e);
         }
     }
 
     public void Stop()
     {
-        //_callbacks.OnPeekerStopped.Invoke();
-        
-
-
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource = null;
     }

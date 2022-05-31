@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.Application.Logging;
@@ -12,20 +13,21 @@ using JetBrains.Annotations;
 
 namespace ASBMessageTool.SendingMessages.Code;
 
-public enum MessageSendingStatus
+public enum MessageSenderStatus
 {
     Idle,
     Sending,
+    Stopping,
     Success,
     Error
 }
 
-
-
 public sealed class SenderConfigViewModel : INotifyPropertyChanged
 {
     private record LastMessageSendingError(string Message);
-    
+
+    private const string LastSendStatusUnavailable = "Idle";
+
     private SenderConfigModel _modelItem;
     private readonly SeparateWindowManagementCallbacks _separateWindowManagementCallbacks;
     private readonly ISenderMessagePropertiesWindowProxy _senderMessagePropertiesWindowProxy;
@@ -33,8 +35,8 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private readonly IInGuiThreadActionCaller _inGuiThreadActionCaller;
     private readonly IServiceBusHelperLogger _logger;
     private bool _isDetached = false;
-    private string _lastSendStatusText = "N/A";
-    private MessageSendingStatus _lastSendStatus = MessageSendingStatus.Idle;
+    private string _lastSendStatusText = LastSendStatusUnavailable;
+    private MessageSenderStatus _lastSendStatus = MessageSenderStatus.Idle;
     private TextDocument _msgToSendDocument = new("");
     private ISenderSettingsValidator _senderSettingsValidator;
     private readonly IOperationSystemServices _operationSystemServices;
@@ -42,6 +44,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private Maybe<LastMessageSendingError> _lastMessageSendingError = Maybe<LastMessageSendingError>.Nothing;
     private ConfigEditingEnabler _configEditorEnabler;
     private bool _isConfigurationViewExpanded = true;
+    private StopSendingMessagesCommand _stopSendingMessagesCommand;
 
 
     public SenderConfigViewModel(SenderConfigModel modelItem,
@@ -50,7 +53,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         IMessageSender messageSender,
         IInGuiThreadActionCaller inGuiThreadActionCaller,
         IServiceBusHelperLogger logger,
-        ISenderSettingsValidator senderSettingsValidator, 
+        ISenderSettingsValidator senderSettingsValidator,
         IOperationSystemServices operationSystemServices)
     {
         ModelItem = modelItem; // must use Property instead of backing field because Document.Text must be set
@@ -83,73 +86,111 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         });
 
         ValidateConfigurationCommand = new ValidateSenderConfigurationCommand(
-            ()=>{ _configEditorEnabler.SetConfigValidationStarted();},
-            () => { _configEditorEnabler.SetConfigValidationFinished();},
-        inGuiThreadActionCaller,
+            () => { _configEditorEnabler.SetConfigValidationStarted(); },
+            () => { _configEditorEnabler.SetConfigValidationFinished(); },
+            inGuiThreadActionCaller,
             GetServiceBusMessageSendData,
             _senderSettingsValidator);
 
+        _stopSendingMessagesCommand = new StopSendingMessagesCommand(_messageSender, inGuiThreadActionCaller){ };
+
+        var senderCallbacks = new SenderCallbacks()
+        {
+            OnStartSendingAction = ()=>
+            {
+                _stopSendingMessagesCommand.OnStartSending();
+                IndicateSendingInStarted();
+            },
+            OnSendingFinishedSuccessfully = () =>
+            {
+                _stopSendingMessagesCommand.OnSendingFinished();
+                IndicateSendingFinished();
+            },
+            OnErrorHappenedWhileSending = (e) =>
+            {
+                _stopSendingMessagesCommand.OnSendingFailed();
+                IndicateErrorHappenedWhenSending(e);
+            },
+            OnSendingStopping = () =>
+            {
+                _stopSendingMessagesCommand.IndicateSendingStopping();
+                IndicateStopping();
+            },
+            OnSendingStopped = () =>
+            {
+                _stopSendingMessagesCommand.IndicateSendingStopped();
+                IndicateSendingStopped();
+            }
+        };
         
         SendMessageCommand = new SendMessageCommand(_messageSender,
-            IndicateSendingInStarted,
-            IndicateSendingFinished,
             GetServiceBusMessageSendData,
-            IndicateErrorHappenedWhenSending,
             IndicateUnexpectedExceptionFinished,
-            _inGuiThreadActionCaller);
+            _inGuiThreadActionCaller, 
+            senderCallbacks);
 
         CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
         {
             _operationSystemServices.SetClipboardText(_modelItem.ServiceBusConnectionString);
         });
+        
+    }
+
+    private void IndicateStopping()
+    {
+        MessageSenderStatus = MessageSenderStatus.Stopping;
+        SetLastSendingError("Stopping...");
+    }
+    
+    private void IndicateSendingStopped()
+    {
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
+        SetLastSendStatusMessage(LastSendStatusUnavailable);
+        MessageSenderStatus = MessageSenderStatus.Idle;
     }
 
     private void IndicateErrorHappenedWhenSending(MessageSendErrorInfo messageSendErrorInfo)
     {
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
         SetLastSendingError(messageSendErrorInfo.Message);
+        MessageSenderStatus = MessageSenderStatus.Error;
+        SetLastSendStatusMessage(_lastMessageSendingError.Value().Message);
     }
 
     private void IndicateUnexpectedExceptionFinished(Exception exception)
     {
-        _logger.LogException("While sending message exception happened: ", exception);
+        _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
         SetLastSendingError("Unexpected error, see logs for details.");
+        _logger.LogException("While sending message exception happened: ", exception);
+        MessageSenderStatus = MessageSenderStatus.Error;
     }
 
     private void IndicateSendingFinished()
     {
         _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
-        if (_lastMessageSendingError.IsSomething())
-        {
-            MessageSendingStatus = MessageSendingStatus.Error;
-            SetLastSendStatusMessage(_lastMessageSendingError.Value().Message);
-        }
-        else
-        {
-            SetLastSendStatusMessage("Message send successfully");
-            MessageSendingStatus = MessageSendingStatus.Success;    
-        }
+        SetLastSendStatusMessage("Message send successfully");
+        MessageSenderStatus = MessageSenderStatus.Success;
     }
 
     private void IndicateSendingInStarted()
     {
-        _lastMessageSendingError = Maybe<LastMessageSendingError>.Nothing;
         _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingStarted();
         SetLastSendStatusMessage("Sending...");
-        MessageSendingStatus = MessageSendingStatus.Sending;
+        MessageSenderStatus = MessageSenderStatus.Sending;
     }
 
     private void SetLastSendingError(string msg)
     {
         _lastMessageSendingError = new LastMessageSendingError(msg).ToMaybe();
     }
-    
+
     private void SetLastSendStatusMessage(string msg)
     {
         var status = $"{TimeUtils.GetShortTimestamp()} {msg}";
         MessageSendingStatusText = status;
     }
 
-    
+
     private ServiceBusMessageSendData GetServiceBusMessageSendData()
     {
         return new ServiceBusMessageSendData
@@ -173,16 +214,19 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
     public ICommand AttachToPanelCommand { get; }
     public ICommand DetachFromPanelCommand { get; }
     public ICommand SendMessageCommand { get; }
     public ICommand ShowPropertiesWindowCommand { get; }
     public ICommand ValidateConfigurationCommand { get; }
-    
+
     public ICommand CopySenderConnectionStringToClipboard { get; }
-    
+    public ICommand StopSendingMessageCommand => _stopSendingMessagesCommand;
+
+
     public event PropertyChangedEventHandler PropertyChanged;
-    
+
 
     public SenderConfigModel ModelItem
     {
@@ -234,7 +278,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         }
     }
 
-    public MessageSendingStatus MessageSendingStatus
+    public MessageSenderStatus MessageSenderStatus
     {
         get => _lastSendStatus;
         set
@@ -245,7 +289,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         }
     }
 
-        
+
     [UsedImplicitly]
     public bool IsConfigurationViewExpanded
     {

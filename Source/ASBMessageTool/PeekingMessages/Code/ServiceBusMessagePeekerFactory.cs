@@ -1,4 +1,5 @@
-﻿using ASBMessageTool.Application.Logging;
+﻿using System.Threading.Tasks;
+using ASBMessageTool.Application.Logging;
 
 namespace ASBMessageTool.PeekingMessages.Code;
 
@@ -15,12 +16,12 @@ public class ServiceBusMessagePeekerFactory
 
     public IServiceBusMessagePeeker Create()
     {
-        return new ServiceBusMessageMessagePeeker(_peekerSettingsValidator, _logger);
+        return new ServiceBusMessagePeeker(_peekerSettingsValidator, _logger);
     }
 }
 
 public interface IServiceBusMessagePeeker
 {
-    void Start(ServiceBusPeekerSettings config, PeekerCallbacks callbacks);
+    Task Start(ServiceBusPeekerSettings config, PeekerCallbacks callbacks);
     void Stop();
 }
