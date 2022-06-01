@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows.Input;
 using ASBMessageTool.Application;
 using ASBMessageTool.Application.Logging;
@@ -9,6 +9,7 @@ using ASBMessageTool.Model;
 using ASBMessageTool.ReceivingMessages.Code;
 using Core.Maybe;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
 using JetBrains.Annotations;
 
 namespace ASBMessageTool.SendingMessages.Code;
@@ -45,7 +46,18 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
     private ConfigEditingEnabler _configEditorEnabler;
     private bool _isConfigurationViewExpanded = true;
     private StopSendingMessagesCommand _stopSendingMessagesCommand;
+    private IHighlightingDefinition _highlightingDefinition;
 
+
+    public ICommand AttachToPanelCommand { get; }
+    public ICommand DetachFromPanelCommand { get; }
+    public ICommand SendMessageCommand { get; }
+    public ICommand ShowPropertiesWindowCommand { get; }
+    public ICommand ValidateConfigurationCommand { get; }
+    public ICommand CopySenderConnectionStringToClipboard { get; }
+    
+    [UsedImplicitly]
+    public ICommand StopSendingMessageCommand => _stopSendingMessagesCommand;
 
     public SenderConfigViewModel(SenderConfigModel modelItem,
         SeparateWindowManagementCallbacks separateWindowManagementCallbacks,
@@ -64,6 +76,19 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         _logger = logger;
         _senderSettingsValidator = senderSettingsValidator;
         _operationSystemServices = operationSystemServices;
+
+
+        // I don't want ModelItem ('pure' model) to have members of 3rd types ('IHighlightingDefinition' in this case )
+        // So the syntax highlighting name is a string in 'model' but must be transformed to 'IHighlightingDefinition'
+        // object in viewmodel because it must be 'concrete' 3rd party object that is used by AvalonEdit WPF control
+        if (!string.IsNullOrWhiteSpace(ModelItem.SelectedSyntaxHighlightingName))
+        {
+            var manager = HighlightingManager.Instance;
+            if (manager != null)
+            {
+                _highlightingDefinition = manager.GetDefinition(ModelItem.SelectedSyntaxHighlightingName);
+            }
+        }
 
         _configEditorEnabler = new ConfigEditingEnabler(value => { IsEditingConfigurationEnabled = value; });
 
@@ -92,11 +117,11 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
             GetServiceBusMessageSendData,
             _senderSettingsValidator);
 
-        _stopSendingMessagesCommand = new StopSendingMessagesCommand(_messageSender, inGuiThreadActionCaller){ };
+        _stopSendingMessagesCommand = new StopSendingMessagesCommand(_messageSender, inGuiThreadActionCaller) { };
 
         var senderCallbacks = new SenderCallbacks()
         {
-            OnStartSendingAction = ()=>
+            OnStartSendingAction = () =>
             {
                 _stopSendingMessagesCommand.OnStartSending();
                 IndicateSendingInStarted();
@@ -122,18 +147,17 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
                 IndicateSendingStopped();
             }
         };
-        
+
         SendMessageCommand = new SendMessageCommand(_messageSender,
             GetServiceBusMessageSendData,
             IndicateUnexpectedExceptionFinished,
-            _inGuiThreadActionCaller, 
+            _inGuiThreadActionCaller,
             senderCallbacks);
 
         CopySenderConnectionStringToClipboard = new DelegateCommand(_ =>
         {
             _operationSystemServices.SetClipboardText(_modelItem.ServiceBusConnectionString);
         });
-        
     }
 
     private void IndicateStopping()
@@ -141,7 +165,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         MessageSenderStatus = MessageSenderStatus.Stopping;
         SetLastSendingError("Stopping...");
     }
-    
+
     private void IndicateSendingStopped()
     {
         _configEditorEnabler.ExternalTaskThatBlocksConfigurationEditingFinished();
@@ -215,17 +239,40 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
         }
     }
 
-    public ICommand AttachToPanelCommand { get; }
-    public ICommand DetachFromPanelCommand { get; }
-    public ICommand SendMessageCommand { get; }
-    public ICommand ShowPropertiesWindowCommand { get; }
-    public ICommand ValidateConfigurationCommand { get; }
-
-    public ICommand CopySenderConnectionStringToClipboard { get; }
-    public ICommand StopSendingMessageCommand => _stopSendingMessagesCommand;
-
 
     public event PropertyChangedEventHandler PropertyChanged;
+
+
+    [UsedImplicitly]
+    public ReadOnlyCollection<IHighlightingDefinition> HighlightingDefinitions
+    {
+        get
+        {
+            var hlManager = HighlightingManager.Instance;
+
+            if (hlManager != null)
+                return hlManager.HighlightingDefinitions;
+
+            return null;
+        }
+    }
+
+    [UsedImplicitly]
+    public IHighlightingDefinition HighlightingDefinition
+    {
+        get { return _highlightingDefinition; }
+
+        set
+        {
+            if (_highlightingDefinition != value)
+            {
+                _highlightingDefinition = value;
+            }
+            
+            ModelItem.SelectedSyntaxHighlightingName = _highlightingDefinition?.Name;
+            OnPropertyChanged();
+        }
+    }
 
 
     public SenderConfigModel ModelItem
@@ -277,6 +324,7 @@ public sealed class SenderConfigViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
 
     public MessageSenderStatus MessageSenderStatus
     {

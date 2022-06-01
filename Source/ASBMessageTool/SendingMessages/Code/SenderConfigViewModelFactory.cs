@@ -12,12 +12,14 @@ public class SenderConfigViewModelFactory
     private readonly SenderMessagePropertiesWindowProxyFactory _senderMessagePropertiesWindowProxyFactory;
     private readonly ISenderSettingsValidator _senderSettingsValidator;
     private readonly IOperationSystemServices _operationSystemServices;
+ 
 
     public SenderConfigViewModelFactory(IServiceBusHelperLogger logger,
         IInGuiThreadActionCaller inGuiThreadActionCaller,
         MessageSenderFactory messageSenderFactory,
         SenderMessagePropertiesWindowProxyFactory senderMessagePropertiesWindowProxyFactory,
-        ISenderSettingsValidator senderSettingsValidator, IOperationSystemServices operationSystemServices)
+        ISenderSettingsValidator senderSettingsValidator,
+        IOperationSystemServices operationSystemServices)
     {
         _logger = logger;
         _inGuiThreadActionCaller = inGuiThreadActionCaller;
@@ -36,7 +38,7 @@ public class SenderConfigViewModelFactory
             OnAttachAction = windowForSenderConfig.HideWindow,
             OnDetachAction = windowForSenderConfig.ShowAsDetachedWindow
         };
-
+        
         var viewModel = new SenderConfigViewModel(
             configModel,
             callbacks,

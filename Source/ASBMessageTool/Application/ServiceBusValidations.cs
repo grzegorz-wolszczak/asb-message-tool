@@ -129,7 +129,7 @@ public static class ServiceBusValidations
                 return Maybe<ValidationErrorResult>.Nothing;
             }
 
-            return new ValidationErrorResult($"{errorMessagePrefix}: neither queue nor topic that name exist").ToMaybe();
+            return new ValidationErrorResult($"{errorMessagePrefix}: neither queue nor topic with that name exist").ToMaybe();
         }
         catch (Exception e) when (e is TaskCanceledException or OperationCanceledException)
         {
