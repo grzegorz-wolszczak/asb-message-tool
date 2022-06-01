@@ -13,8 +13,8 @@ public partial class SenderConfigUserControl : UserControl
         InitializeComponent();
     }
 
-    // avalonEdit does not have its property 'Text' as dependency property so we cannot bind viewmodel for it
-    // must set MsgBody in code behind;
+    // avalonEdit does not have its property 'Text' as dependency property so we cannot bind viewmodel for it,
+    // we must set MsgBody in code behind;
 
     private void SenderMsgBodyTextBox_OnTextChanged(object sender, EventArgs e)
     {

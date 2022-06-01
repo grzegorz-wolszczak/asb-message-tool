@@ -39,17 +39,20 @@
 
         </Grid.RowDefinitions>
 
-
+        
         <Expander Grid.Row="0"
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
-                  IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }"
+                  IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }" 
                   Header="Message peeker configuration"
-                  Margin="5,0,5,2"
+                  Margin="5,2,5,2"
                   
                   >
-            <Grid IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
-            >
+            <GroupBox Padding="2,5"
+                      IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
+                      >
+                 <Grid >
+            
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -96,8 +99,7 @@
                     <PasswordBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Copy connection string"
-                                      Command="{Binding CopySenderConnectionStringToClipboard}">
-                            </MenuItem>
+                                      Command="{Binding CopySenderConnectionStringToClipboard}" />
                         </ContextMenu>
                     </PasswordBox.ContextMenu>
                 </PasswordBox>
@@ -242,13 +244,15 @@
                 
                 
             </Grid>
+            </GroupBox>
+           
 
         </Expander>
 
         <GroupBox Grid.Row="1"
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
-                  Margin="5,2,5,2"
+                  Margin="5"
                   Header="Received messages:">
             <Grid>
 
@@ -365,28 +369,30 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <Button Margin="5" MinWidth="75"
-                        Padding="5,2,5,2"
+                <Button Margin="5"
+                        Padding="5,0"
+                        MinWidth="75"
                         Style="{StaticResource ButtonStyle}"
                         Command="{Binding PeekMessagesCommand}">
                     Peek messages
                 </Button>
                 
-                <Button Margin="5" MinWidth="75"
-                        Padding="5,2,5,2"
+                <Button Margin="5" 
+                        MinWidth="75"
                         Style="{StaticResource ButtonStyle}"
                         Command="{Binding StopPeekingCommand}">
                     Stop
                 </Button>
                 
-                <!-- StopPeekingCommand -->
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right">
+                
                 <Button Margin="5"
-                        Style="{StaticResource ButtonStyle}"
-                        Width="75" 
                         MinWidth="75"
+                        Style="{StaticResource ButtonStyle}"
                         Command="{Binding ClearMessageContentCommand}">
                     Clear
                 </Button>

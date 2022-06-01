@@ -7,7 +7,7 @@ using ASBMessageTool.Model;
 
 namespace ASBMessageTool.SendingMessages.Code;
 
-public class SenderConfigModel : INotifyPropertyChanged
+public sealed class SenderConfigModel : INotifyPropertyChanged
 {
     private string _configName = string.Empty;
     private SbMessageStandardFields _sbMessageStandardFields = new();
@@ -16,6 +16,7 @@ public class SenderConfigModel : INotifyPropertyChanged
     private string _outputTopicName = string.Empty;
     private string _body = string.Empty;
     private int _msgBodyTextFontSize = AppDefaults.DefaultTextBoxFontSize;
+    private string _selectedSyntaxHighlightingName = AppDefaults.SyntaxHighlightingName;
 
     public string ConfigName
     {
@@ -24,6 +25,17 @@ public class SenderConfigModel : INotifyPropertyChanged
         {
             if (value == _configName) return;
             _configName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedSyntaxHighlightingName
+    {
+        get => _selectedSyntaxHighlightingName;
+        set
+        {
+            if (value == _selectedSyntaxHighlightingName) return;
+            _selectedSyntaxHighlightingName = value;
             OnPropertyChanged();
         }
     }
@@ -98,7 +110,7 @@ public class SenderConfigModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

@@ -52,8 +52,8 @@
                         <!--  Exception Message  -->
                         <TextBlock Style="{StaticResource Label}"
                                    Text="Exception message" />
-                        <TextBlock Grid.Column="1"
-                                   Text="{Binding Exception.Message, Mode=OneWay, TargetNullValue=-}"
+                        <TextBlock
+                            Text="{Binding Exception.Message, Mode=OneWay, TargetNullValue=-}"
                                    TextWrapping="Wrap" />
                         <!--  Exception Type  -->
                         <TextBlock Style="{StaticResource Label}"

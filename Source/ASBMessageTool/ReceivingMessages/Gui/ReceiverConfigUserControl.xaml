@@ -10,18 +10,17 @@
              xmlns:model="clr-namespace:ASBMessageTool.Model"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
-             d:DesignHeight="350" d:DesignWidth="400">
+             d:DesignHeight="600" d:DesignWidth="400">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        
+
         <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxStyle}" />
         <converters:BoolToTextWrappingValueConverter x:Key="BoolToTextWrappingConverter" />
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         <converters:NegatedBooleanConverter x:Key="NegatedBooleanConverter" />
         <converters:BooleanToReversedVisibilityConverter x:Key="BooleanToReversedVisibilityConverter" />
         <converters:BooleanToHiddenVisibilityConverter x:Key="BooleanToHiddenVisibilityConverter" />
-        
 
 
         <!-- works with datacontext of ReceiverConfigViewModel -->
@@ -50,348 +49,342 @@
                   Grid.ColumnSpan="3"
                   IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }"
                   Header="Message receiver configuration"
-                  Margin="5,0,5,2"
-                  
-                  >
-            <Grid IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }"
-            >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                  Margin="5,2,5,2">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" /> <!-- sender config name -->
-                    <RowDefinition Height="Auto" /> <!-- service bus config name --> 
-                    <RowDefinition Height="Auto" /> 
-                    <RowDefinition Height="Auto" /> <!-- input topic subscription name -->
-                    <RowDefinition Height="Auto" /> 
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <GroupBox Padding="2,5"
+                IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-
-                <Label Grid.Column="0"
-                       Grid.Row="0"
-                       Margin="5,2,5,2"
-                       Content="Receiver config name" />
-
-                <TextBox Grid.Column="1"
-                         Grid.Row="0"
-                         Margin="5,2,5,2"
-                         Grid.ColumnSpan="2"
-                         Text="{Binding Path=ModelItem.ConfigName, UpdateSourceTrigger=PropertyChanged}" />
-
-                <Label Grid.Column="0"
-                       Grid.Row="1"
-                       Margin="5,2,5,2"
-                       Content="Service bus connection string" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" /> <!-- sender config name -->
+                        <RowDefinition Height="Auto" /> <!-- service bus config name -->
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" /> <!-- input topic subscription name -->
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
 
-                <PasswordBox Grid.Column="1"
-                             Grid.Row="1"
+                    <Label Grid.Column="0"
+                           Grid.Row="0"
+                           Margin="5,2,5,2"
+                           Content="Receiver config name" />
+
+                    <TextBox Grid.Column="1"
+                             Grid.Row="0"
                              Margin="5,2,5,2"
                              Grid.ColumnSpan="2"
-                             application:PasswordBoxAssistant.BindPassword="true"
-                             application:PasswordBoxAssistant.BoundPassword="{Binding
+                             Text="{Binding Path=ModelItem.ConfigName, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Label Grid.Column="0"
+                           Grid.Row="1"
+                           Margin="5,2,5,2"
+                           Content="Service bus connection string" />
+
+
+                    <PasswordBox Grid.Column="1"
+                                 Grid.Row="1"
+                                 Margin="5,2,5,2"
+                                 Grid.ColumnSpan="2"
+                                 application:PasswordBoxAssistant.BindPassword="true"
+                                 application:PasswordBoxAssistant.BoundPassword="{Binding
                          Path=ModelItem.ServiceBusConnectionString,
                          Mode=TwoWay,
-                         UpdateSourceTrigger=PropertyChanged}" >
-                    <PasswordBox.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Copy connection string"
-                                      Command="{Binding CopySenderConnectionStringToClipboard}">
-                            </MenuItem>
-                        </ContextMenu>
-                    </PasswordBox.ContextMenu>
-                </PasswordBox>
+                         UpdateSourceTrigger=PropertyChanged}">
+                        <PasswordBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Copy connection string"
+                                          Command="{Binding CopySenderConnectionStringToClipboard}" />
+                            </ContextMenu>
+                        </PasswordBox.ContextMenu>
+                    </PasswordBox>
 
-                <GroupBox Margin="5,2,5,2"
-                          Grid.Column="0"
-                          Grid.ColumnSpan="3"
-                          Grid.Row="2"
-                          Grid.RowSpan="2">
-                    <Grid>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-
-                        <GroupBox
-                            Grid.Row="0"
-                            Header="Receive source">
-                            <StackPanel Orientation="Horizontal">
-
-                                <RadioButton Margin="5,2,5,2"
-                                             Content="Topic"
-                                             Name="TopicConfiguredRadioButton"
-                                             IsChecked="{Binding
-                                Path=ModelItem.ReceiverDataSourceType,
-                                Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static model:ReceiverDataSourceType.Topic} }" />
-
-                                <RadioButton Margin="5,2,5,2"
-                                             Content="Queue"
-                                             Name="QueueConfiguredRadioButton"
-                                             IsChecked="{Binding
-                                Path=ModelItem.ReceiverDataSourceType,
-                                Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static model:ReceiverDataSourceType.Queue} }" />
-                            </StackPanel>
-
-                        </GroupBox>
-
-                        <GroupBox Grid.Row="1" Name="TopicConfiguredGroupBox"
-                                  Visibility="{Binding ElementName=TopicConfiguredRadioButton,
-                                    Path=IsChecked,
-                                    Converter={StaticResource BoolToVisibilityConverter},
-                                     UpdateSourceTrigger=PropertyChanged}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-
-                                <Label Grid.Column="0"
-                                       Grid.Row="0"
-                                       Margin="5,2,5,2"
-                                       Content="Topic name" />
-
-                                <TextBox Grid.Column="1"
-                                         Grid.Row="0"
-                                         Margin="5,2,5,2"
-                                         Grid.ColumnSpan="2"
-                                         Text="{Binding Path=ModelItem.InputTopicName,
-                         UpdateSourceTrigger=PropertyChanged}" />
-
-                                <Label Grid.Column="0"
-                                       Grid.Row="1"
-                                       Margin="5,2,5,2"
-                                       Content="Topic subscription name" />
-
-                                <TextBox Grid.Column="1"
-                                         Grid.Row="1"
-                                         Margin="5,2,5,2"
-                                         Grid.ColumnSpan="2"
-                                         Text="{Binding Path=ModelItem.InputTopicSubscriptionName,
-                         UpdateSourceTrigger=PropertyChanged}" />
-                            </Grid>
-                        </GroupBox>
-
-                        <GroupBox Grid.Row="1" Name="QueueConfiguredGroupBox"
-                                  Visibility="{Binding ElementName=QueueConfiguredRadioButton,
-                              Path=IsChecked,
-                               Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-
-                                <Label Grid.Column="0"
-                                       Grid.Row="0"
-                                       Margin="5,2,5,2"
-                                       Content="Queue name" />
-
-                                <TextBox Grid.Column="1"
-                                         Grid.Row="0"
-                                         Margin="5,2,5,2"
-                                         Grid.ColumnSpan="2"
-                                         Text="{Binding Path=ModelItem.ReceiverQueueName,
-                         UpdateSourceTrigger=PropertyChanged}" />
-
-                            </Grid>
-                        </GroupBox>
-                    </Grid>
-
-                </GroupBox>
-
-
-             
-                <Grid Grid.Column="0"
-                      Grid.Row="4"
-                      Grid.ColumnSpan="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0"
-                                Margin="5,5,5,5"> 
-                        <CheckBox 
-                            Margin = "2"
-                            VerticalAlignment="Center"
-                            Content="Receive from deadletter subqueue"
-                            x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
-                            IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
-                          UpdateSourceTrigger=PropertyChanged}" />
-                    
-                        <CheckBox Margin="2" Name="ReceiveSpecificNumberOfMessagesCheckBox"
-                                  IsChecked="{Binding ModelItem.ShouldReceiveSpecificNumberOfMessages}">
-                            <StackPanel Orientation="Horizontal" >
-                                <Label Margin="0,0,10,0" Padding="0"
-                                > Receive specific number of messages</Label>
-                                
-                                <xctk:IntegerUpDown
-                                    IsEnabled="{Binding ElementName=ReceiveSpecificNumberOfMessagesCheckBox, Path=IsChecked}"
-                                    MinWidth="70"
-                                    Increment="1" 
-                                    AllowSpin="True"
-                                    Minimum="0"
-                                    DefaultValue="1"
-                                    FormatString="G"
-                                    Watermark="Enter number"
-                                    ClipValueToMinMax="True"
-                                    DisplayDefaultValueOnEmptyText="True"
-                                    Visibility="{Binding ElementName=ReceiveSpecificNumberOfMessagesCheckBox, Path=IsChecked,
-                                     Converter={StaticResource BooleanToHiddenVisibilityConverter} }"
-                                    Value = "{Binding ModelItem.NumberOfMessagesToReceive, UpdateSourceTrigger=PropertyChanged}"
-                                    ShowButtonSpinner="True"
-                                    InputValidationError="UpDownBase_OnInputValidationError"
-                                    
-                                />    
-                            </StackPanel>
-                        
-                        </CheckBox>
-                    </StackPanel>
-                </Grid>
-                    
-                
-                <Grid Grid.Row="5" Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <Button  Grid.Column="0" 
-                            Margin="5,0,5,2" 
-                            Content="Validate configuration"
-                            Style="{StaticResource ValidateConfigurationButtonStyle}"
-                            Command="{Binding ValidateConfigurationCommand}"
-                    />   
-                </Grid>
-                
-            
-
-
-                <Expander Grid.Column="0"
-                          Grid.Row="6"
-                          Grid.ColumnSpan="3"
-                          Header="On message receive action"
-                          Visibility="{Binding ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox,
-                          Path=IsChecked,
-                          Converter={StaticResource BooleanToReversedVisibilityConverter} }">
-                    <GroupBox>
+                    <GroupBox Margin="5,2,5,2"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="3"
+                              Grid.Row="2"
+                              Grid.RowSpan="2">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
 
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />
-                                <RowDefinition />
                             </Grid.RowDefinitions>
 
-                            <!-- complete checkbox grid -->
-                            <Grid Grid.Column="0" Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+                            <GroupBox
+                                Grid.Row="0"
+                                Header="Receive source">
+                                <StackPanel Orientation="Horizontal">
 
+                                    <RadioButton Margin="5,2,5,2"
+                                                 Content="Topic"
+                                                 Name="TopicConfiguredRadioButton"
+                                                 IsChecked="{Binding
+                                Path=ModelItem.ReceiverDataSourceType,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static model:ReceiverDataSourceType.Topic} }" />
+
+                                    <RadioButton Margin="5,2,5,2"
+                                                 Content="Queue"
+                                                 Name="QueueConfiguredRadioButton"
+                                                 IsChecked="{Binding
+                                Path=ModelItem.ReceiverDataSourceType,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static model:ReceiverDataSourceType.Queue} }" />
+                                </StackPanel>
+
+                            </GroupBox>
+
+                            <GroupBox Grid.Row="1" Name="TopicConfiguredGroupBox"
+                                      Visibility="{Binding ElementName=TopicConfiguredRadioButton,
+                                    Path=IsChecked,
+                                    Converter={StaticResource BoolToVisibilityConverter},
+                                     UpdateSourceTrigger=PropertyChanged}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Column="0"
+                                           Grid.Row="0"
+                                           Margin="5,2,5,2"
+                                           Content="Topic name" />
+
+                                    <TextBox Grid.Column="1"
+                                             Grid.Row="0"
+                                             Margin="5,2,5,2"
+                                             Grid.ColumnSpan="2"
+                                             Text="{Binding Path=ModelItem.InputTopicName,
+                         UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <Label Grid.Column="0"
+                                           Grid.Row="1"
+                                           Margin="5,2,5,2"
+                                           Content="Topic subscription name" />
+
+                                    <TextBox Grid.Column="1"
+                                             Grid.Row="1"
+                                             Margin="5,2,5,2"
+                                             Grid.ColumnSpan="2"
+                                             Text="{Binding Path=ModelItem.InputTopicSubscriptionName,
+                         UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </GroupBox>
+
+                            <GroupBox Grid.Row="1" Name="QueueConfiguredGroupBox"
+                                      Visibility="{Binding ElementName=QueueConfiguredRadioButton,
+                              Path=IsChecked,
+                               Converter={StaticResource BoolToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Column="0"
+                                           Grid.Row="0"
+                                           Margin="5,2,5,2"
+                                           Content="Queue name" />
+
+                                    <TextBox Grid.Column="1"
+                                             Grid.Row="0"
+                                             Margin="5,2,5,2"
+                                             Grid.ColumnSpan="2"
+                                             Text="{Binding Path=ModelItem.ReceiverQueueName,
+                         UpdateSourceTrigger=PropertyChanged}" />
+
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+
+                    </GroupBox>
+
+
+                    <Grid Grid.Column="0"
+                          Grid.Row="4"
+                          Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0"
+                                    Margin="5,5,5,5">
+                            <CheckBox
+                                Margin="2"
+                                VerticalAlignment="Center"
+                                Content="Receive from deadletter subqueue"
+                                x:Name="ReceiveMessagesFromDeadLetterQueueCheckBox"
+                                IsChecked="{Binding ModelItem.IsAttachedToDeadLetterSubqueue,
+                          UpdateSourceTrigger=PropertyChanged}" />
+
+                            <CheckBox Margin="2" Name="ReceiveSpecificNumberOfMessagesCheckBox"
+                                      IsChecked="{Binding ModelItem.ShouldReceiveSpecificNumberOfMessages}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Margin="0,0,10,0" Padding="0"> Receive specific number of messages</Label>
+
+                                    <xctk:IntegerUpDown
+                                        IsEnabled="{Binding ElementName=ReceiveSpecificNumberOfMessagesCheckBox, Path=IsChecked}"
+                                        MinWidth="70"
+                                        Increment="1"
+                                        AllowSpin="True"
+                                        Minimum="0"
+                                        DefaultValue="1"
+                                        FormatString="G"
+                                        Watermark="Enter number"
+                                        ClipValueToMinMax="True"
+                                        DisplayDefaultValueOnEmptyText="True"
+                                        Visibility="{Binding ElementName=ReceiveSpecificNumberOfMessagesCheckBox, Path=IsChecked,
+                                     Converter={StaticResource BooleanToHiddenVisibilityConverter} }"
+                                        Value="{Binding ModelItem.NumberOfMessagesToReceive, UpdateSourceTrigger=PropertyChanged}"
+                                        ShowButtonSpinner="True"
+                                        InputValidationError="UpDownBase_OnInputValidationError" />
+                                </StackPanel>
+
+                            </CheckBox>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Grid.Row="5" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Margin="5,0,5,2"
+                                Content="Validate configuration"
+                                Style="{StaticResource ValidateConfigurationButtonStyle}"
+                                Command="{Binding ValidateConfigurationCommand}" />
+                    </Grid>
+
+
+                    <Expander Grid.Column="0"
+                              Grid.Row="6"
+                              Grid.ColumnSpan="3"
+                              Header="On message receive action"
+                              Visibility="{Binding ElementName=ReceiveMessagesFromDeadLetterQueueCheckBox,
+                          Path=IsChecked,
+                          Converter={StaticResource BooleanToReversedVisibilityConverter} }">
+                        <GroupBox>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <RadioButton Margin="5"
-                                             Content="Complete"
-                                             IsChecked="{Binding
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <!-- complete checkbox grid -->
+                                <Grid Grid.Column="0" Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton Margin="5"
+                                                 Content="Complete"
+                                                 IsChecked="{Binding
                                             Path=ModelItem.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
                                             ConverterParameter={x:Static code:OnMessageReceiveEnumAction.Complete} }" />
-                            </Grid>
+                                </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
-                                    <ColumnDefinition Width="Auto"
-                                                      SharedSizeGroup="AllAdditionalButtonsForRadioButtonsWidth" />
-                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+                                        <ColumnDefinition Width="Auto"
+                                                          SharedSizeGroup="AllAdditionalButtonsForRadioButtonsWidth" />
+                                    </Grid.ColumnDefinitions>
 
-                                <RadioButton
-                                    Grid.Column="0"
-                                    Grid.Row="0"
-                                    Margin="5"
-                                    Content="Abandon"
-                                    x:Name="AbandonMessageCheckbox"
-                                    IsChecked="{Binding ModelItem.OnMessageReceiveAction,
+                                    <RadioButton
+                                        Grid.Column="0"
+                                        Grid.Row="0"
+                                        Margin="5"
+                                        Content="Abandon"
+                                        x:Name="AbandonMessageCheckbox"
+                                        IsChecked="{Binding ModelItem.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
                                             ConverterParameter={x:Static code:OnMessageReceiveEnumAction.Abandon}
                                 }" />
 
 
-                                <Button
-                                    Grid.Column="1"
-                                    Grid.Row="0"
-                                    Content="..."
-                                    Height="20"
-                                    Width="75"
-                                    Margin="5,0,0,0"
-                                    Style="{StaticResource ButtonStyle}"
-                                    IsEnabled="{Binding ElementName=AbandonMessageCheckbox, Path=IsChecked}"
-                                    Command="{Binding ShowAbandonMessageOverriddenPropertiesWindowCommand}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Grid.Row="0"
+                                        Content="..."
+                                        Height="20"
+                                        Width="75"
+                                        Margin="5,0,0,0"
+                                        Style="{StaticResource ButtonStyle}"
+                                        IsEnabled="{Binding ElementName=AbandonMessageCheckbox, Path=IsChecked}"
+                                        Command="{Binding ShowAbandonMessageOverriddenPropertiesWindowCommand}" />
 
 
-                            </Grid>
+                                </Grid>
 
 
-                            <Grid Grid.Column="0" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
-                                    <ColumnDefinition Width="Auto"
-                                                      SharedSizeGroup="AllAdditionalButtonsForRadioButtonsWidth" />
-                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="AllRadioButtonsWidth" />
+                                        <ColumnDefinition Width="Auto"
+                                                          SharedSizeGroup="AllAdditionalButtonsForRadioButtonsWidth" />
+                                    </Grid.ColumnDefinitions>
 
-                                <RadioButton
-                                    Grid.Column="0" Grid.Row="0"
-                                    Margin="5"
-                                    VerticalAlignment="Center"
-                                    Content="DeadLetter"
-                                    x:Name="DeadLetterMessageCheckbox"
-                                    IsChecked="{Binding ModelItem.OnMessageReceiveAction,
+                                    <RadioButton
+                                        Grid.Column="0" Grid.Row="0"
+                                        Margin="5"
+                                        VerticalAlignment="Center"
+                                        Content="DeadLetter"
+                                        x:Name="DeadLetterMessageCheckbox"
+                                        IsChecked="{Binding ModelItem.OnMessageReceiveAction,
                                             Converter={StaticResource EnumToBooleanConverter},
                                             ConverterParameter={x:Static code:OnMessageReceiveEnumAction.MoveToDeadLetter}
                                 }" />
 
 
-                                <Button
-                                    Grid.Column="1"
-                                    Grid.Row="0"
-                                    Content="..." Height="20" Width="75" Margin="5,0,0,0"
-                                    IsEnabled="{Binding ElementName=DeadLetterMessageCheckbox, Path=IsChecked}"
-                                    Command="{Binding ShowDeadLetterMessageOverriddenPropertiesWindowCommand}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Grid.Row="0"
+                                        Content="..." Height="20" Width="75" Margin="5,0,0,0"
+                                        IsEnabled="{Binding ElementName=DeadLetterMessageCheckbox, Path=IsChecked}"
+                                        Command="{Binding ShowDeadLetterMessageOverriddenPropertiesWindowCommand}" />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </GroupBox>
-                </Expander>
-            </Grid>
+                        </GroupBox>
+                    </Expander>
+                </Grid>
+            </GroupBox>
+
 
         </Expander>
 
         <GroupBox Grid.Row="1"
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
-                  Margin="5,2,5,2"
+                  Margin="5"
                   Header="Received messages:">
             <Grid>
 
@@ -429,7 +422,7 @@
                 <StackPanel Grid.Column="0"
                             Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
-                        <Label> Last receiver status: </Label>
+                        <Label> Receiver status: </Label>
                         <Label Content="{Binding ReceiverStatusText}">
                             <Label.Style>
                                 <Style>
@@ -510,7 +503,8 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <Button Margin="5" MinWidth="75"
+                <Button Margin="5" 
+                        MinWidth="75"
                         Command="{Binding StartMessageReceiveCommand}"
                         Style="{StaticResource ButtonStyle}"
                         x:Name="ReceiveButton">
@@ -523,8 +517,11 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Margin="5" Width="75" MinWidth="75"
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right">
+                <Button Margin="5" 
+                        MinWidth="75"
                         Style="{StaticResource ButtonStyle}"
                         Command="{Binding ClearMessageContentCommand}">
                     Clear

@@ -18,11 +18,6 @@ public class PeekerConfigModel : INotifyPropertyChanged
     private bool _shouldShowOnlyMessageBodyAsJson;
     private int _msgBodyTextBoxFontSize = AppDefaults.DefaultTextBoxFontSize;
     private bool _shouldReplaceJsonSlashNSlashRSequencesWithNewLineCharacter;
-    //private IList<SBMessageApplicationProperty> _abandonMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
-    //private IList<SBMessageApplicationProperty> _deadLetterMessageApplicationOverridenProperties = new ObservableCollection<SBMessageApplicationProperty>();
-    //private SbDeadLetterMessageFields _sbDeadLetterMessageFields = new();
-    //private OnMessageReceiveEnumAction _onMessageReceiveAction;
-    //private DeadLetterMessageFieldsOverrideEnumType _deadLetterMessageFieldsOverrideType;
     private ReceiverDataSourceType _peekerDataSourceType;
 
     public string ConfigName

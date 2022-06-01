@@ -6,10 +6,10 @@
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:application="clr-namespace:ASBMessageTool.Application"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="500" d:DesignWidth="300">
 
     <UserControl.Resources>
-        
+
     </UserControl.Resources>
 
     <Grid>
@@ -30,96 +30,100 @@
 
         <Expander Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                   IsExpanded="{Binding Path=IsConfigurationViewExpanded, UpdateSourceTrigger=PropertyChanged }"
-                  Margin="5,2,5,0"
+                  Margin="5,2,5,2"
                   Header="Service Bus Sender configuration">
-            <Grid
+            <GroupBox
+                Padding="2,5"
                 IsEnabled="{Binding Path=IsEditingConfigurationEnabled, UpdateSourceTrigger=PropertyChanged }">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
 
-                </Grid.ColumnDefinitions>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" /> <!-- detach button -->
-                    <RowDefinition Height="*" /> <!-- text box -->
-                    <RowDefinition Height="Auto" /> <!-- send button-->
-                    <RowDefinition />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" /> <!-- detach button -->
+                        <RowDefinition Height="*" /> <!-- text box -->
+                        <RowDefinition Height="Auto" /> <!-- send button-->
+                        <RowDefinition />
 
-                </Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
 
-                <Grid.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="Padding" Value="5,5,5,5" />
-                    </Style>
-                </Grid.Resources>
+                    <Grid.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="Padding" Value="5,5,5,5" />
+                        </Style>
+                    </Grid.Resources>
 
-                <Label Grid.Column="0"
-                       Grid.Row="0"
-                       Margin="5,0,5,2"
-                       Content="Name" />
+                    <Label Grid.Column="0"
+                           Grid.Row="0"
+                           Margin="5,2,5,2"
+                           Content="Sender config name" />
 
-                <TextBox Grid.Column="1"
-                         Grid.Row="0"
-                         Margin="5,0,5,2"
-                         Grid.ColumnSpan="2"
-                         Text="{Binding Path=ModelItem.ConfigName, UpdateSourceTrigger=PropertyChanged}" />
-
-                <Label Grid.Column="0"
-                       Grid.Row="1"
-                       Margin="5,0,5,2"
-                       Content="Connection string" />
-
-                <PasswordBox Grid.Column="1"
-                             Grid.Row="1"
-                             Margin="5,0,5,2"
+                    <TextBox Grid.Column="1"
+                             Grid.Row="0"
+                             Margin="5,2,5,2"
                              Grid.ColumnSpan="2"
-                             application:PasswordBoxAssistant.BindPassword="true"
-                             application:PasswordBoxAssistant.BoundPassword="{Binding
+                             Text="{Binding Path=ModelItem.ConfigName, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Label Grid.Column="0"
+                           Grid.Row="1"
+                           Margin="5,2,5,2"
+                           Content="Connection string" />
+
+                    <PasswordBox Grid.Column="1"
+                                 Grid.Row="1"
+                                 Margin="5,2,5,2"
+                                 Grid.ColumnSpan="2"
+                                 application:PasswordBoxAssistant.BindPassword="true"
+                                 application:PasswordBoxAssistant.BoundPassword="{Binding
                          Path=ModelItem.ServiceBusConnectionString,
                          Mode=TwoWay,
                          UpdateSourceTrigger=PropertyChanged}">
-                    <PasswordBox.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Copy connection string"
-                                Command="{Binding CopySenderConnectionStringToClipboard}">
-                            </MenuItem>
-                        </ContextMenu>
-                    </PasswordBox.ContextMenu>
-                </PasswordBox>
+                        <PasswordBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Copy connection string"
+                                          Command="{Binding CopySenderConnectionStringToClipboard}" />
+                            </ContextMenu>
+                        </PasswordBox.ContextMenu>
+                    </PasswordBox>
 
 
-                <Label Grid.Column="0"
-                       Grid.Row="2"
-                       Margin="5,0,5,2"
-                       Content="Queue or Topic name" />
+                    <Label Grid.Column="0"
+                           Grid.Row="2"
+                           Margin="5,2,5,2"
+                           Content="Queue or Topic name" />
 
-                <TextBox Grid.Column="1"
-                         Grid.Row="2"
-                         Margin="5,0,5,2"
-                         Grid.ColumnSpan="2"
-                         Text="{Binding Path=ModelItem.OutputTopicName, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Grid.Column="1"
+                             Grid.Row="2"
+                             Margin="5,2,5,2"
+                             Grid.ColumnSpan="2"
+                             Text="{Binding Path=ModelItem.OutputTopicName, UpdateSourceTrigger=PropertyChanged}" />
 
 
-                <Grid Grid.Row="3" Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <Button  Grid.Column="0"
-                            Margin="5,0,5,2"
-                            Content="Validate configuration"
-                            Style="{StaticResource ValidateConfigurationButtonStyle}"
-                            Command="{Binding ValidateConfigurationCommand}" />   
+                    <Grid Grid.Row="3" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Margin="5,2,5,2"
+                                Content="Validate configuration"
+                                Style="{StaticResource ValidateConfigurationButtonStyle}"
+                                Command="{Binding ValidateConfigurationCommand}" />
+                    </Grid>
+
+
                 </Grid>
-                
-                
-            </Grid>
+            </GroupBox>
+
         </Expander>
 
-        <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Header="Message" Margin="5">
+        <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Header="Message" 
+                  Margin="5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -130,13 +134,15 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
 
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Label Margin="0,0,5,0" Content="Properties " />
-                    <Button Margin="0,0,0,0" 
-                            MinWidth="45" 
+                    <Button Margin="0,0,0,0"
+                            MinWidth="45"
                             Content="..." Height="22"
                             Style="{StaticResource ButtonStyle}"
                             Command="{Binding ShowPropertiesWindowCommand}" />
@@ -145,6 +151,7 @@
                 <Label Grid.Column="0" Grid.Row="1">Body :</Label>
 
                 <!-- Unfortunately we cannot bind Text property, only a document property-->
+                <!-- SyntaxHighlighting="{Binding ModelItem.SelectedSyntaxHighlightingName}" -->
                 <avalonedit:TextEditor Grid.Row="2"
                                        Grid.Column="0"
                                        Grid.ColumnSpan="2"
@@ -152,12 +159,17 @@
                                        Margin="5,0,5,2"
                                        Background="White"
                                        WordWrap="False"
+                                       
                                        VerticalScrollBarVisibility="Auto"
                                        HorizontalScrollBarVisibility="Auto"
                                        VerticalAlignment="Stretch"
                                        HorizontalAlignment="Stretch"
                                        IsReadOnly="False"
-                                       SyntaxHighlighting="Json"
+                                       
+                                       SyntaxHighlighting="{Binding HighlightingDefinition, 
+                                                            Mode=OneWay, 
+                                                            UpdateSourceTrigger=PropertyChanged}"
+                                       
                                        ShowLineNumbers="True"
                                        FontFamily="Consolas"
                                        TextChanged="SenderMsgBodyTextBox_OnTextChanged"
@@ -167,6 +179,61 @@
                                        Document="{Binding AvalonTextDocument,
                                                            Mode=TwoWay,
                                                            UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" >
+                    <Label
+                        Content="Sender status:"
+                        Margin="5,0,5,0" />
+
+                    <Label
+                        Margin="5,0,5,0"
+                        Content="{Binding MessageSendingStatusText}">
+                        <Label.Style>
+                            <Style>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Error">
+                                        <Setter Property="Control.Foreground" Value="Red" />
+                                        <Setter Property="Control.FontWeight" Value="Bold" />
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Idle">
+                                        <Setter Property="Control.Foreground" Value="Blue" />
+                                        <Setter Property="Control.FontWeight" Value="Bold" />
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Sending">
+                                        <Setter Property="Control.Foreground" Value="Orange" />
+                                        <Setter Property="Control.FontWeight" Value="Bold" />
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Stopping">
+                                        <Setter Property="Control.Foreground" Value="Orange" />
+                                        <Setter Property="Control.FontWeight" Value="Bold" />
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Success">
+                                        <Setter Property="Control.Foreground" Value="Green" />
+                                        <Setter Property="Control.FontWeight" Value="Bold" />
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
+                    </Label>
+                </StackPanel>
+                
+                <Expander Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                          Header="Text options">
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Syntax highlighting : </Label>
+                        <ComboBox IsEditable="False"
+                                  ItemsSource="{Binding HighlightingDefinitions, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedItem="{Binding HighlightingDefinition,                                   
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                                  />
+                    </StackPanel>
+                </Expander>
+
             </Grid>
         </GroupBox>
 
@@ -174,77 +241,38 @@
         <Grid Grid.Column="0"
               Grid.Row="2"
               Grid.ColumnSpan="3"
-              Margin="5,0,5,2">
+              >
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
             
-            <Button Grid.Column="0"
-                    x:Name="SendButton"
-                    MinWidth="75"
-                    Margin="5,2,5,2"
-                    Style="{StaticResource ButtonStyle}"
-                    Command="{Binding SendMessageCommand}">
-                Send
-            </Button>
             
-            <Button Grid.Column="1"
-                    MinWidth="75"
-                    Margin="5,2,5,2"
-                    Style="{StaticResource ButtonStyle}"
-                    Command="{Binding StopSendingMessageCommand}">
-                Stop
-            </Button>
+            <StackPanel Orientation="Horizontal">
+                <Button 
+                        x:Name="SendButton"
+                        MinWidth="75"
+                        Margin="5"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding SendMessageCommand}">
+                    Send
+                </Button>
+
+                <Button Grid.Column="1"
+                        MinWidth="75"
+                        Margin="5"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding StopSendingMessageCommand}">
+                    Stop
+                </Button>    
+            </StackPanel>
             
-            <Label
-                Grid.Column="2"
-                Content="Last send status:"
-                Margin="5,0,5,0" />
+            
 
-            <Label
-                Margin="5,0,5,0"
-                Grid.Column="3"
-                Content="{Binding MessageSendingStatusText}">
-                <Label.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Error">
-                                <Setter Property="Control.Foreground" Value="Red" />
-                                <Setter Property="Control.FontWeight" Value="Bold" />
-                            </DataTrigger>
+            
 
-                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Idle">
-                                <Setter Property="Control.Foreground" Value="Blue" />
-                                <Setter Property="Control.FontWeight" Value="Bold" />
-                            </DataTrigger>
-
-                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Sending">
-                                <Setter Property="Control.Foreground" Value="Orange" />
-                                <Setter Property="Control.FontWeight" Value="Bold" />
-                            </DataTrigger>
-                            
-                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Stopping">
-                                <Setter Property="Control.Foreground" Value="Orange" />
-                                <Setter Property="Control.FontWeight" Value="Bold" />
-                            </DataTrigger>
-
-                            <DataTrigger Binding="{Binding MessageSenderStatus}" Value="Success">
-                                <Setter Property="Control.Foreground" Value="Green" />
-                                <Setter Property="Control.FontWeight" Value="Bold" />
-                            </DataTrigger>
-
-                        </Style.Triggers>
-                    </Style>
-                </Label.Style>
-            </Label>
 
         </Grid>
 
