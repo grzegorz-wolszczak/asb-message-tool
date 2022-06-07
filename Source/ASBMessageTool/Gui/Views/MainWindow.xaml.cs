@@ -54,8 +54,7 @@ public partial class MainWindow
     {
         GuiElementsHelperRoutines.ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
             () => (int)LogContentTextBox.FontSize,
-            value => { LogContentTextBox.FontSize = value; },
-            sender, 
+            value => { LogContentTextBox.FontSize = value; }, 
             e);
         
     }

@@ -40,7 +40,6 @@ public partial class SenderConfigUserControl : UserControl
         GuiElementsHelperRoutines.ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
             () => targetItem.MsgBodyTextBoxFontSize,
             value => { targetItem.MsgBodyTextBoxFontSize = value; },
-            sender,
             e);
     }
 }
