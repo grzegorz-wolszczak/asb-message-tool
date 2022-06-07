@@ -7,32 +7,29 @@ namespace ASBMessageTool.Gui;
 public static class GuiElementsHelperRoutines
 {
     public static void ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
-        Func<int> getValueFunc, 
-        Action<int> setValueFunc, object sender, MouseWheelEventArgs e )
+        Func<int> getValueFunc,
+        Action<int> setValueFunc, MouseWheelEventArgs e)
     {
-        
-        if (Keyboard.Modifiers != ModifierKeys.Control)
+        if (Keyboard.Modifiers == ModifierKeys.Control)
         {
-            return;
-        }
+            e.Handled = true;
+            var value = getValueFunc();
 
-        e.Handled = true;
-        var value = getValueFunc();
+            if (e.Delta > 0)
+            {
+                ++value;
+            }
+            else
+            {
+                --value;
+            }
 
-        if (e.Delta > 0)
-        {
-            ++value;
-        }
-        else
-        {
-            --value;
-        }
+            if (value < AppDefaults.MinimumTextBoxFontSize)
+            {
+                value = AppDefaults.MinimumTextBoxFontSize;
+            }
 
-        if (value < AppDefaults.MinimumTextBoxFontSize)
-        {
-            value = AppDefaults.MinimumTextBoxFontSize;
+            setValueFunc(value);
         }
-
-        setValueFunc(value);
     }
 }

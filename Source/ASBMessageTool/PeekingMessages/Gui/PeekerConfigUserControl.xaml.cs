@@ -19,8 +19,7 @@ public partial class PeekerConfigUserControl : UserControl
         
         GuiElementsHelperRoutines.ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
             () => targetItem.MsgBodyTextBoxFontSize,
-            value => { targetItem.MsgBodyTextBoxFontSize = value; },
-            sender, 
+            value => { targetItem.MsgBodyTextBoxFontSize = value; }, 
             e);
     }
 

@@ -21,8 +21,7 @@ public partial class ReceiverConfigUserControl : UserControl
         
         GuiElementsHelperRoutines.ChangeValueOnMouseWheelEventWithCtrlKeyPressed(
             () => targetItem.MsgBodyTextBoxFontSize,
-            value => { targetItem.MsgBodyTextBoxFontSize = value; },
-            sender, 
+            value => { targetItem.MsgBodyTextBoxFontSize = value; }, 
             e);
     }
 
